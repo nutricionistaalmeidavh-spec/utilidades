@@ -2,6 +2,8 @@
 
 Fronteira BIM reutilizável sobre IfcOpenShell.
 
-**Consumir como:** `service` para manter uma separação técnica explícita do componente LGPL.
+**Consumir como:** `shared`.
 
-O CompatibilizaBIM/CBIM deve depender de um contrato ArtiSys (`IIfcEngine` ou equivalente), permitindo substituir a implementação sem contaminar o domínio com APIs específicas do upstream.
+**Execução:** biblioteca/CLI/processo local iniciado sob demanda pelo CompatibilizaBIM/CBIM e encerrado ao terminar a operação. Não exige servidor permanente.
+
+O consumidor deve depender de um contrato ArtiSys (`IIfcEngine` ou equivalente), permitindo substituir a implementação sem espalhar APIs específicas do upstream pelo domínio e mantendo a fronteira técnica necessária para o componente LGPL.
