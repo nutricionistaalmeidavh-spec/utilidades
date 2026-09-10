@@ -1,25 +1,19 @@
-# Kits executáveis ArtiSys 0.2.0
+# Kits executáveis ArtiSys
 
-Os quatro módulos são código reutilizável executável. O core é gratuito,
-open source e executado localmente. Nenhum deles requer serviço comercial,
-assinatura ou conta externa. Modelos, browsers e dependências são provisionados
-na instalação; Trivy atualiza uma base pública de vulnerabilidades.
+Os quatro kits executáveis são reutilizáveis e não exigem infraestrutura permanente:
 
-| Módulo | Consumir | Responsabilidade do produto |
-|---|---|---|
-| QA | pacote npm local `@artisys/qa` | seletores, login e cenários reais |
-| Security | CLI Python por checkout fixado | alvo, instalação dos scanners, política de publicação |
-| API Contracts | pacote npm local `@artisys/api-contracts` | OpenAPI, schemas, contratos Pact, baseline revisada |
-| Documents | wheel Python `artisys-documents` | modelos OCR, classificação, revisão e destino dos arquivos |
+| Módulo | Versão | Execução | Responsabilidade do produto |
+|---|---:|---|---|
+| QA | 1.1.0 | local ou GitHub Actions | seletores, login e cenários reais |
+| Security | 0.2.0 | local ou GitHub Actions | alvo e política de bloqueio |
+| API Contracts | 0.2.0 | local ou GitHub Actions | OpenAPI, schemas, Pact e baselines |
+| Documents | 0.2.0 | local sob demanda ou GitHub Actions | OCR, classificação, revisão e destino |
 
-Os quatro pacotes são MIT para o código próprio. Licenças upstream permanecem
-independentes e estão registradas em `docs/LICENSES.md` e nas distribuições das
-dependências. Não redistribua pastas `projects/` junto com os produtos.
+Nenhum deles requer servidor, VPS, PC ligado, runner self-hosted ou assinatura externa para funcionar.
 
-## Preparar ambiente de desenvolvimento
+## Preparar ambiente local
 
-Node 22+, Python 3.10+; Java 17+ se for gerar clientes. Não é necessário inicializar
-os 47 submodules para testar os kits. No Linux/WSL, na raiz deste checkout:
+Node 22+, Python 3.10+; Java 17+ apenas quando o OpenAPI Generator for usado. Não é necessário inicializar os 22 submodules para testar os kits.
 
 ```bash
 npm ci --ignore-scripts --prefix modules/artisys-qa
@@ -29,62 +23,40 @@ python3 -m venv .venv
 .venv/bin/python scripts/check-modules.py --pact
 ```
 
-No PowerShell, use `python -m venv .venv` e `.venv\Scripts\python.exe` no lugar de
-`.venv/bin/python`. Cada README possui instruções próprias. A compatibilidade
-de instalação Windows/macOS e os modelos OCR devem ser validados no host alvo.
+No PowerShell, use `python -m venv .venv` e `.venv\Scripts\python.exe`.
 
-Instale Chromium no diretório de QA com `npx --no-install playwright install chromium`.
-Depois execute `python scripts/check-modules.py --browser --pact`. Para validar o
-gerador também, provisione o JAR fixado conforme o README de API Contracts, defina
-`OPENAPI_GENERATOR_JAR` e acrescente `--generator`. Nenhum teste opcional selecionado
-é convertido em sucesso se uma dependência estiver ausente.
+Para Chromium:
+
+```bash
+cd modules/artisys-qa
+npx --no-install playwright install chromium
+```
+
+Depois execute `python scripts/check-modules.py --browser --pact`. Para validar o gerador, provisione o JAR fixado conforme o README de API Contracts, defina `OPENAPI_GENERATOR_JAR` e acrescente `--generator`.
+
+## GitHub Actions
+
+O workflow `.github/workflows/module-checks.yml` usa **`ubuntu-latest`**. Não existe requisito de runner self-hosted.
+
+O template `modules/artisys-security/templates/consumer-workflow.yml` também usa runner hospedado pelo GitHub e pode ser copiado para produtos consumidores.
+
+Se a franquia de GitHub Actions da conta for esgotada, isso afeta apenas a automação de CI; nunca torna o produto dependente de uma máquina mantida ligada.
 
 ## Entregar aos consumidores
 
 1. Fixe um commit revisado de `utilidades`.
-2. Use `npm pack` no kit JS e instale o `.tgz` no consumidor, ou gere a wheel do
-   Documents. Guarde versão/commit e lockfiles no consumidor.
+2. Para kits JS, use `npm pack` e instale o `.tgz` no consumidor; para Documents, gere a wheel Python quando necessário.
 3. Mantenha cenários, schemas, regras e destinos no repositório do produto.
-4. Para atualizar, troque o pacote inteiro e rode os testes do consumidor. Não
-   copie e personalize fontes do núcleo compartilhado.
-5. Security pode ser chamado diretamente de um checkout fixado. O template de
-   workflow faz checkout separado e exige um SHA revisado.
+4. Atualize substituindo o pacote inteiro e rode os testes do consumidor.
+5. Security pode ser executado diretamente de checkout fixado durante GitHub Actions.
 
-Nada aqui altera o PDV, FluxoDRE ou outro sistema automaticamente. O PDV permanece
-desktop/rede local. Os exemplos não são um caixa pronto para uso comercial.
+Não copie os upstreams de `projects/` para os produtos.
 
-## CI e gates
+## Gates
 
-`scripts/check-modules.py` é o caminho local, sem CI obrigatório. O workflow
-opcional `.github/workflows/module-checks.yml` é disparado manualmente e usa
-`self-hosted` por padrão. O proprietário prepara o runner Linux com Node, Python,
-Java, bibliotecas do Chromium, curl e acesso às dependências. `ubuntu-latest` pode
-ser escolhido explicitamente, sujeito à franquia/cobrança do GitHub; não é requisito.
+- **QA:** testes E2E, Chromium, screenshots, trace, vídeos e demos declarativas.
+- **Security:** Gitleaks, Trivy e Semgrep; falhas e ferramentas ausentes bloqueiam o gate configurado.
+- **Contracts:** validação de contratos Pact/OpenAPI e geração de cliente quando solicitada.
+- **Documents:** testes de arquivos, pré-processamento e contratos OCR; inferência real e drivers de scanner dependem apenas da máquina onde a tarefa for executada, não de servidor permanente.
 
-`modules/artisys-security/templates/consumer-workflow.yml` cobre commits/PRs e tags
-quando adotado no produto. Use runners próprios apenas para código confiável.
-Se `utilidades` for privado, o segundo checkout exige credencial de leitura
-autorizada para esse repositório, configurada no ambiente do consumidor.
-Para bloquear merge configure o check obrigatório; para bloquear release use
-`needs: security`. Esses controles não são ativados silenciosamente pelo kit.
-
-Gates Security: segredos e severidade HIGH/CRITICAL bloqueiam commits; MEDIUM também
-bloqueia release. Erros e ferramentas ausentes bloqueiam ambos. Isso é um baseline,
-não auditoria completa de produto. O workflow de testes dos kits não substitui um
-scan real do produto com os três scanners.
-
-## Escopo de validação
-
-- QA: prontidão/cancelamento, limpeza de contextos, concorrência HTTP real,
-  idempotência, estoque, cancelamento de venda e caixa do exemplo.
-- Contracts: validação estrita, envelope de evento, baseline e CLI; Pact real
-  aceita provedor compatível e rejeita tipo monetário incompatível. OpenAPI
-  Generator real gera cliente que passa no TypeScript estrito.
-- Documents: arquivos e pré-processamento Pillow/OpenCV reais, EXIF, limites,
-  regras, contrato Paddle e CLI sem sobrescrita. Inferência real PaddleOCR e
-  drivers de scanner não foram homologados; não há detector de assinatura.
-- Security: comandos, versões, relatórios, critérios e falhas exercitados por
-  testes. O scan completo Gitleaks/Trivy/Semgrep requer ambiente com as ferramentas.
-
-Consulte [evidências da entrega](MODULE_KITS_VERIFICATION.md) para resultados e
-limitações observados. `implemented` não significa homologação dos consumidores.
+`implemented` ou `stable` significa que o kit possui código executável; homologação em cada produto consumidor continua separada.
