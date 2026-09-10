@@ -1,5 +1,7 @@
 # ArtiSys Capture
 
+**Status:** stable 1.0.0.
+
 Contrato reutilizável para captura por câmera/arquivo, QR/barcode e pré-processamento OpenCV sem serviço permanente.
 
 ## API
