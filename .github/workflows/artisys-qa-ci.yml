@@ -29,6 +29,9 @@ jobs:
         run: |
           npm test --prefix modules/artisys-qa
           npm run check --prefix modules/artisys-qa
+      - name: Verify package contents
+        working-directory: modules/artisys-qa
+        run: npm pack --dry-run
       - name: Install Chromium
         run: npx --prefix modules/artisys-qa playwright install --with-deps chromium
       - name: Browser reference test

@@ -1,35 +1,173 @@
 # @artisys/qa
 
-Módulo compartilhado ArtiSys para QA visual/técnico e gravação de demonstrações com Playwright. A versão 1.1 executa fluxos declarativos em aplicações web ou Electron, gera screenshots, vídeo, trace, telemetria e também Demo Flows reutilizáveis para 16:9, 1:1 e Reels/TikTok/Shorts 9:16.
+Módulo compartilhado ArtiSys para QA, automação e gravação de demonstrações em aplicações web ou Electron.
 
-O consumidor mantém apenas URL/entrypoint, credenciais em secrets, seletores e regras específicas do produto.
+A versão **1.2.0** adiciona uma plataforma reutilizável de **Demo Profiles**: o módulo pode preparar/reutilizar conta demo, workspace isolado, fixtures versionadas e fluxos compartilhados antes de executar Playwright. Regras específicas de cada produto ficam atrás de um adapter pequeno do consumidor.
 
-## Resultado de uma execução QA
+## O que o módulo centraliza
+
+- Playwright web e Electron;
+- QA flows e Demo Flows declarativos;
+- conta demo idempotente (`find` → `create if missing` → `authenticate`);
+- workspaces `persistent`, `snapshot` ou `ephemeral`;
+- fixtures genéricas e packs específicos do produto;
+- biblioteca de fluxos reutilizáveis via `uses`;
+- ações abstratas via `capability` mapeadas pelo adapter;
+- screenshots, trace, telemetria e vídeo;
+- MP4 social 16:9, 1:1 e Reels 9:16;
+- redaction de secrets nos summaries, telemetria e logs de processo.
+
+## Demo Profile
+
+Exemplo de configuração:
+
+```json
+{
+  "defaultDemoProfile": "default",
+  "demoProfiles": {
+    "default": {
+      "adapter": "./demo-adapter.mjs",
+      "account": {
+        "createIfMissing": true,
+        "usernameEnv": "ARTISYS_DEMO_USERNAME",
+        "passwordEnv": "ARTISYS_DEMO_PASSWORD"
+      },
+      "workspace": {
+        "strategy": "persistent",
+        "resetBeforeRun": "baseline"
+      },
+      "fixtures": ["common/base", "common/customer"]
+    }
+  }
+}
+```
+
+Credenciais nunca ficam no JSON: os campos `*Env` apontam para variáveis de ambiente/GitHub Secrets.
+
+### Ciclo da conta
+
+Em cada execução com profile:
+
+```text
+resolve profile
+  → findDemoAccount
+  → createDemoAccount (somente se ausente)
+  → authenticateDemoAccount
+  → ensureDemoWorkspace
+  → resetDemoWorkspace (opcional e somente se workspace.demo === true)
+  → seedDemoFixtures
+  → executar flow
+```
+
+A conta pode permanecer no backend do sistema entre gravações. O adapter deve implementar `findDemoAccount` de forma determinística para a mesma identidade ser reutilizada.
+
+### Estratégias de workspace
+
+| Estratégia | Uso |
+|---|---|
+| `persistent` | Web/staging ou backend persistente. Conta e workspace continuam disponíveis entre execuções. |
+| `snapshot` | Electron/local. O adapter pode restaurar/exportar um snapshot de dados demo. |
+| `ephemeral` | Workspace descartável por execução. |
+
+Reset destrutivo é bloqueado se o adapter não devolver o workspace com `demo: true`.
+
+## Adapter do produto
+
+O módulo central não conhece tabelas, endpoints nem seletores do PDV/Obra/etc. O consumidor implementa somente o necessário:
+
+```js
+export default {
+  async findDemoAccount(context) {},
+  async createDemoAccount(context) {},
+  async authenticateDemoAccount(context) {},
+  async ensureDemoWorkspace(context) {},
+  async resetDemoWorkspace(context, policy) {},
+  async seedDemoFixtures(context, packs) {},
+  capabilities: {
+    'auth.login': async ({ page, runtimeContext }) => {}
+  }
+};
+```
+
+Veja `templates/consumer/demo-adapter.mjs` e `templates/consumer/artisys-qa.demo-profile.example.json`.
+
+## Fixtures reutilizáveis
+
+Packs centrais iniciais:
+
+- `common/base`
+- `common/customer`
+- `common/employee`
+- `commerce/catalog`
+- `commerce/order`
+
+Cada pack possui `id` e `revision`. O adapter materializa esses dados no schema real do produto usando upsert/chaves determinísticas. Packs específicos, por exemplo `pdv/salon` ou `obra/project`, ficam no consumidor usando o mesmo contrato.
+
+## Flows reutilizáveis
+
+Um flow pode incluir outro:
+
+```json
+{
+  "steps": [
+    { "uses": "common/login" },
+    { "action": "capability", "name": "navigation.dashboard" },
+    { "action": "screenshot", "name": "dashboard" }
+  ]
+}
+```
+
+Biblioteca central inicial:
+
+- `common/login`
+- `common/logout`
+- `common/dashboard-tour`
+- `common/create-record`
+- `common/search-record`
+- `common/report-tour`
+
+`uses` também aceita arquivos JSON relativos. Inclusões recursivas são rejeitadas.
+
+Ações específicas continuam disponíveis normalmente: `goto`, `click`, `fill`, `press`, `check`, `uncheck`, `hover`, `selectOption`, `reload`, `waitFor`, `waitForTimeout`, `expectVisible`, `expectText`, `expectURL`, `screenshot` e `capability`.
+
+## CLI
+
+```sh
+artisys-qa validate --config qa/artisys-qa.config.json
+artisys-qa list --config qa/artisys-qa.config.json
+
+artisys-qa demo-profile status --config qa/artisys-qa.config.json --profile default
+artisys-qa demo-profile prepare --config qa/artisys-qa.config.json --profile default
+artisys-qa demo-profile reset --config qa/artisys-qa.config.json --profile default
+
+artisys-qa run --config qa/artisys-qa.config.json --flow smoke --profile default
+artisys-qa demo --config qa/artisys-qa.config.json --demo quick-30s --profile default --preset reels-9x16
+```
+
+Quando existe `defaultDemoProfile`, `run` e `demo` o utilizam automaticamente. Configurações 1.1.1 sem profile continuam funcionando sem alteração.
+
+## Resultado QA
 
 ```text
 qa-artifacts/<sistema>-<fluxo>-<viewport>-<timestamp>/
 ├── screenshots/
 ├── video.webm              # web
-├── video.mp4               # Electron, via frames + ffmpeg
+├── video.mp4               # Electron
 ├── trace.zip
 ├── telemetry.json
 ├── run-summary.json
 └── process.log             # quando houver startCommand
 ```
 
-## Demo Flows
+`run-summary.json` inclui somente metadados seguros do Demo Profile (nome, estratégia, ids não sensíveis e revisões de fixtures).
 
-Demo Flows são separados dos testes. O objetivo é mostrar o produto, não validar regras de negócio.
-
-Presets incorporados:
+## Demo Flows e vídeo social
 
 | Preset | Saída |
 |---|---|
 | `landscape-16x9` | 1920×1080 MP4 |
 | `square-1x1` | 1080×1080 MP4 |
 | `reels-9x16` | 1080×1920 MP4 |
-
-Exemplo no manifesto:
 
 ```json
 {
@@ -43,102 +181,32 @@ Exemplo no manifesto:
 }
 ```
 
-Fluxo de demonstração:
+`holdMs` controla o ritmo de uma etapa. O vídeo final é normalizado por ffmpeg/ffprobe para o preset e duração solicitados.
 
-```json
-{
-  "name": "quick-30s",
-  "durationTargetSec": 30,
-  "steps": [
-    {"action": "waitFor", "selector": "body", "holdMs": 2500},
-    {"action": "click", "selector": "[data-route='products']", "holdMs": 4000},
-    {"action": "click", "selector": "[data-route='checkout']", "holdMs": 4000}
-  ]
-}
-```
+Em Electron, a viewport desktop é preservada e encaixada no canvas social. Em web responsiva, o preset também pode dirigir a viewport de captura.
 
-`holdMs` controla o ritmo depois de qualquer etapa. A duração-alvo é informativa: o `demo-summary.json` registra duração real e desvio, mas não reprova o fluxo por alguns segundos de diferença.
+## Segurança
 
-Em Electron, o sistema continua em uma viewport desktop legível; o ffmpeg preserva a proporção e centraliza o conteúdo no canvas vertical, evitando espremer a interface. Para web responsiva, o preset pode ser usado como viewport de captura.
+- nunca coloque senha/token literal no manifest;
+- use `usernameEnv`, `passwordEnv`, `tokenEnv` etc.;
+- o runner aplica redaction dos valores sensíveis em summaries, telemetria e `process.log`;
+- traces/screenshots/vídeos ainda podem registrar conteúdo visível da aplicação: use exclusivamente dados demo/sintéticos;
+- adapters devem isolar a conta/workspace demo de dados reais;
+- reset exige `workspace.demo === true`.
 
-Execução:
+## GitHub Actions
 
-```sh
-node src/cli.mjs demo \
-  --config ../../../meu-repo/qa/artisys-qa.config.json \
-  --demo quick-30s \
-  --preset reels-9x16
-```
+O repositório fornece action composta e workflow reutilizável. O consumidor pode disparar QA/Demo pelo GitHub, inclusive pelo celular, e receber `qa-artifacts`.
 
-Resultado adicional:
+Para repositórios que não podem consumir diretamente um workflow privado compartilhado, use runtime pinado no consumidor e registre versão/commit de origem. Atualizações centrais não devem entrar silenciosamente em aplicativos já publicados: o consumidor atualiza o pin e gera um novo build/redeploy.
 
-```text
-├── demo-video.mp4
-└── demo-summary.json
-```
+## Compatibilidade
 
-## Uso mais simples em qualquer repositório
-
-Copie `templates/consumer` para `qa/` e ajuste `qa/artisys-qa.config.json`. O template já inclui um `quick-30s` de demonstração.
-
-```json
-{
-  "schemaVersion": 1,
-  "systemId": "meu-sistema",
-  "mode": "web",
-  "defaultEnvironment": "production",
-  "defaultFlow": "smoke",
-  "defaultDemo": "quick-30s",
-  "defaultViewport": "desktop",
-  "capture": {"video": true, "screenshotEachStep": true},
-  "environments": {
-    "production": {"baseURL": "https://app.exemplo.com"}
-  },
-  "flows": {"smoke": "flows/smoke.json"},
-  "demos": {
-    "quick-30s": {"file": "demo/quick-30s.json", "preset": "reels-9x16", "durationTargetSec": 30}
-  }
-}
-```
-
-Ações disponíveis: `goto`, `click`, `fill`, `press`, `check`, `uncheck`, `hover`, `selectOption`, `reload`, `waitFor`, `waitForTimeout`, `expectVisible`, `expectText`, `expectURL` e `screenshot`. Seletores podem usar `selector`, `testId`, `role`+`name`, `text` ou `label`. Valores sensíveis devem usar `valueFromEnv`.
-
-## Execução local
-
-```sh
-cd modules/artisys-qa
-npm ci
-npx playwright install chromium
-node src/cli.mjs validate --config ../../../meu-repo/qa/artisys-qa.config.json
-node src/cli.mjs run --config ../../../meu-repo/qa/artisys-qa.config.json --flow smoke --viewport desktop
-node src/cli.mjs demo --config ../../../meu-repo/qa/artisys-qa.config.json --demo quick-30s --preset reels-9x16
-```
-
-Comandos: `validate`, `list`, `run` e `demo`.
-
-## GitHub Actions — execução pelo celular
-
-O repositório `utilidades` fornece ação composta e workflow reutilizável. O consumidor pode receber `flow`/`demo`, `environment`, `viewport`/`preset` via `workflow_dispatch` e publicar `qa-artifacts` como artifact. Assim o computador local não precisa estar ligado para aplicações web acessíveis ou Electron inicializável pelo runner.
-
-Como `utilidades` é privado, o GitHub deve permitir que outros repositórios privados usem suas Actions/workflows. Quando a política não permitir compartilhamento direto, use o runtime fixado no consumidor, mantendo a origem/commit central documentados.
-
-## Electron
-
-O runner abre a primeira janela Electron com Playwright. Screenshots e trace são capturados diretamente. Vídeo Electron é criado por frames e `ffmpeg`. Demo Flows normalizam esse vídeo para o preset social solicitado.
-
-## Multi-viewport QA
-
-- `desktop`: 1440×900
-- `tablet`: 1024×768
-- `mobile`: 390×844
-
-## QA técnico existente
-
-O módulo não substitui `node:test`, integração, concorrência, banco ou release gates do produto. Demo Flows também não substituem QA: são uma camada separada para apresentação do sistema.
-
-## Segurança e retenção
-
-Use dados sintéticos. Screenshots, vídeo, trace e telemetria podem conter dados sensíveis. Credenciais devem ficar em GitHub Secrets e entrar apenas por `valueFromEnv`.
+- Node.js `>=22`
+- Playwright `>=1.51 <2`
+- Electron fornecido pelo consumidor
+- ffmpeg para MP4/demo Electron
+- ffprobe para normalização de duração
 
 ## Desenvolvimento
 
@@ -148,8 +216,9 @@ npm test
 npm run check
 npx playwright install chromium
 npm run test:example
+npm pack --dry-run
 ```
 
-## Política de custo
+## Custo
 
-O módulo não exige serviço pago. Playwright e ffmpeg são usados localmente/no runner; custos dependem apenas da infraestrutura/Actions escolhida pelo consumidor.
+O núcleo não exige serviço pago. Playwright e ffmpeg rodam localmente ou no runner escolhido pelo consumidor.

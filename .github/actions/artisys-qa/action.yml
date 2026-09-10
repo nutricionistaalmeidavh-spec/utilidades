@@ -19,6 +19,10 @@ inputs:
     description: Nome do Demo Flow
     required: false
     default: ''
+  profile:
+    description: Nome do Demo Profile; vazio usa defaultDemoProfile quando configurado
+    required: false
+    default: ''
   preset:
     description: landscape-16x9, square-1x1 ou reels-9x16
     required: false
@@ -73,6 +77,7 @@ runs:
         QA_MODE: ${{ inputs.mode }}
         QA_FLOW: ${{ inputs.flow }}
         QA_DEMO: ${{ inputs.demo }}
+        QA_PROFILE: ${{ inputs.profile }}
         QA_PRESET: ${{ inputs.preset }}
         QA_ENVIRONMENT: ${{ inputs.environment }}
         QA_VIEWPORT: ${{ inputs.viewport }}
@@ -82,11 +87,13 @@ runs:
         if [ "$QA_MODE" = "demo" ]; then
           ARGS=(demo --config "$QA_CONFIG" --output "$QA_OUTPUT")
           if [ -n "$QA_DEMO" ]; then ARGS+=(--demo "$QA_DEMO"); fi
+          if [ -n "$QA_PROFILE" ]; then ARGS+=(--profile "$QA_PROFILE"); fi
           if [ -n "$QA_PRESET" ]; then ARGS+=(--preset "$QA_PRESET"); fi
           if [ -n "$QA_ENVIRONMENT" ]; then ARGS+=(--environment "$QA_ENVIRONMENT"); fi
         else
           ARGS=(run --config "$QA_CONFIG" --viewport "$QA_VIEWPORT" --output "$QA_OUTPUT")
           if [ -n "$QA_FLOW" ]; then ARGS+=(--flow "$QA_FLOW"); fi
+          if [ -n "$QA_PROFILE" ]; then ARGS+=(--profile "$QA_PROFILE"); fi
           if [ -n "$QA_ENVIRONMENT" ]; then ARGS+=(--environment "$QA_ENVIRONMENT"); fi
         fi
         xvfb-run -a node "$KIT_DIR/src/cli.mjs" "${ARGS[@]}"

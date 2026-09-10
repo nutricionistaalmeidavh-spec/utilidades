@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
 import { createReferenceServer } from '../examples/pos-reference/server.js';
 import { waitForHealth } from '../src/index.js';
 
@@ -32,4 +33,22 @@ test('real HTTP concurrency, idempotency, cancellation and cash closure', async 
 test('health checks time out and respect cancellation', async () => {
   await assert.rejects(waitForHealth('http://127.0.0.1:1', { timeoutMs: 30, intervalMs: 5 }), /timed out/);
   await assert.rejects(waitForHealth('http://127.0.0.1:1', { signal: AbortSignal.abort() }), { name: 'AbortError' });
+});
+
+test('1.2 package exposes demo platform APIs and built-in flow library', async () => {
+  const pkg = JSON.parse(await fs.readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(pkg.version, '1.2.0');
+  for (const key of ['./demo-profile', './adapters', './fixture-registry', './flow-library', './redaction']) {
+    assert.ok(pkg.exports[key], `missing package export ${key}`);
+  }
+  assert.ok(pkg.files.includes('flows'), 'package must publish built-in reusable flows');
+});
+
+test('GitHub action and reusable workflow forward named demo profiles', async () => {
+  const action = await fs.readFile(new URL('../../../.github/actions/artisys-qa/action.yml', import.meta.url), 'utf8');
+  const workflow = await fs.readFile(new URL('../../../.github/workflows/artisys-qa-reusable.yml', import.meta.url), 'utf8');
+  assert.match(action, /\n  profile:\n/);
+  assert.match(action, /--profile/);
+  assert.match(workflow, /\n      profile:\n/);
+  assert.match(workflow, /profile: \$\{\{ inputs\.profile \}\}/);
 });
