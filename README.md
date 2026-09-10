@@ -11,8 +11,8 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 ## Estado atual
 
 - **49 projetos aprovados** como Git submodules em `catalog/projects.json`.
-- **15 módulos ArtiSys** registrados.
-- **12 kits executáveis**: 9 `stable` e 3 `implemented`.
+- **19 módulos ArtiSys** registrados.
+- **16 kits executáveis**: 11 `stable` e 5 `implemented`.
 - **3 foundations** ainda precisam ser promovidas.
 - Nenhum projeto aprovado exige infraestrutura always-on mantida pelo usuário.
 
@@ -27,9 +27,13 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 - `artisys-media` 1.0.0 — jobs de mídia, MediaBunny e manifestos Motion Canvas.
 - `artisys-office` 1.0.0 — DOCX, workbook Univer e requests PPT Master.
 - `artisys-ui-builder` 1.0.0 — páginas/blocos portáveis e adapters GrapesJS/Puck/Craft.
+- `artisys-upload` 1.0.0 — políticas, validação, fila e adapters Uppy/react-dropzone.
+- `artisys-annotations` 1.0.0 — anotações portáveis em imagens/PDF e adapters de UI.
 
 ## Outros módulos
 
+- `artisys-serialport` — implemented — Node SerialPort, dispositivos seriais e hardware Desktop.
+- `artisys-printing` — implemented — ReceiptLine + node-thermal-printer.
 - `artisys-security` — implemented — Gitleaks + Trivy + Semgrep.
 - `artisys-documents` — implemented — PaddleOCR + OpenCV.
 - `artisys-api-contracts` — implemented — OpenAPI Generator + Pact JS.
@@ -60,7 +64,7 @@ adapter / biblioteca / CLI / job CI
 projects/<upstream>
 ```
 
-Regras de negócio continuam no consumidor. **Nenhum dos seis novos kits foi integrado a qualquer sistema consumidor.**
+Regras de negócio continuam no consumidor. Os kits deste repositório não são integrados automaticamente aos produtos.
 
 ## Clonar
 
