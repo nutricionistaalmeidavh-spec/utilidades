@@ -1,0 +1,1 @@
+Politica aprovada: a triagem ocorre antes da apresentacao das listas.
