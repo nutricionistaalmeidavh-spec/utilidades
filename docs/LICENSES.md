@@ -4,7 +4,6 @@
 
 ## Casos especiais
 
-- **Postiz** — AGPL-3.0: serviço isolado.
 - **NetBird** — BSD-3-Clause no geral, mas `management/`, `signal/`, `relay/` e `combined/` são AGPL-3.0: serviço isolado.
 - **Renovate** — AGPL-3.0: ferramenta isolada.
 - **k6** — AGPL-3.0: ferramenta isolada.
