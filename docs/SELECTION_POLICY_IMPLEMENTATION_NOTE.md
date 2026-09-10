@@ -1,0 +1,1 @@
+A triagem e obrigatoria antes da apresentacao de qualquer lista. Aprovacao do usuario ocorre somente depois que os candidatos ja passaram por custo, licenca, modo de execucao, ausencia de infraestrutura always-on e utilidade concreta de produto.
