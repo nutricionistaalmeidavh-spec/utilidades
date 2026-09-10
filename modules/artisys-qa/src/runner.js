@@ -4,6 +4,7 @@ import { chromium, _electron as electron } from 'playwright';
 import { attachPageTelemetry } from './telemetry.js';
 import { executeStep } from './steps.js';
 import { createFrameRecorder } from './video.js';
+import { startConsumerProcess } from './process.js';
 import { ensureDir, sanitizeName, writeJson } from './helpers.js';
 
 async function loadFlow(file) {
@@ -14,18 +15,6 @@ async function loadFlow(file) {
 
 function runId({ systemId, flowName, viewportName }) {
   return `${sanitizeName(systemId)}-${sanitizeName(flowName)}-${sanitizeName(viewportName || 'viewport')}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
-}
-
-async function finalizeNativeVideo(page, outputDir) {
-  const video = page.video?.();
-  if (!video) return null;
-  try {
-    const target = path.join(outputDir, 'video.webm');
-    await video.saveAs(target);
-    return target;
-  } catch {
-    return null;
-  }
 }
 
 export async function runQaFlow({ manifest, rootDir, environmentName, environment, flowName, flowFile, viewport, outputRoot = 'qa-artifacts' }) {
@@ -44,9 +33,21 @@ export async function runQaFlow({ manifest, rootDir, environmentName, environmen
   let page;
   let electronApp;
   let frameRecorder;
+  let nativeVideo;
+  let consumerProcess;
   let videoFile = null;
 
   try {
+    if (environment.startCommand) {
+      consumerProcess = await startConsumerProcess({
+        command: environment.startCommand,
+        cwd: rootDir,
+        env: environment.env,
+        readyUrl: environment.readyUrl,
+        timeoutMs: environment.readyTimeoutMs || 30000,
+      });
+    }
+
     if (manifest.mode === 'electron') {
       const entry = path.resolve(rootDir, manifest.electron.entry);
       const executablePath = manifest.electron.executablePath ? path.resolve(rootDir, manifest.electron.executablePath) : undefined;
@@ -74,6 +75,7 @@ export async function runQaFlow({ manifest, rootDir, environmentName, environmen
       });
       await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
       page = await context.newPage();
+      nativeVideo = page.video?.() || null;
     }
 
     attachPageTelemetry(page, telemetry);
@@ -101,10 +103,22 @@ export async function runQaFlow({ manifest, rootDir, environmentName, environmen
     if (page) await page.screenshot({ path: path.join(screenshotsDir, 'failure.png'), fullPage: false }).catch(() => {});
   } finally {
     if (context) await context.tracing.stop({ path: traceFile }).catch(() => {});
-    if (manifest.mode === 'web' && page) videoFile = await finalizeNativeVideo(page, outputDir);
     if (frameRecorder) videoFile = await frameRecorder.stop(path.join(outputDir, 'video.mp4'));
     if (electronApp) await electronApp.close().catch(() => {});
+    if (manifest.mode === 'web' && context) await context.close().catch(() => {});
+    if (nativeVideo) {
+      try {
+        videoFile = path.join(outputDir, 'video.webm');
+        await nativeVideo.saveAs(videoFile);
+      } catch {
+        videoFile = null;
+      }
+    }
     if (browser) await browser.close().catch(() => {});
+    if (consumerProcess) {
+      await fs.writeFile(path.join(outputDir, 'process.log'), consumerProcess.logs.join(''), 'utf8').catch(() => {});
+      await consumerProcess.stop().catch(() => {});
+    }
     await fs.rm(path.join(outputDir, '.native-video'), { recursive: true, force: true }).catch(() => {});
   }
 
