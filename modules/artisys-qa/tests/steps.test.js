@@ -20,6 +20,6 @@ test('capability step delegates to adapter capability', async () => {
     runtimeContext,
   });
 
-  assert.equal(label, '01-auth-login');
+  assert.equal(label, '01-auth.login');
   assert.deepEqual(calls, [{ name: 'auth.login', runtimeContext }]);
 });
