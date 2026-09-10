@@ -2,41 +2,64 @@
   "schemaVersion": 1,
   "id": "artisys-qa",
   "name": "ArtiSys QA",
-  "version": "0.2.0",
-  "status": "implemented",
+  "version": "1.0.0",
+  "status": "stable",
   "consumptionMode": "shared",
-  "upstreams": [
-    "playwright"
-  ],
-  "boundary": "Test harness and browser automation; no product business rules.",
+  "upstreams": ["playwright"],
+  "boundary": "Reusable QA harness, browser/Electron automation and evidence capture; product rules, credentials and selectors stay in the consumer.",
   "provides": [
     "shared-playwright-config",
+    "declarative-flow-runner",
+    "web-chromium-capture",
+    "electron-window-capture",
+    "screenshots",
+    "video",
+    "playwright-trace",
+    "console-network-telemetry",
+    "desktop-tablet-mobile-viewports",
+    "consumer-process-lifecycle",
     "isolated-browser-terminals",
     "product-login-fixture",
     "http-readiness-check",
+    "github-composite-action",
+    "github-reusable-workflow",
+    "consumer-template",
     "pos-reference-example"
   ],
   "packageName": "@artisys/qa",
   "entrypoint": "./src/index.js",
   "implementedCapabilities": [
-    "shared-playwright-config",
-    "isolated-browser-terminals",
-    "product-login-fixture",
-    "http-readiness-check",
-    "pos-reference-example"
+    "manifest-contract",
+    "flow-selection",
+    "environment-selection",
+    "viewport-selection",
+    "secret-from-environment",
+    "web-video-webm",
+    "electron-video-mp4-via-ffmpeg",
+    "step-screenshots",
+    "failure-screenshot",
+    "trace-zip",
+    "telemetry-json",
+    "run-summary-json",
+    "github-artifact-upload"
   ],
   "plannedCapabilities": [],
   "verification": {
     "unit": "npm test",
-    "browser": "npm run test:example"
+    "browser": "npm run test:example",
+    "manifest": "npm run check"
   },
   "compatibility": {
     "node": ">=22",
-    "playwright": ">=1.51 <2"
+    "playwright": ">=1.51 <2",
+    "githubRunner": "ubuntu-latest",
+    "electron": "consumer-provided"
   },
   "limitations": [
-    "Reference POS uses memory only and does not verify any consumer product.",
-    "Electron native process automation is not included."
+    "Consumer owns product-specific flows, selectors, accounts and test data.",
+    "Private cross-repository GitHub Action use requires GitHub Actions access to utilidades.",
+    "Electron video uses sampled screenshots encoded with ffmpeg; web capture uses Playwright native video.",
+    "Local-only systems require Electron launch in Actions or a reachable test environment."
   ],
   "costPolicy": {
     "coreLicenseFee": 0,
