@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -13,13 +13,19 @@
     "./runner": "./src/runner.js",
     "./demo": "./src/demo.js",
     "./video": "./src/video.js",
-    "./helpers": "./src/helpers.js"
+    "./helpers": "./src/helpers.js",
+    "./demo-profile": "./src/demo-profile.js",
+    "./adapters": "./src/adapters.js",
+    "./fixture-registry": "./src/fixture-registry.js",
+    "./flow-library": "./src/flow-library.js",
+    "./redaction": "./src/redaction.js"
   },
   "bin": {
     "artisys-qa": "./src/cli.mjs"
   },
   "files": [
     "src",
+    "flows",
     "templates",
     "examples/pos-reference/*.js",
     "README.md",
