@@ -25,6 +25,14 @@ jobs:
           node --test modules/artisys-printing/tests/*.test.js
           npm run check --prefix modules/artisys-serialport
           npm run check --prefix modules/artisys-printing
+      - name: Install hardware module dependencies
+        run: |
+          npm install --prefix modules/artisys-serialport
+          npm install --prefix modules/artisys-printing
+      - name: Smoke test real hardware upstream boundaries
+        run: |
+          node -e "const s=require('./modules/artisys-serialport'); const m=s.createSerialPortManager(); if(typeof m.list!=='function') process.exit(1);"
+          node -e "const p=require('./modules/artisys-printing'); const d=p.createReceiptDocument({title:'ArtiSys smoke'}); const svg=p.renderReceiptSvg(d); if(!String(svg).includes('<svg')) process.exit(1);"
       - name: Install existing module dependencies
         run: |
           npm ci --ignore-scripts --prefix modules/artisys-qa
