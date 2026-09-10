@@ -2,47 +2,30 @@
 
 Esta pasta contém integrações próprias construídas sobre os upstreams aprovados em `projects/`.
 
-`artisys-qa` está estável em **1.1.1**. `artisys-pdf` e `artisys-workflows` estão estáveis em **1.0.0**. Security, API Contracts e Documents estão implementados em 0.2.0. AI Quality, Privacy e BIM permanecem em `foundation`.
-
-## Regra principal
-
-Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou runner self-hosted permanente.
-
-Os únicos modos operacionais aceitos são:
-
-| Classe | Uso |
-|---|---|
-| `embedded` | biblioteca executada dentro do próprio produto |
-| `ci` | GitHub Actions/CI |
-| `local-on-demand` | processo local iniciado apenas durante a tarefa e encerrado depois |
-| `dev-tool` | desenvolvimento; não participa do runtime do cliente |
-
-Para reutilização entre produtos, `consumptionMode` deve ser `shared` ou `snapshot`. Módulos baseados em serviço always-on não são aceitos neste repositório.
-
-## Estrutura mínima
-
-```text
-modules/<id>/
-├─ module.json
-└─ README.md
-```
-
-Módulos `stable` também devem ter código executável, testes, licença local, exemplo e verificação automatizada.
-
-## Regra de integração
-
-O consumidor usa o contrato ArtiSys. Não copie `projects/<upstream>` para dentro do produto e não espalhe imports específicos do upstream pelo domínio.
+Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou runner self-hosted permanente. Módulos `stable` têm código executável, testes, licença local, exemplo e verificação automatizada.
 
 ## Módulos atuais
 
-1. `artisys-qa` — stable 1.1.1 — Playwright/Chromium
-2. `artisys-pdf` — stable 1.0.0 — pdfme + PDF.js + react-pdf-highlighter
-3. `artisys-workflows` — stable 1.0.0 — XYFlow + LogicFlow + Rete.js
-4. `artisys-security` — implemented 0.2.0 — Gitleaks + Trivy + Semgrep
-5. `artisys-documents` — implemented 0.2.0 — PaddleOCR + OpenCV
-6. `artisys-api-contracts` — implemented 0.2.0 — OpenAPI Generator + Pact JS
-7. `artisys-ai-quality` — foundation — Promptfoo
-8. `artisys-privacy` — foundation — Presidio local/CI
-9. `artisys-bim` — foundation — IfcOpenShell local sob demanda
+| Módulo | Estado | Função |
+|---|---|---|
+| `artisys-qa` 1.2.0 | stable | Playwright/Chromium, evidências e demos |
+| `artisys-pdf` 1.0.0 | stable | geração, visualização e anotações PDF |
+| `artisys-workflows` 1.0.0 | stable | grafos, dependências e adapters visuais |
+| `artisys-capture` 1.0.0 | stable | câmera/arquivo, QR/barcode e OpenCV |
+| `artisys-dashboard` 1.0.0 | stable | grids, painéis redimensionáveis e data grid |
+| `artisys-planning` 1.0.0 | stable | Gantt, calendário, progresso e conflitos |
+| `artisys-media` 1.0.0 | stable | áudio/vídeo e manifestos de motion |
+| `artisys-office` 1.0.0 | stable | DOCX, workbook Univer e jobs PPT |
+| `artisys-ui-builder` 1.0.0 | stable | schema de páginas + GrapesJS/Puck/Craft |
+| `artisys-security` 0.2.0 | implemented | Gitleaks + Trivy + Semgrep |
+| `artisys-documents` 0.2.0 | implemented | PaddleOCR + OpenCV |
+| `artisys-api-contracts` 0.2.0 | implemented | OpenAPI Generator + Pact JS |
+| `artisys-ai-quality` 0.1.0 | foundation | Promptfoo |
+| `artisys-privacy` 0.1.0 | foundation | Presidio local/CI |
+| `artisys-bim` 0.1.0 | foundation | IfcOpenShell local sob demanda |
+
+## Integração
+
+O consumidor usa o contrato ArtiSys. Regras de negócio, persistência, permissões e styling continuam no repositório do produto. Não copie `projects/<upstream>` para dentro do produto.
 
 Consulte `../docs/MODULE_KITS.md` e `../docs/INTEGRATION_GUIDE.md`.

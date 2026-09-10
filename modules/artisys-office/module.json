@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-office",
+  "name": "ArtiSys Office",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-local-on-demand",
+  "upstreams": ["univer", "docxjs", "ppt-master"],
+  "boundary": "Portable office-document descriptors and runtime adapters; document storage, permissions and business templates stay in the consumer.",
+  "provides": ["office-document-contract", "docxjs-render-boundary", "univer-workbook-snapshot", "ppt-master-request"],
+  "packageName": "@artisys/office",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["office-kind-validation", "docx-render-async", "row-array-to-univer-cell-data", "sheet-order-generation", "ppt-master-portable-request"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["The PPT Master request is a portable local-job contract; the consumer chooses the local runner and file paths.", "Univer component registration and styling stay in the consumer UI."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}

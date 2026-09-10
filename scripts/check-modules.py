@@ -8,8 +8,21 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-READY = ('artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents', 'artisys-pdf', 'artisys-workflows')
+READY = (
+    'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
+    'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
+    'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder'
+)
 READY_STATUSES = ('implemented', 'stable')
+JS_MODULES = (
+    'artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows',
+    'artisys-capture', 'artisys-dashboard', 'artisys-planning', 'artisys-media',
+    'artisys-office', 'artisys-ui-builder'
+)
+NEW_PRODUCT_MODULES = (
+    'artisys-capture', 'artisys-dashboard', 'artisys-planning',
+    'artisys-media', 'artisys-office', 'artisys-ui-builder'
+)
 
 
 def run(args, cwd=ROOT, env=None):
@@ -41,10 +54,13 @@ def main():
             if not (path / 'LICENSE').is_file():
                 raise ValueError(f'{entry["id"]}: missing local code license')
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
-    for module in ('artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows'):
+    for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
     for module in ('artisys-pdf', 'artisys-workflows'):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
+    for module in NEW_PRODUCT_MODULES:
+        run([npm, 'run', 'example'], ROOT / 'modules' / module)
+        run([npm, 'pack', '--dry-run'], ROOT / 'modules' / module)
     run([sys.executable, '-m', 'unittest', 'discover', '-s', 'modules/artisys-security/tests', '-v'])
     env = os.environ.copy()
     env['PYTHONPATH'] = str(ROOT / 'modules' / 'artisys-documents' / 'src') + os.pathsep + env.get('PYTHONPATH', '')
