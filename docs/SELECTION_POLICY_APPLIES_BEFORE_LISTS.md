@@ -1,0 +1,1 @@
+A triagem deve ocorrer antes de qualquer lista de sugestoes ser apresentada.
