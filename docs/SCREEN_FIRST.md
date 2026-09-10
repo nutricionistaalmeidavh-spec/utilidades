@@ -1,0 +1,1 @@
+SCREEN FIRST: toda busca futura aplica os filtros antes de mostrar candidatos.
