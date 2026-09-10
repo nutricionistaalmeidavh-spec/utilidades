@@ -6,6 +6,12 @@ export const VIEWPORTS = Object.freeze({
   mobile: { width: 390, height: 844 },
 });
 
+export const DEMO_PRESETS = Object.freeze({
+  'landscape-16x9': Object.freeze({ name: 'landscape-16x9', width: 1920, height: 1080, captureViewport: Object.freeze({ width: 1920, height: 1080 }) }),
+  'square-1x1': Object.freeze({ name: 'square-1x1', width: 1080, height: 1080, captureViewport: Object.freeze({ width: 1080, height: 1080 }) }),
+  'reels-9x16': Object.freeze({ name: 'reels-9x16', width: 1080, height: 1920, captureViewport: Object.freeze({ width: 1080, height: 1920 }) }),
+});
+
 /** Shared Playwright configuration for consumer-owned test suites. */
 export function createQaConfig({
   baseURL,
