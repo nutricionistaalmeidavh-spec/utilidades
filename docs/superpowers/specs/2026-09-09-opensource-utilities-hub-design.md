@@ -13,7 +13,6 @@ Os upstreams são incorporados como **Git submodules fixados em commits exatos**
 1. PaddlePaddle/PaddleOCR — Document Intelligence.
 2. JCodesMore/ai-website-cloner-template — Site Reconstruction.
 3. hugohe3/ppt-master — Report Engine.
-4. gitroomhq/postiz-app — Social Publishing.
 
 ## Estrutura
 
@@ -25,8 +24,7 @@ utilidades/
 ├── projects/
 │   ├── document-intelligence/paddleocr
 │   ├── site-reconstruction/ai-website-cloner-template
-│   ├── report-engine/ppt-master
-│   └── social-publishing/postiz
+│   └── report-engine/ppt-master
 └── docs/
     ├── INTEGRATION_GUIDE.md
     └── LICENSES.md
@@ -39,8 +37,7 @@ utilidades/
 - Todo upstream deve ficar fixado em commit conhecido.
 - Toda atualização exige atualização do catálogo.
 - Licenças e autoria devem ser preservadas.
-- Postiz, por AGPL-3.0, será classificado como `isolated-service`; nenhum produto proprietário o incorporará diretamente sem revisão específica.
 
 ## Verificação
 
-A entrega é considerada válida quando `.gitmodules`, `catalog/projects.json` e a árvore Git apontarem para os mesmos quatro upstreams e os mesmos quatro commits fixados.
+A entrega inicial é considerada válida quando `.gitmodules`, `catalog/projects.json` e a árvore Git apontarem para os mesmos upstreams e commits fixados.
