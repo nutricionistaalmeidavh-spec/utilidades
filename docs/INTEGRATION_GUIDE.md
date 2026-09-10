@@ -64,7 +64,7 @@ Contém kits ArtiSys reutilizáveis. Cada módulo deve declarar:
 
 ## Grupos de upstreams
 
-- Documentos/conteúdo: PaddleOCR, AI Website Cloner, PPT Master e Postiz.
+- Documentos/conteúdo: PaddleOCR, AI Website Cloner e PPT Master.
 - Colaboração/processos: Yjs, bpmn-js e XYFlow.
 - UI/catálogo: Storybook e Backstage.
 - Infraestrutura: NetBird, APISIX, NATS, Wasmtime, Ansible e Renovate.
