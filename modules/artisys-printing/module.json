@@ -19,6 +19,25 @@
     "printer-profile",
     "printer-driver-resolver"
   ],
+  "implementedCapabilities": [
+    "immutable-receipt-document",
+    "32-42-48-column-rendering",
+    "signed-cent-formatting",
+    "receiptline-markup-adapter",
+    "receiptline-svg-preview",
+    "receiptline-command-rendering",
+    "qr-and-barcode-blocks",
+    "electron-print-driver",
+    "electron-html-escaping-and-cleanup",
+    "generic-transport-printer-driver",
+    "thermal-epson-driver",
+    "thermal-star-driver",
+    "paper-cut-command",
+    "cash-drawer-command",
+    "printer-profile-validation",
+    "explicit-driver-resolver",
+    "stable-printing-error-codes"
+  ],
   "packageName": "@artisys/printing",
   "entrypoint": "./src/index.js",
   "verification": {
