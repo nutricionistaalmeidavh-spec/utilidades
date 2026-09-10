@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local free verification entry point. Dependencies must already be installed."""
+"""Local/CI verification entry point. Dependencies must already be installed."""
 import argparse
 import json
 import os
@@ -9,6 +9,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 READY = ('artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents')
+READY_STATUSES = ('implemented', 'stable')
 
 
 def run(args, cwd=ROOT, env=None):
@@ -35,7 +36,7 @@ def main():
         if not set(manifest['upstreams']) <= upstreams:
             raise ValueError(f'{entry["id"]}: unknown upstream')
         if entry['id'] in READY:
-            if not manifest.get('implementedCapabilities') or entry['status'] != 'implemented':
+            if not manifest.get('implementedCapabilities') or entry['status'] not in READY_STATUSES:
                 raise ValueError(f'{entry["id"]}: missing implementation metadata')
             if not (path / 'LICENSE').is_file():
                 raise ValueError(f'{entry["id"]}: missing local code license')
@@ -44,14 +45,14 @@ def main():
         run([npm, 'test'], ROOT / 'modules' / module)
     run([sys.executable, '-m', 'unittest', 'discover', '-s', 'modules/artisys-security/tests', '-v'])
     env = os.environ.copy()
-    env['PYTHONPATH'] = str(ROOT / 'modules/artisys-documents/src') + os.pathsep + env.get('PYTHONPATH', '')
-    run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-v'], ROOT / 'modules/artisys-documents', env)
+    env['PYTHONPATH'] = str(ROOT / 'modules' / 'artisys-documents' / 'src') + os.pathsep + env.get('PYTHONPATH', '')
+    run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-v'], ROOT / 'modules' / 'artisys-documents', env)
     if args.browser:
-        run([npm, 'run', 'test:example'], ROOT / 'modules/artisys-qa')
+        run([npm, 'run', 'test:example'], ROOT / 'modules' / 'artisys-qa')
     if args.pact:
-        run([npm, 'run', 'test:pact'], ROOT / 'modules/artisys-api-contracts')
+        run([npm, 'run', 'test:pact'], ROOT / 'modules' / 'artisys-api-contracts')
     if args.generator:
-        run([npm, 'run', 'test:generator'], ROOT / 'modules/artisys-api-contracts')
+        run([npm, 'run', 'test:generator'], ROOT / 'modules' / 'artisys-api-contracts')
     print('Requested module checks passed. Consumer product acceptance is separate.')
 
 
