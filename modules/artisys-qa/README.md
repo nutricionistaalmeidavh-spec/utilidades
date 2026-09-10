@@ -1,8 +1,10 @@
 # @artisys/qa
 
-Módulo compartilhado ArtiSys para QA visual e técnico com Playwright. A versão 1.0 executa fluxos declarativos em aplicações web ou Electron e produz evidências padronizadas: screenshots, vídeo, trace, erros de console/rede e resumo JSON. O consumidor mantém apenas URL/entrypoint, credenciais em secrets, seletores e regras específicas do produto.
+Módulo compartilhado ArtiSys para QA visual/técnico e gravação de demonstrações com Playwright. A versão 1.1 executa fluxos declarativos em aplicações web ou Electron, gera screenshots, vídeo, trace, telemetria e também Demo Flows reutilizáveis para 16:9, 1:1 e Reels/TikTok/Shorts 9:16.
 
-## Resultado de uma execução
+O consumidor mantém apenas URL/entrypoint, credenciais em secrets, seletores e regras específicas do produto.
+
+## Resultado de uma execução QA
 
 ```text
 qa-artifacts/<sistema>-<fluxo>-<viewport>-<timestamp>/
@@ -15,9 +17,69 @@ qa-artifacts/<sistema>-<fluxo>-<viewport>-<timestamp>/
 └── process.log             # quando houver startCommand
 ```
 
+## Demo Flows
+
+Demo Flows são separados dos testes. O objetivo é mostrar o produto, não validar regras de negócio.
+
+Presets incorporados:
+
+| Preset | Saída |
+|---|---|
+| `landscape-16x9` | 1920×1080 MP4 |
+| `square-1x1` | 1080×1080 MP4 |
+| `reels-9x16` | 1080×1920 MP4 |
+
+Exemplo no manifesto:
+
+```json
+{
+  "demos": {
+    "quick-30s": {
+      "file": "demo/quick-30s.json",
+      "preset": "reels-9x16",
+      "durationTargetSec": 30
+    }
+  }
+}
+```
+
+Fluxo de demonstração:
+
+```json
+{
+  "name": "quick-30s",
+  "durationTargetSec": 30,
+  "steps": [
+    {"action": "waitFor", "selector": "body", "holdMs": 2500},
+    {"action": "click", "selector": "[data-route='products']", "holdMs": 4000},
+    {"action": "click", "selector": "[data-route='checkout']", "holdMs": 4000}
+  ]
+}
+```
+
+`holdMs` controla o ritmo depois de qualquer etapa. A duração-alvo é informativa: o `demo-summary.json` registra duração real e desvio, mas não reprova o fluxo por alguns segundos de diferença.
+
+Em Electron, o sistema continua em uma viewport desktop legível; o ffmpeg preserva a proporção e centraliza o conteúdo no canvas vertical, evitando espremer a interface. Para web responsiva, o preset pode ser usado como viewport de captura.
+
+Execução:
+
+```sh
+node src/cli.mjs demo \
+  --config ../../../meu-repo/qa/artisys-qa.config.json \
+  --demo quick-30s \
+  --preset reels-9x16
+```
+
+Resultado adicional:
+
+```text
+├── demo-video.mp4
+└── demo-summary.json
+```
+
 ## Uso mais simples em qualquer repositório
 
-Copie `templates/consumer` para `qa/` e ajuste `qa/artisys-qa.config.json`.
+Copie `templates/consumer` para `qa/` e ajuste `qa/artisys-qa.config.json`. O template já inclui um `quick-30s` de demonstração.
 
 ```json
 {
@@ -26,31 +88,20 @@ Copie `templates/consumer` para `qa/` e ajuste `qa/artisys-qa.config.json`.
   "mode": "web",
   "defaultEnvironment": "production",
   "defaultFlow": "smoke",
+  "defaultDemo": "quick-30s",
   "defaultViewport": "desktop",
   "capture": {"video": true, "screenshotEachStep": true},
   "environments": {
     "production": {"baseURL": "https://app.exemplo.com"}
   },
-  "flows": {"smoke": "flows/smoke.json"}
+  "flows": {"smoke": "flows/smoke.json"},
+  "demos": {
+    "quick-30s": {"file": "demo/quick-30s.json", "preset": "reels-9x16", "durationTargetSec": 30}
+  }
 }
 ```
 
-Fluxo declarativo:
-
-```json
-{
-  "name": "login",
-  "steps": [
-    {"action": "fill", "label": "E-mail", "valueFromEnv": "QA_USERNAME"},
-    {"action": "fill", "label": "Senha", "valueFromEnv": "QA_PASSWORD"},
-    {"action": "click", "role": "button", "name": "Entrar"},
-    {"action": "expectVisible", "text": "Dashboard"},
-    {"action": "screenshot", "name": "dashboard"}
-  ]
-}
-```
-
-Ações disponíveis na v1: `goto`, `click`, `fill`, `press`, `check`, `uncheck`, `hover`, `selectOption`, `reload`, `waitFor`, `waitForTimeout`, `expectVisible`, `expectText`, `expectURL` e `screenshot`. Seletores podem usar `selector`, `testId`, `role`+`name`, `text` ou `label`. Valores sensíveis devem usar `valueFromEnv`.
+Ações disponíveis: `goto`, `click`, `fill`, `press`, `check`, `uncheck`, `hover`, `selectOption`, `reload`, `waitFor`, `waitForTimeout`, `expectVisible`, `expectText`, `expectURL` e `screenshot`. Seletores podem usar `selector`, `testId`, `role`+`name`, `text` ou `label`. Valores sensíveis devem usar `valueFromEnv`.
 
 ## Execução local
 
@@ -60,72 +111,36 @@ npm ci
 npx playwright install chromium
 node src/cli.mjs validate --config ../../../meu-repo/qa/artisys-qa.config.json
 node src/cli.mjs run --config ../../../meu-repo/qa/artisys-qa.config.json --flow smoke --viewport desktop
+node src/cli.mjs demo --config ../../../meu-repo/qa/artisys-qa.config.json --demo quick-30s --preset reels-9x16
 ```
 
-Comandos: `validate`, `list` e `run`.
+Comandos: `validate`, `list`, `run` e `demo`.
 
 ## GitHub Actions — execução pelo celular
 
-O repositório `utilidades` fornece dois pontos de consumo:
+O repositório `utilidades` fornece ação composta e workflow reutilizável. O consumidor pode receber `flow`/`demo`, `environment`, `viewport`/`preset` via `workflow_dispatch` e publicar `qa-artifacts` como artifact. Assim o computador local não precisa estar ligado para aplicações web acessíveis ou Electron inicializável pelo runner.
 
-- ação composta: `nutricionistaalmeidavh-spec/utilidades/.github/actions/artisys-qa@main`;
-- workflow reutilizável: `.github/workflows/artisys-qa-reusable.yml`.
-
-No consumidor, um workflow mínimo pode receber `flow`, `environment` e `viewport` via `workflow_dispatch`, chamar o workflow reutilizável e publicar `qa-artifacts` como artifact. Assim o computador local não precisa estar ligado para aplicações web acessíveis ou aplicações Electron que possam ser iniciadas pelo runner.
-
-Como `utilidades` é privado, o GitHub deve permitir que os outros repositórios privados do mesmo proprietário usem suas Actions/workflows. Se a política da conta não permitir o compartilhamento direto, use um token de leitura somente para `utilidades` ou sincronize o módulo como snapshot controlado; nunca coloque tokens no código.
+Como `utilidades` é privado, o GitHub deve permitir que outros repositórios privados usem suas Actions/workflows. Quando a política não permitir compartilhamento direto, use o runtime fixado no consumidor, mantendo a origem/commit central documentados.
 
 ## Electron
 
-```json
-{
-  "schemaVersion": 1,
-  "systemId": "desktop-app",
-  "mode": "electron",
-  "electron": {
-    "entry": "../desktop/main.cjs",
-    "executablePath": "../node_modules/electron/dist/electron"
-  },
-  "environments": {"ci": {}},
-  "flows": {"smoke": "flows/smoke.json"}
-}
-```
+O runner abre a primeira janela Electron com Playwright. Screenshots e trace são capturados diretamente. Vídeo Electron é criado por frames e `ffmpeg`. Demo Flows normalizam esse vídeo para o preset social solicitado.
 
-O runner abre a primeira janela Electron com Playwright. Screenshots e trace são capturados diretamente. Para vídeo Electron, o módulo amostra frames e monta MP4 com `ffmpeg`, porque o vídeo nativo do Playwright é destinado ao `BrowserContext` criado pelo browser. A Action instala `ffmpeg` e `xvfb` no runner Ubuntu.
-
-## Processos locais opcionais
-
-Ambientes web locais podem declarar:
-
-```json
-{
-  "baseURL": "http://127.0.0.1:3000",
-  "startCommand": "npm run start:test",
-  "readyUrl": "http://127.0.0.1:3000/health"
-}
-```
-
-O processo é iniciado antes do navegador, aguarda readiness e é encerrado ao fim. Logs vão para `process.log`.
-
-## Multi-viewport
-
-Padrões incorporados:
+## Multi-viewport QA
 
 - `desktop`: 1440×900
 - `tablet`: 1024×768
 - `mobile`: 390×844
 
-O mesmo fluxo pode ser executado em qualquer viewport sem duplicação de código.
-
 ## QA técnico existente
 
-Este módulo não substitui `node:test`, testes unitários, integração, concorrência, banco ou release gates do produto. Ele adiciona a camada de navegação/captura visual. O PDV ArtiSys mantém seus testes técnicos e consome este módulo para evidência visual.
+O módulo não substitui `node:test`, integração, concorrência, banco ou release gates do produto. Demo Flows também não substituem QA: são uma camada separada para apresentação do sistema.
 
 ## Segurança e retenção
 
-Screenshots, vídeo, trace e network metadata podem conter dados sensíveis. Use contas/dados sintéticos e retenção curta dos artifacts. Credenciais devem ficar em GitHub Secrets e entrar no fluxo apenas por `valueFromEnv`. Nunca grave secrets em manifesto, fluxo ou logs.
+Use dados sintéticos. Screenshots, vídeo, trace e telemetria podem conter dados sensíveis. Credenciais devem ficar em GitHub Secrets e entrar apenas por `valueFromEnv`.
 
-## Desenvolvimento do módulo
+## Desenvolvimento
 
 ```sh
 npm ci
@@ -135,8 +150,6 @@ npx playwright install chromium
 npm run test:example
 ```
 
-O projeto de referência POS em `examples/pos-reference` continua sendo apenas uma demonstração em memória e não valida nenhum consumidor real.
-
 ## Política de custo
 
-O módulo não exige serviço pago. Playwright é usado como ferramenta de desenvolvimento e o GitHub Actions pode ser utilizado dentro da franquia disponível da conta. Custos externos só aparecem se o consumidor escolher infraestrutura/serviços adicionais.
+O módulo não exige serviço pago. Playwright e ffmpeg são usados localmente/no runner; custos dependem apenas da infraestrutura/Actions escolhida pelo consumidor.

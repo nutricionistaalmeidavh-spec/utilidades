@@ -50,5 +50,9 @@ export async function executeStep({ page, step, index, screenshotsDir, baseURL, 
     }
     default: throw new Error(`Unsupported QA action: ${step.action}`);
   }
+  if (step.holdMs != null) {
+    if (!Number.isFinite(step.holdMs) || step.holdMs < 0) throw new TypeError(`${label}: holdMs must be a non-negative number`);
+    if (step.holdMs > 0) await page.waitForTimeout(step.holdMs);
+  }
   return label;
 }

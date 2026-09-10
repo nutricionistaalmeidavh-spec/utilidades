@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -11,6 +11,8 @@
     "./fixtures": "./src/fixtures.js",
     "./manifest": "./src/manifest.js",
     "./runner": "./src/runner.js",
+    "./demo": "./src/demo.js",
+    "./video": "./src/video.js",
     "./helpers": "./src/helpers.js"
   },
   "bin": {

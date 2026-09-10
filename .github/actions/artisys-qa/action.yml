@@ -1,14 +1,26 @@
 name: ArtiSys QA
 
-description: Executa um fluxo visual ArtiSys QA com Playwright/Chromium e produz screenshots, vídeo, trace e logs.
+description: Executa fluxo de QA ou Demo Flow com Playwright/Chromium e produz screenshots, vídeo, trace e logs.
 
 inputs:
   config:
     description: Caminho do artisys-qa.config.json no repositório consumidor
     required: false
     default: qa/artisys-qa.config.json
+  mode:
+    description: run para QA ou demo para demonstração
+    required: false
+    default: run
   flow:
-    description: Nome do fluxo
+    description: Nome do fluxo QA
+    required: false
+    default: ''
+  demo:
+    description: Nome do Demo Flow
+    required: false
+    default: ''
+  preset:
+    description: landscape-16x9, square-1x1 ou reels-9x16
     required: false
     default: ''
   environment:
@@ -16,7 +28,7 @@ inputs:
     required: false
     default: ''
   viewport:
-    description: desktop, tablet ou mobile
+    description: desktop, tablet ou mobile para QA
     required: false
     default: desktop
   output:
@@ -58,14 +70,24 @@ runs:
       shell: bash
       env:
         QA_CONFIG: ${{ inputs.config }}
+        QA_MODE: ${{ inputs.mode }}
         QA_FLOW: ${{ inputs.flow }}
+        QA_DEMO: ${{ inputs.demo }}
+        QA_PRESET: ${{ inputs.preset }}
         QA_ENVIRONMENT: ${{ inputs.environment }}
         QA_VIEWPORT: ${{ inputs.viewport }}
         QA_OUTPUT: ${{ inputs.output }}
       run: |
         KIT_DIR="${{ github.action_path }}/../../../modules/artisys-qa"
-        ARGS=(run --config "$QA_CONFIG" --viewport "$QA_VIEWPORT" --output "$QA_OUTPUT")
-        if [ -n "$QA_FLOW" ]; then ARGS+=(--flow "$QA_FLOW"); fi
-        if [ -n "$QA_ENVIRONMENT" ]; then ARGS+=(--environment "$QA_ENVIRONMENT"); fi
+        if [ "$QA_MODE" = "demo" ]; then
+          ARGS=(demo --config "$QA_CONFIG" --output "$QA_OUTPUT")
+          if [ -n "$QA_DEMO" ]; then ARGS+=(--demo "$QA_DEMO"); fi
+          if [ -n "$QA_PRESET" ]; then ARGS+=(--preset "$QA_PRESET"); fi
+          if [ -n "$QA_ENVIRONMENT" ]; then ARGS+=(--environment "$QA_ENVIRONMENT"); fi
+        else
+          ARGS=(run --config "$QA_CONFIG" --viewport "$QA_VIEWPORT" --output "$QA_OUTPUT")
+          if [ -n "$QA_FLOW" ]; then ARGS+=(--flow "$QA_FLOW"); fi
+          if [ -n "$QA_ENVIRONMENT" ]; then ARGS+=(--environment "$QA_ENVIRONMENT"); fi
+        fi
         xvfb-run -a node "$KIT_DIR/src/cli.mjs" "${ARGS[@]}"
         echo "artifact-path=$QA_OUTPUT" >> "$GITHUB_OUTPUT"
