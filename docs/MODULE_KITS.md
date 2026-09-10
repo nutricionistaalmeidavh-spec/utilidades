@@ -13,6 +13,10 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | Media | 1.0.0 | embedded/dev | MediaBunny + Motion Canvas |
 | Office | 1.0.0 | embedded/local | DOCX, Univer e PPT jobs |
 | UI Builder | 1.0.0 | embedded | GrapesJS, Puck e Craft |
+| Upload | 1.0.0 | embedded | política, validação, fila, Uppy e Dropzone |
+| Annotations | 1.0.0 | embedded | regiões em imagem/PDF e adapters de anotação |
+| SerialPort | 0.1.0 | embedded | dispositivos seriais em Desktop |
+| Printing | 0.1.0 | embedded | recibos e impressão térmica |
 | Security | 0.2.0 | local/Actions | Gitleaks, Trivy e Semgrep |
 | API Contracts | 0.2.0 | local/Actions | OpenAPI + Pact |
 | Documents | 0.2.0 | local/Actions | OCR + pré-processamento |
@@ -31,7 +35,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/check-modules.py --browser --pact --generator
 ```
 
-Os seis novos módulos JS não possuem serviço ou pacote externo obrigatório para executar sua suíte de contrato. Os runtimes upstream são injetados/instalados pelo consumidor somente quando aquela capacidade é usada.
+Os módulos JS executam seus testes de contrato sem serviço externo obrigatório. Runtimes upstream são instalados pelo consumidor somente quando a capacidade correspondente é usada.
 
 ## Regra de entrega
 

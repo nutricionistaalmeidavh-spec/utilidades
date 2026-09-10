@@ -12,17 +12,19 @@ READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
     'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder',
-    'artisys-serialport', 'artisys-printing'
+    'artisys-upload', 'artisys-annotations', 'artisys-serialport', 'artisys-printing'
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
     'artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows',
     'artisys-capture', 'artisys-dashboard', 'artisys-planning', 'artisys-media',
-    'artisys-office', 'artisys-ui-builder', 'artisys-serialport', 'artisys-printing'
+    'artisys-office', 'artisys-ui-builder', 'artisys-upload', 'artisys-annotations',
+    'artisys-serialport', 'artisys-printing'
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
-    'artisys-media', 'artisys-office', 'artisys-ui-builder'
+    'artisys-media', 'artisys-office', 'artisys-ui-builder',
+    'artisys-upload', 'artisys-annotations'
 )
 
 
