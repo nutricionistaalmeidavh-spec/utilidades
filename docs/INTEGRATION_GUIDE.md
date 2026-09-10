@@ -2,110 +2,95 @@
 
 ## Objetivo
 
-`utilidades` separa upstreams externos aprovados de módulos ArtiSys reutilizáveis.
+`utilidades` guarda apenas projetos que possam ser realmente consumidos pelos sistemas ArtiSys sem infraestrutura operacional permanente.
 
 ```text
 Projeto consumidor
       ↓
-Módulo ArtiSys em modules/
+Módulo ArtiSys
       ↓
-adapter / wrapper / CLI / API
+adapter / biblioteca / CLI / GitHub Action
       ↓
-upstream em projects/
+upstream aprovado
 ```
+
+## Classes de execução aceitas
+
+### `embedded`
+Biblioteca executada dentro do próprio navegador, Node/Electron, .NET, Python ou runtime já pertencente ao produto.
+
+Exemplos atuais: Yjs, bpmn-js, XYFlow, Wasmtime e OpenCV.
+
+### `ci`
+Ferramenta usada durante build, testes, análise ou release em GitHub Actions/CI. Ela pode iniciar processos temporários durante o job, mas nada permanece ligado depois.
+
+Exemplos atuais: Playwright, Trivy, Semgrep, Gitleaks, Cosign, k6, WireMock, Pact JS, OpenAPI Generator, Promptfoo e Renovate.
+
+### `local-on-demand`
+Processo ou biblioteca local acionado apenas quando o usuário ou o Desktop precisa executar uma tarefa. Pode usar CPU/GPU/arquivos locais, mas não pode exigir daemon ou servidor permanente.
+
+Exemplos atuais: PaddleOCR, Presidio, PPT Master e IfcOpenShell.
+
+### `dev-tool`
+Ferramenta usada apenas no desenvolvimento e que não participa do runtime do cliente.
+
+## Rejeição automática
+
+Um novo projeto deve ser rejeitado se qualquer uma destas condições for verdadeira:
+
+1. exige servidor, daemon, banco de dados ou container permanentemente ligado;
+2. exige VPS, PC dedicado, homelab ou runner `self-hosted` para o funcionamento normal;
+3. só entrega valor como aplicação completa hospedada, sem capacidade reutilizável clara;
+4. depende obrigatoriamente de API/serviço pago ou conta cloud externa;
+5. é apenas referência arquitetural/visual sem código reutilizável que justifique virar submodule;
+6. possui licença source-available/comercial incompatível com o core R$ 0;
+7. sua integração faria o produto depender operacionalmente da infraestrutura do autor do upstream.
+
+## Regras de consumo
+
+1. Não espalhar imports específicos do upstream pelo domínio do produto; usar uma fronteira local estável quando necessário.
+2. Regras de negócio, identidade visual, permissões e dados pertencem ao consumidor.
+3. Secrets ficam no produto/CI, nunca em `utilidades`.
+4. Dependências de CI devem usar versão aprovada e preferencialmente pinada.
+5. Processos `local-on-demand` devem iniciar apenas durante a operação e terminar ao final dela.
+6. GitHub Actions hospedado é o padrão para automações de CI; não criar requisito de runner self-hosted.
+7. Serviço pago pode existir somente como alternativa opcional e substituível, nunca como requisito silencioso.
+8. Antes de atualizar um upstream, rever licença, modo de execução, dependências e compatibilidade.
+9. Um upstream que mudar e passar a exigir infraestrutura permanente deve ser removido do catálogo.
 
 ## Camada `projects/`
 
-Registra componentes open source externos aprovados, controlando origem, versão fixada, licença e forma de consumo. Nenhuma regra de negócio, identidade visual ou permissão de produto deve ser adicionada aos submodules.
-
-### Formas de consumo dos upstreams
-
-- `adapter`: biblioteca atrás de interface local.
-- `runtime-adapter`: runtime isolado atrás de interface local.
-- `service-adapter`: processo/serviço externo acessado por API.
-- `dev-tool`: ferramenta de desenvolvimento/CI.
-- `dev-tool-service`: serviço de desenvolvimento/testes.
-- `isolated-tool`: ferramenta copyleft executada separadamente.
-- `isolated-service`: serviço copyleft ou de licença mista executado separadamente.
-- `adapter-with-attribution`: integração com atribuição/elemento visual obrigatório.
-- `adapter-with-lgpl-boundary`: integração com fronteira técnica explícita para componente LGPL.
-- `internal-tool-adapter`: ferramenta interna que não vira dependência direta do produto final.
-- `isolated-reference`: referência arquitetural/funcional que não deve ser incorporada sem revisão específica.
-- `license-review-required`: uso bloqueado para produto comercial até revisão explícita da licença aplicável.
+Contém os upstreams externos intactos como submodules fixados em commit. O campo `runtimeClass` de `catalog/projects.json` informa como o projeto pode ser usado de forma compatível com esta política.
 
 ## Camada `modules/`
 
-Para os quatro kits executáveis 0.2.0, use [MODULE_KITS.md](MODULE_KITS.md).
-`artisys-documents` agora usa `shared`: classificar e escolher destinos são hooks
-do consumidor, sem duplicar o núcleo de processamento. Nenhum serviço pago é
-necessário para executar esses kits; workflows hospedados são opcionais.
+Contém integrações ArtiSys reutilizáveis. Os modos de reutilização permitidos são:
 
-Contém kits ArtiSys reutilizáveis. Cada módulo deve declarar:
+- `shared` — núcleo comum versionado aqui e consumido por vários produtos;
+- `snapshot` — base copiada deliberadamente e customizada no consumidor.
 
-- upstreams utilizados;
-- fronteira técnica;
-- modo de consumo;
-- consumidores recomendados;
-- estágio de maturidade;
-- instruções de integração e verificação.
-
-### Modos de consumo dos módulos
-
-- `shared`: código/configuração comum que deve permanecer sincronizado com a fonte central.
-- `snapshot`: ponto de partida copiado para o consumidor e depois customizado localmente.
-- `service`: upstream executado isoladamente e acessado por API, CLI, fila ou socket; o consumidor recebe somente a fronteira ArtiSys.
-
-## Regras obrigatórias
-
-1. Não espalhar imports do upstream pelo consumidor; usar uma fronteira local estável.
-2. Nenhum secret pertence a `utilidades`; credenciais ficam no ambiente do consumidor.
-3. Não editar submodules para incluir regra de negócio, identidade visual ou permissões do produto.
-4. Ferramentas de CI/teste devem usar versão aprovada/pinada.
-5. Serviços isolados devem se comunicar por protocolo estável, como HTTP, CLI, fila ou socket.
-6. O módulo não pode esconder obrigações de licença do upstream.
-7. Regras de negócio específicas permanecem no sistema consumidor.
-8. Uma atualização de upstream só chega aos consumidores depois de validação no `utilidades`.
-9. O mesmo módulo pode ser adotado por vários produtos sem obrigá-los a usar a mesma regra de negócio.
-10. **Política de custo ArtiSys:** o core obrigatório de qualquer módulo deve poder operar com custo de licença/assinatura **R$ 0**, preferencialmente com solução **open source e/ou self-hosted**. Serviços, APIs, planos comerciais ou recursos pagos só podem existir como **opção explícita**, documentada e substituível, e nunca como dependência silenciosa ou requisito oculto para o funcionamento do core.
-
-## Grupos de upstreams
-
-- Documentos/conteúdo: PaddleOCR, AI Website Cloner e PPT Master.
-- Colaboração/processos: Yjs, bpmn-js e XYFlow.
-- UI/catálogo: Storybook e Backstage.
-- Infraestrutura: NetBird, APISIX, NATS, Wasmtime, Ansible e Renovate.
-- Segurança/supply chain: Trivy, Semgrep, Gitleaks e Cosign.
-- Quality engineering: k6, Playwright, WireMock, Pact JS e OpenAPI Generator.
-- IA/privacidade/sync: Promptfoo, Presidio, Ollama e Electric.
-- Construção/BIM: WebODM e IfcOpenShell.
-- Dados/design/office/media: OpenRefine, Penpot, ONLYOFFICE, Immich e Filestash.
-- Commerce/eventos/agendamento: Saleor, pretix e Cal.com/cal.diy.
-- Plataforma/identidade/autorização: Coder, Keycloak, OpenFGA e Infisical.
-- Saúde/IoT/otimização: Medplum, ThingsBoard e Timefold Solver.
-- Referências com revisão especial: Outline e Remotion.
+Não criar novos módulos com dependência de serviço always-on.
 
 ## Fluxo de promoção
 
 ```text
-upstream novo/atualizado
-        ↓
-projects/ + catalog/projects.json
-        ↓
-validação de licença e segurança
-        ↓
-module correspondente
-        ↓
-testes do módulo
-        ↓
-consumidores selecionados
+candidato GitHub
+      ↓
+verificar utilidade real
+      ↓
+verificar licença
+      ↓
+verificar execução
+      ↓
+embedded / ci / local-on-demand / dev-tool ?
+      ↓ sim
+projects/ + catálogo
+      ↓
+adapter/módulo quando necessário
+      ↓
+teste em consumidor real
 ```
 
-## Atualizações
+## Política de custo
 
-1. Resolver a nova versão/commit no upstream.
-2. Rever `LICENSE`, `NOTICE` e mudanças de licenciamento.
-3. Atualizar gitlink e `catalog/projects.json` no mesmo commit.
-4. Verificar `.gitmodules`, SHA do gitlink e catálogo.
-5. Verificar o módulo ArtiSys que depende desse upstream.
-6. Atualizar `catalog/modules.json` quando contrato, versão ou modo de consumo mudar.
-7. Só então atualizar os consumidores.
+O core obrigatório deve funcionar com **R$ 0 de licença/assinatura** e sem máquina mantida ligada pelo usuário. Serviços pagos ou cloud podem aparecer somente como opção explícita, documentada e substituível.
