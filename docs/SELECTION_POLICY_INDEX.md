@@ -1,0 +1,1 @@
+Use `SELECTION_POLICY.md` before presenting repository suggestions.
