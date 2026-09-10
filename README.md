@@ -6,106 +6,47 @@ A regra é simples: um projeto só entra aqui se puder ser usado **sem manter in
 
 ## Critério de entrada
 
-Aceitamos somente projetos que funcionem em pelo menos um destes modos:
-
-- `embedded` — biblioteca incorporada ao navegador, Node/Electron, .NET, Python ou outro runtime do próprio produto;
-- `ci` — ferramenta executável em GitHub Actions/CI;
-- `local-on-demand` — processo local iniciado apenas quando necessário pelo Desktop/CLI e encerrado depois;
-- `dev-tool` — ferramenta de desenvolvimento que não vira dependência operacional do cliente.
-
-Não entram:
-
-- servidores, daemons, bancos ou stacks Docker que precisem ficar 24/7 ligados;
-- projetos que exijam VPS, PC dedicado ou runner self-hosted permanente;
-- produtos completos que não ofereçam uma capacidade reutilizável clara para os sistemas ArtiSys;
-- serviços pagos, contas cloud ou APIs comerciais como requisito do core;
-- bibliotecas genéricas que apenas repetem funções triviais já cobertas pelo stack;
-- projetos apenas de referência sem caminho de integração real;
-- software source-available/comercial incompatível com um core R$ 0.
+Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram servidores/daemons 24/7, VPS/PC dedicado, serviços pagos obrigatórios, bibliotecas triviais ou projetos sem caminho real de integração.
 
 ## Estado atual
 
-- **49 projetos aprovados** como Git submodules, todos classificados por forma real de execução em `catalog/projects.json`.
-- **9 módulos ArtiSys** registrados.
-- **6 kits executáveis:** `artisys-qa` 1.1.1, `artisys-pdf` 1.0.0, `artisys-workflows` 1.0.0, `artisys-security` 0.2.0, `artisys-api-contracts` 0.2.0 e `artisys-documents` 0.2.0.
+- **49 projetos aprovados** como Git submodules em `catalog/projects.json`.
+- **15 módulos ArtiSys** registrados.
+- **12 kits executáveis**: 9 `stable` e 3 `implemented`.
+- **3 foundations** ainda precisam ser promovidas.
 - Nenhum projeto aprovado exige infraestrutura always-on mantida pelo usuário.
 
-## Projetos aprovados
+## Kits stable
 
-### Documentos, mídia e dados
-- PaddleOCR — OCR local sob demanda.
-- OpenCV — visão computacional embutida/local.
-- Presidio — detecção e anonimização de PII em job local ou CI.
-- PPT Master — geração de apresentações em processo local.
-- PDF.js — visualizador PDF embutido.
-- Glide Data Grid — grade de dados de alta performance no frontend.
-- Annotorious — anotações diretamente sobre imagens.
-- docxjs — renderização de DOCX no cliente.
-- react-pdf-highlighter — highlights e regiões anotáveis em PDF.
-- pdfme — designer e geração de templates PDF.
-- Univer — planilhas, documentos e apresentações embutíveis; serviços externos permanecem opcionais.
+- `artisys-qa` 1.2.0 — Playwright/Chromium, screenshots, traces, vídeos e demos.
+- `artisys-pdf` 1.0.0 — pdfme + PDF.js + highlights/anotações.
+- `artisys-workflows` 1.0.0 — grafos, validação/execução e adapters XYFlow/LogicFlow/Rete.
+- `artisys-capture` 1.0.0 — captura câmera/arquivo, QR/barcode e helpers OpenCV.
+- `artisys-dashboard` 1.0.0 — layouts de dashboard, painéis e data grid.
+- `artisys-planning` 1.0.0 — Gantt, calendário, progresso e conflitos de recurso.
+- `artisys-media` 1.0.0 — jobs de mídia, MediaBunny e manifestos Motion Canvas.
+- `artisys-office` 1.0.0 — DOCX, workbook Univer e requests PPT Master.
+- `artisys-ui-builder` 1.0.0 — páginas/blocos portáveis e adapters GrapesJS/Puck/Craft.
 
-### Frontend, colaboração, fluxos e planejamento
-- Yjs — CRDT embutido; sincronização remota é opcional e não faz parte do core.
-- bpmn-js — modelagem BPMN diretamente no frontend.
-- XYFlow — editores visuais node-based diretamente no frontend.
-- LogicFlow — fluxogramas e processos empresariais editáveis.
-- Rete.js — programação e automações visuais por nós.
-- Storybook — laboratório de componentes durante desenvolvimento/CI.
-- AI Website Cloner Template — ferramenta interna de reconstrução/análise de interfaces.
-- Frappe Gantt — cronograma Gantt embutido.
-- FullCalendar — calendário e agenda drag-and-drop embutidos.
-- react-grid-layout — dashboards com cards reposicionáveis e redimensionáveis.
-- react-resizable-panels — painéis redimensionáveis para layouts de desktop/web.
-- Craft.js — framework para editores visuais React.
-- Puck — page builder visual React embutível.
-- GrapesJS — editor visual de páginas e templates.
+## Outros módulos
 
-### Arquivos, upload e captura
-- Uppy — uploader modular; serviços externos do ecossistema são opcionais e não fazem parte do core aprovado.
-- react-dropzone — seleção e drag-and-drop de arquivos no frontend.
-- html5-qrcode — leitura de QR/barcode no navegador usando câmera ou arquivos.
+- `artisys-security` — implemented — Gitleaks + Trivy + Semgrep.
+- `artisys-documents` — implemented — PaddleOCR + OpenCV.
+- `artisys-api-contracts` — implemented — OpenAPI Generator + Pact JS.
+- `artisys-ai-quality` — foundation — Promptfoo.
+- `artisys-privacy` — foundation — Presidio local/CI.
+- `artisys-bim` — foundation — IfcOpenShell local sob demanda.
 
-### Voz, IA e mídia local
-- sherpa-onnx — STT, TTS, VAD e outros recursos de voz offline/on-device; modelos são avaliados separadamente.
-- whisper.cpp — transcrição local/offline.
-- WebLLM — inferência de LLM no navegador via WebGPU, sem servidor de inferência obrigatório.
-- Motion Canvas — criação programática de animações e vídeos como ferramenta de desenvolvimento.
-- MediaBunny — leitura, escrita e conversão de áudio/vídeo no cliente.
+## Repos aprovados por capacidade
 
-### PDV, impressão e hardware
-- Node SerialPort — comunicação serial com balanças, leitores e equipamentos via runtime desktop/native.
-- ReceiptLine — composição de recibos/cupons para impressão térmica.
-- node-thermal-printer — integração direta com impressoras térmicas em Node/Electron.
-
-### Desktop, plugins e BIM
-- Wasmtime — runtime WebAssembly embutível.
-- IfcOpenShell — processamento IFC local sob demanda para CompatibilizaBIM/CBIM.
-
-### Segurança, qualidade e automação
-- Renovate — automação de dependências via CI.
-- Trivy — vulnerabilidades/SBOM via CI.
-- Semgrep — análise estática via CI.
-- Gitleaks — detecção de secrets via CI.
-- Cosign — assinatura/verificação de artefatos via CI.
-- k6 — testes de carga via CI.
-- Playwright — testes E2E/Chromium e geração de demos via CI.
-- WireMock — mock de APIs somente durante testes.
-- Pact JS — contract testing via CI.
-- OpenAPI Generator — geração de clientes/SDKs via CI.
-- Promptfoo — testes de qualidade e regressão de IA via CI.
-
-## Módulos ArtiSys
-
-- `artisys-qa` — Playwright/Chromium, screenshots, traces, vídeos e fluxos de demo.
-- `artisys-pdf` — geração pdfme, visualização PDF.js e anotações/highlights portáveis.
-- `artisys-workflows` — contrato de workflows, validação/execução e adapters XYFlow/LogicFlow/Rete.js.
-- `artisys-security` — Gitleaks + Trivy + Semgrep.
-- `artisys-documents` — PaddleOCR + OpenCV.
-- `artisys-api-contracts` — OpenAPI Generator + Pact JS.
-- `artisys-ai-quality` — Promptfoo.
-- `artisys-privacy` — Presidio executado localmente sob demanda ou em CI.
-- `artisys-bim` — IfcOpenShell executado localmente sob demanda.
+- **Documentos/dados:** PaddleOCR, OpenCV, Presidio, PPT Master, PDF.js, pdfme, react-pdf-highlighter, docxjs, Univer, Glide Data Grid, Annotorious.
+- **UI/fluxos:** Yjs, bpmn-js, XYFlow, LogicFlow, Rete.js, Storybook, Frappe Gantt, FullCalendar, react-grid-layout, react-resizable-panels, Craft.js, Puck, GrapesJS.
+- **Arquivos/captura:** Uppy, react-dropzone, html5-qrcode.
+- **Voz/IA/mídia:** sherpa-onnx, whisper.cpp, WebLLM, Motion Canvas, MediaBunny.
+- **Hardware/PDV:** Node SerialPort, ReceiptLine, node-thermal-printer.
+- **BIM/runtime:** Wasmtime, IfcOpenShell.
+- **QA/segurança:** Renovate, Trivy, Semgrep, Gitleaks, Cosign, k6, Playwright, WireMock, Pact JS, OpenAPI Generator, Promptfoo.
+- **Ferramenta interna:** AI Website Cloner Template.
 
 ## Arquitetura
 
@@ -119,7 +60,7 @@ adapter / biblioteca / CLI / job CI
 projects/<upstream>
 ```
 
-Nunca copiar um upstream inteiro para dentro de um produto. Regras de negócio continuam no consumidor.
+Regras de negócio continuam no consumidor. **Nenhum dos seis novos kits foi integrado a qualquer sistema consumidor.**
 
 ## Clonar
 
@@ -129,4 +70,4 @@ cd utilidades
 git submodule update --init --recursive
 ```
 
-Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `modules/README.md`, `docs/INTEGRATION_GUIDE.md`, `docs/LICENSES.md` e `docs/WEBLLM_NOTES.md` antes de promover uma utilidade para outro sistema.
+Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `modules/README.md` e `docs/INTEGRATION_GUIDE.md`.

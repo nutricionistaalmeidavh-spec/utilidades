@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-media",
+  "name": "ArtiSys Media",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-dev-tool",
+  "upstreams": ["mediabunny", "motion-canvas"],
+  "boundary": "Portable media-job contract plus MediaBunny execution and Motion Canvas render metadata; product editorial rules and storage stay in the consumer.",
+  "provides": ["media-job-validation", "trim-duration", "mediabunny-conversion-boundary", "motion-canvas-render-manifest"],
+  "packageName": "@artisys/media",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["trim-validation", "resize-validation", "audio-defaults", "duration-calculation", "conversion-init-execute", "invalid-conversion-rejection", "motion-canvas-scene-manifest"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["MediaBunny Input/Output objects are constructed by the consumer because browser/file targets differ by product.", "Motion Canvas rendering remains a development/build-time operation."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}
