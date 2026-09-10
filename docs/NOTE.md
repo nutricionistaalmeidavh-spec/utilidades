@@ -1,0 +1,1 @@
+Triagem antes da apresentacao e requisito permanente.
