@@ -2,61 +2,56 @@
 
 ## Objetivo
 
-`utilidades` é o registro central de componentes open source externos aprovados. Ele controla origem, versão fixada, licença e finalidade. A integração funcional acontece no repositório consumidor por meio de um adaptador local.
+`utilidades` registra componentes open source externos aprovados, controlando origem, versão fixada, licença e forma de consumo. A integração funcional acontece no repositório consumidor através de uma fronteira local.
 
 ## Fluxo padrão
 
 ```text
 Projeto consumidor
       ↓
-adaptador local
+adapter / wrapper / CLI / API
       ↓
-utilidade aprovada / serviço isolado
+utilidade aprovada ou serviço isolado
       ↓
-upstream open source
+upstream fixado por SHA
 ```
 
-### 1. Selecionar a utilidade
+## Formas de consumo
 
-Consultar `catalog/projects.json` e usar exatamente o projeto/commit aprovado.
+- `adapter`: biblioteca atrás de interface local.
+- `runtime-adapter`: runtime isolado atrás de interface local.
+- `service-adapter`: processo/serviço externo acessado por API.
+- `dev-tool`: ferramenta de desenvolvimento/CI.
+- `dev-tool-service`: serviço de desenvolvimento/testes.
+- `isolated-tool`: ferramenta copyleft executada separadamente.
+- `isolated-service`: serviço copyleft ou de licença mista executado separadamente.
+- `adapter-with-attribution`: integração com atribuição/elemento visual obrigatório.
+- `adapter-with-lgpl-boundary`: integração com fronteira técnica explícita para componente LGPL.
+- `internal-tool-adapter`: ferramenta interna que não vira dependência direta do produto final.
 
-### 2. Criar uma fronteira no consumidor
+## Regras
 
-O consumidor não deve importar detalhes internos do upstream em vários pontos. Criar uma única camada de integração com interface estável. Exemplos de nomes:
+1. Não espalhar imports do upstream pelo consumidor; criar uma única fronteira estável.
+2. Nenhum secret pertence a `utilidades`; credenciais ficam no ambiente do consumidor.
+3. Não editar submodules para incluir regra de negócio, identidade visual ou permissões do produto.
+4. Ferramentas de CI/teste devem ser executadas em versão pinada.
+5. Serviços isolados devem se comunicar por protocolo estável, como HTTP, CLI, fila ou socket.
 
-- `DocumentIntelligenceProvider` para PaddleOCR;
-- `SiteReconstructionProvider` para AI Website Cloner;
-- `ReportEngineProvider` para PPT Master;
-- `SocialPublishingProvider` para Postiz.
+## Grupos
 
-### 3. Isolar configuração e credenciais
+- Documentos/conteúdo: PaddleOCR, AI Website Cloner, PPT Master e Postiz.
+- Colaboração/processos: Yjs, bpmn-js e XYFlow.
+- UI/catálogo: Storybook e Backstage.
+- Infraestrutura: NetBird, APISIX, NATS, Wasmtime, Ansible e Renovate.
+- Segurança/supply chain: Trivy, Semgrep, Gitleaks e Cosign.
+- Quality engineering: k6, Playwright, WireMock, Pact JS e OpenAPI Generator.
+- IA/privacidade/sync: Promptfoo, Presidio, Ollama e Electric.
+- Construção/BIM: WebODM e IfcOpenShell.
 
-Nenhum segredo deve entrar em `utilidades`. Chaves, tokens, endpoints privados e credenciais pertencem ao ambiente do projeto consumidor.
+## Atualizações
 
-### 4. Atualizações
-
-Atualizar primeiro o submodule neste repositório, registrar o novo commit em `catalog/projects.json`, revisar a licença/changelog e somente depois atualizar os consumidores.
-
-## Estratégia por projeto
-
-### PaddleOCR
-
-Preferir execução como processo/serviço Python isolado quando o consumidor principal for TypeScript/Electron/Worker. O adaptador do consumidor envia o arquivo e recebe uma resposta estruturada. Primeiro alvo previsto: documentos digitalizados do FluxoDRE/MH.
-
-### AI Website Cloner Template
-
-Tratar como ferramenta interna de desenvolvimento/prospecção, não como dependência de runtime dos sites gerados. A saída deve ser revisada e adaptada ao design system e às regras do projeto consumidor.
-
-### PPT Master
-
-Tratar como motor de geração. O consumidor envia dados/documentos e recebe `.pptx`; templates e identidade visual permanecem no sistema consumidor.
-
-### Postiz
-
-Por ser AGPL-3.0, preferir implantação como serviço separado e comunicação por API/integração externa. Não copiar módulos do Postiz para dentro de um produto proprietário sem análise específica das obrigações da licença.
-
-## Regra de ownership
-
-- `utilidades`: terceiros, versões, licenças, referências e política de uso.
-- projeto consumidor: adapter, regras de negócio, UI, permissões e configuração.
-- upstream: código original e evolução do componente open source.
+1. Resolver a nova versão/commit no upstream.
+2. Rever `LICENSE`, `NOTICE` e mudanças de licenciamento.
+3. Atualizar gitlink e `catalog/projects.json` no mesmo commit.
+4. Verificar `.gitmodules`, SHA do gitlink e catálogo.
+5. Só então atualizar os consumidores.

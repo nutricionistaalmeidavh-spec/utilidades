@@ -14,3 +14,107 @@
 	path = projects/social-publishing/postiz
 	url = https://github.com/gitroomhq/postiz-app.git
 	branch = main
+[submodule "projects/collaboration/yjs"]
+	path = projects/collaboration/yjs
+	url = https://github.com/yjs/yjs.git
+	branch = main
+[submodule "projects/process-modeling/bpmn-js"]
+	path = projects/process-modeling/bpmn-js
+	url = https://github.com/bpmn-io/bpmn-js.git
+	branch = develop
+[submodule "projects/visual-workflows/xyflow"]
+	path = projects/visual-workflows/xyflow
+	url = https://github.com/xyflow/xyflow.git
+	branch = main
+[submodule "projects/ui-engineering/storybook"]
+	path = projects/ui-engineering/storybook
+	url = https://github.com/storybookjs/storybook.git
+	branch = next
+[submodule "projects/developer-portal/backstage"]
+	path = projects/developer-portal/backstage
+	url = https://github.com/backstage/backstage.git
+	branch = master
+[submodule "projects/networking/netbird"]
+	path = projects/networking/netbird
+	url = https://github.com/netbirdio/netbird.git
+	branch = main
+[submodule "projects/api-infrastructure/apisix"]
+	path = projects/api-infrastructure/apisix
+	url = https://github.com/apache/apisix.git
+	branch = master
+[submodule "projects/messaging/nats-server"]
+	path = projects/messaging/nats-server
+	url = https://github.com/nats-io/nats-server.git
+	branch = main
+[submodule "projects/plugin-runtime/wasmtime"]
+	path = projects/plugin-runtime/wasmtime
+	url = https://github.com/bytecodealliance/wasmtime.git
+	branch = main
+[submodule "projects/infrastructure-automation/ansible"]
+	path = projects/infrastructure-automation/ansible
+	url = https://github.com/ansible/ansible.git
+	branch = devel
+[submodule "projects/dependency-automation/renovate"]
+	path = projects/dependency-automation/renovate
+	url = https://github.com/renovatebot/renovate.git
+	branch = main
+[submodule "projects/security/trivy"]
+	path = projects/security/trivy
+	url = https://github.com/aquasecurity/trivy.git
+	branch = main
+[submodule "projects/security/semgrep"]
+	path = projects/security/semgrep
+	url = https://github.com/semgrep/semgrep.git
+	branch = develop
+[submodule "projects/security/gitleaks"]
+	path = projects/security/gitleaks
+	url = https://github.com/gitleaks/gitleaks.git
+	branch = master
+[submodule "projects/supply-chain/cosign"]
+	path = projects/supply-chain/cosign
+	url = https://github.com/sigstore/cosign.git
+	branch = main
+[submodule "projects/testing/k6"]
+	path = projects/testing/k6
+	url = https://github.com/grafana/k6.git
+	branch = master
+[submodule "projects/testing/playwright"]
+	path = projects/testing/playwright
+	url = https://github.com/microsoft/playwright.git
+	branch = main
+[submodule "projects/testing/wiremock"]
+	path = projects/testing/wiremock
+	url = https://github.com/wiremock/wiremock.git
+	branch = master
+[submodule "projects/testing/pact-js"]
+	path = projects/testing/pact-js
+	url = https://github.com/pact-foundation/pact-js.git
+	branch = master
+[submodule "projects/api-tooling/openapi-generator"]
+	path = projects/api-tooling/openapi-generator
+	url = https://github.com/OpenAPITools/openapi-generator.git
+	branch = master
+[submodule "projects/ai-testing/promptfoo"]
+	path = projects/ai-testing/promptfoo
+	url = https://github.com/promptfoo/promptfoo.git
+	branch = main
+[submodule "projects/privacy/presidio"]
+	path = projects/privacy/presidio
+	url = https://github.com/data-privacy-stack/presidio.git
+	branch = main
+[submodule "projects/local-ai/ollama"]
+	path = projects/local-ai/ollama
+	url = https://github.com/ollama/ollama.git
+	branch = main
+[submodule "projects/sync/electric"]
+	path = projects/sync/electric
+	url = https://github.com/electric-sql/electric.git
+	branch = main
+[submodule "projects/photogrammetry/webodm"]
+	path = projects/photogrammetry/webodm
+	url = https://github.com/WebODM/WebODM.git
+	branch = master
+[submodule "projects/bim/ifcopenshell"]
+	path = projects/bim/ifcopenshell
+	url = https://github.com/IfcOpenShell/IfcOpenShell.git
+	branch = v0.9.0

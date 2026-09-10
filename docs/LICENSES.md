@@ -1,19 +1,27 @@
 # Licenças dos projetos incorporados
 
-Este arquivo é um índice operacional. O texto integral e oficial de cada licença permanece dentro do respectivo submodule/upstream.
+Índice operacional. O texto integral e oficial de cada licença permanece dentro do respectivo submodule/upstream. O catálogo canônico está em `catalog/projects.json`.
 
-| Projeto | Licença upstream | Política interna |
-|---|---|---|
-| PaddleOCR | Apache License 2.0 | Permitido para integração, mantendo avisos/atribuições exigidos pela licença. |
-| AI Website Cloner Template | MIT | Permitido para uso e adaptação, preservando copyright e licença em cópias substanciais. |
-| PPT Master | MIT | Permitido para uso e adaptação, preservando copyright e licença em cópias substanciais. |
-| Postiz | GNU Affero General Public License v3.0 | Manter isolado como serviço até revisão específica da arquitetura de distribuição/uso em rede. |
+## Casos especiais
 
-## Princípios
+- **Postiz** — AGPL-3.0: serviço isolado.
+- **NetBird** — BSD-3-Clause no geral, mas `management/`, `signal/`, `relay/` e `combined/` são AGPL-3.0: serviço isolado.
+- **Renovate** — AGPL-3.0: ferramenta isolada.
+- **k6** — AGPL-3.0: ferramenta isolada.
+- **WebODM** — AGPL-3.0: serviço isolado.
+- **Ansible** — GPL-3.0: ferramenta externa/CLI isolada.
+- **Semgrep** — LGPL-2.1: manter fronteira clara e preservar obrigações LGPL.
+- **IfcOpenShell** — LGPL-3.0: usar adapter com fronteira explícita.
+- **bpmn-js** — licença permissiva com requisito adicional: o watermark `bpmn.io` deve permanecer visível e inalterado.
+- **Wasmtime** — Apache-2.0 com LLVM Exception.
 
-- Nunca remover `LICENSE`, `NOTICE`, copyright ou atribuições dos projetos upstream.
-- Não relicenciar código de terceiros como se fosse código proprietário.
-- Modificações locais em upstream devem ser evitadas; preferir adapters externos.
-- Antes de distribuir uma solução que incorpore código AGPL, revisar as obrigações aplicáveis ao caso concreto.
+## Regras obrigatórias
 
-Este documento não substitui aconselhamento jurídico.
+- Nunca remover `LICENSE`, `NOTICE`, copyright, atribuições ou marcas exigidas pelo upstream.
+- Não relicenciar código de terceiros como se fosse proprietário.
+- Evitar modificações locais em upstream; preferir adapters, wrappers, CLIs ou serviços externos.
+- AGPL/GPL e licenças mistas permanecem isoladas do código proprietário até revisão específica.
+- LGPL deve manter fronteira técnica clara e preservar as condições do upstream.
+- O SHA do catálogo identifica a versão cuja política foi registrada; atualizar SHA exige nova verificação de licença.
+
+Este documento é uma política de engenharia e não substitui aconselhamento jurídico.
