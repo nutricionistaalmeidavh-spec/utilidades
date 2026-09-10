@@ -10,8 +10,7 @@ permissions:
   contents: read
 jobs:
   security:
-    # Prepared Linux/WSL runner controlled by the owner; no paid hosted runner required.
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
