@@ -359,6 +359,21 @@ Driver simples que recebe um transporte com `write()`/`drain()` e envia bytes j�
 
 Pode ser conectado ao `@artisys/serialport`, TCP ou outro transporte local.
 
+## Dependências de pacote
+
+### `@artisys/serialport`
+
+- `serialport` é dependência de runtime do módulo.
+- Node `>=22`.
+- Nenhum serviço externo.
+
+### `@artisys/printing`
+
+- `receiptline` e `node-thermal-printer` são dependências de runtime do módulo.
+- Electron não é dependência obrigatória: `ElectronPrinterDriver` recebe `BrowserWindow` por injeção do consumidor.
+- `@artisys/serialport` não é dependência obrigatória; o `TransportPrinterDriver` recebe um transporte compatível por injeção.
+- Node `>=22`.
+
 ## Integração no `PDV-ARTISYS`
 
 ### Código que permanece no PDV
@@ -451,16 +466,34 @@ No futuro isso pode migrar para UI de configuração, mas não faz parte deste e
 
 O repositório `utilidades` permanece fonte canônica.
 
-Para o `PDV-ARTISYS`, o primeiro caminho recomendado é dependência Git/local pinada, sem publicar pacote em registry pago.
+O `PDV-ARTISYS` consumirá os módulos por um Git submodule pinado em:
+
+```text
+vendor/utilidades
+```
+
+O `package.json` do PDV apontará para:
+
+```json
+{
+  "dependencies": {
+    "@artisys/serialport": "file:vendor/utilidades/modules/artisys-serialport",
+    "@artisys/printing": "file:vendor/utilidades/modules/artisys-printing"
+  }
+}
+```
+
+O commit do submodule será explícito e versionado pelo próprio Git do PDV. Os upstreams `serialport`, `receiptline` e `node-thermal-printer` continuarão registrados como submodules de proveniência no repositório `utilidades`, mas os módulos ArtiSys usarão as versões npm declaradas em seus próprios `package.json`; portanto o build do PDV não dependerá de clonar recursivamente esses três upstreams para executar.
+
+O Electron Builder empacotará as dependências instaladas do PDV. Para `serialport`, os pacotes nativos `serialport` e `@serialport/*` permanecerão fora do ASAR quando necessário, seguindo a estratégia já usada pelo PDV.
 
 Objetivos:
 
 - nenhuma cópia divergente;
 - versão explícita;
 - build reproduzível;
-- core sem serviço externo em runtime.
-
-O mecanismo exato de pin deve ser escolhido na implementação conforme a forma mais segura suportada pelo Electron Builder e pelo GitHub privado do consumidor.
+- core sem serviço externo em runtime;
+- sem registry privado ou assinatura paga.
 
 ## Catálogo `utilidades`
 
