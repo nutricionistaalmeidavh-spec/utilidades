@@ -1,0 +1,1 @@
+Screen candidates before presentation; no always-on dependencies; no trivial generic libraries.
