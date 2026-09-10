@@ -1,24 +1,25 @@
 # Módulos ArtiSys reutilizáveis
 
-Esta pasta contém integrações nossas construídas sobre os upstreams aprovados em `projects/`.
+Esta pasta contém integrações próprias construídas sobre os upstreams aprovados em `projects/`.
 
-`artisys-qa` está estável em **1.0.0** e fornece Playwright/Chromium, captura de vídeo/screenshots/trace, runner declarativo, suporte web/Electron e GitHub Actions reutilizável. Security, API Contracts e Documents permanecem com implementação 0.2.0. Os demais módulos seguem em `foundation`. `implemented` ou `stable` indica código executável; a homologação em cada produto é separada.
+`artisys-qa` está estável em **1.1.0**. Security, API Contracts e Documents estão implementados em 0.2.0. AI Quality, Privacy e BIM permanecem em `foundation`.
 
-Consulte [instalação e verificações](../docs/MODULE_KITS.md).
+## Regra principal
 
-## Princípio
+Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou runner self-hosted permanente.
 
-Um sistema consumidor não deve conhecer detalhes do upstream quando isso puder ser evitado. Ele consome um contrato ArtiSys estável e o módulo decide como conversar com a biblioteca, CLI ou serviço externo.
+Os únicos modos operacionais aceitos são:
 
-## Modos
-
-| Modo | Uso |
+| Classe | Uso |
 |---|---|
-| `shared` | Código/configuração comum que deve acompanhar a versão central. |
-| `snapshot` | Base copiada uma vez e customizada no projeto consumidor. |
-| `service` | Serviço externo isolado; o consumidor recebe apenas adapter/configuração. |
+| `embedded` | biblioteca executada dentro do próprio produto |
+| `ci` | GitHub Actions/CI |
+| `local-on-demand` | processo local iniciado apenas durante a tarefa e encerrado depois |
+| `dev-tool` | desenvolvimento; não participa do runtime do cliente |
 
-## Estrutura mínima de um módulo
+Para reutilização entre produtos, `consumptionMode` deve ser `shared` ou `snapshot`. Módulos baseados em serviço always-on não são aceitos neste repositório.
+
+## Estrutura mínima
 
 ```text
 modules/<id>/
@@ -26,20 +27,18 @@ modules/<id>/
 └─ README.md
 ```
 
-Quando o módulo amadurecer, pode adicionar `src/`, `contracts/`, `templates/`, `tests` e `examples/` sem mudar sua identidade no catálogo.
+## Regra de integração
 
-## Regra de cópia
+O consumidor usa o contrato ArtiSys. Não copie `projects/<upstream>` para dentro do produto e não espalhe imports específicos do upstream pelo domínio.
 
-Nunca copiar diretamente `projects/<upstream>` para um sistema ArtiSys. O ponto de reutilização é sempre `modules/<id>` ou uma fronteira de serviço declarada pelo módulo.
+## Módulos atuais
 
-## Módulos iniciais
+1. `artisys-qa` — stable 1.1.0 — Playwright/Chromium
+2. `artisys-security` — implemented 0.2.0 — Gitleaks + Trivy + Semgrep
+3. `artisys-documents` — implemented 0.2.0 — PaddleOCR + OpenCV
+4. `artisys-api-contracts` — implemented 0.2.0 — OpenAPI Generator + Pact JS
+5. `artisys-ai-quality` — foundation — Promptfoo
+6. `artisys-privacy` — foundation — Presidio local/CI
+7. `artisys-bim` — foundation — IfcOpenShell local sob demanda
 
-1. `artisys-qa` — stable 1.0.0
-2. `artisys-security`
-3. `artisys-documents`
-4. `artisys-authz`
-5. `artisys-optimizer`
-6. `artisys-api-contracts`
-7. `artisys-ai-quality`
-8. `artisys-privacy`
-9. `artisys-bim`
+Consulte `../docs/MODULE_KITS.md` e `../docs/INTEGRATION_GUIDE.md`.
