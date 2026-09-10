@@ -13,6 +13,29 @@ function run(cmd, args) {
   });
 }
 
+export function buildNormalizeArgs(inputFile, outputFile, preset) {
+  if (!preset?.width || !preset?.height) throw new TypeError('Demo preset requires width and height');
+  const vf = `scale=${preset.width}:${preset.height}:force_original_aspect_ratio=decrease,pad=${preset.width}:${preset.height}:(ow-iw)/2:(oh-ih)/2:black`;
+  return [
+    '-y', '-i', inputFile,
+    '-vf', vf,
+    '-r', '30',
+    '-c:v', 'libx264',
+    '-preset', 'medium',
+    '-crf', '20',
+    '-pix_fmt', 'yuv420p',
+    '-movflags', '+faststart',
+    '-an',
+    outputFile,
+  ];
+}
+
+export async function normalizeDemoVideo(inputFile, outputFile, preset) {
+  await ensureDir(path.dirname(outputFile));
+  await run('ffmpeg', buildNormalizeArgs(inputFile, outputFile, preset));
+  return outputFile;
+}
+
 export function createFrameRecorder(page, { dir, fps = 4 } = {}) {
   let stopped = false;
   let index = 0;
