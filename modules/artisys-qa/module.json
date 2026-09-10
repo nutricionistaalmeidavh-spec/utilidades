@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "artisys-qa",
   "name": "ArtiSys QA",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "status": "stable",
   "consumptionMode": "shared",
   "upstreams": ["playwright"],
@@ -38,6 +38,7 @@
     "flow-selection",
     "demo-selection",
     "demo-duration-target",
+    "demo-media-duration-normalization",
     "demo-step-hold",
     "environment-selection",
     "viewport-selection",
@@ -67,7 +68,8 @@
     "playwright": ">=1.51 <2",
     "githubRunner": "ubuntu-latest",
     "electron": "consumer-provided",
-    "ffmpeg": "required-for-demo-mp4-and-electron-video"
+    "ffmpeg": "required-for-demo-mp4-and-electron-video",
+    "ffprobe": "required-for-demo-duration-normalization"
   },
   "limitations": [
     "Consumer owns product-specific flows, selectors, accounts and test data.",
