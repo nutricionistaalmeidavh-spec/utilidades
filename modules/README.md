@@ -17,6 +17,8 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 | `artisys-media` 1.0.0 | stable | áudio/vídeo e manifestos de motion |
 | `artisys-office` 1.0.0 | stable | DOCX, workbook Univer e jobs PPT |
 | `artisys-ui-builder` 1.0.0 | stable | schema de páginas + GrapesJS/Puck/Craft |
+| `artisys-upload` 1.0.0 | stable | políticas, validação, fila e adapters Uppy/Dropzone |
+| `artisys-annotations` 1.0.0 | stable | anotações em imagens/PDF + adapters Annotorious/highlighter |
 | `artisys-serialport` 0.1.0 | implemented | Node SerialPort, balança, gaveta e dispositivos seriais |
 | `artisys-printing` 0.1.0 | implemented | recibos, ReceiptLine, térmicas e fallback Electron |
 | `artisys-security` 0.2.0 | implemented | Gitleaks + Trivy + Semgrep |
