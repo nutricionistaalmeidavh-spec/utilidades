@@ -1,7 +1,9 @@
 # artisys-privacy
 
-Serviço de privacidade baseado em Presidio para detectar e anonimizar dados pessoais antes de logs, exportações ou processamento externo.
+Camada de privacidade baseada em Presidio para detectar e anonimizar dados pessoais antes de logs, exportações ou processamento externo.
 
-**Consumir como:** `service`.
+**Consumir como:** `shared`.
+
+**Execução:** local sob demanda ou em GitHub Actions/CI. Não existe requisito de servidor/daemon permanente.
 
 Regras brasileiras específicas, como CPF/CNPJ, devem ser adicionadas no adapter ArtiSys sem modificar o upstream.
