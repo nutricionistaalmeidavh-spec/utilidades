@@ -23,7 +23,13 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
+  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
+}
+
+async function resolveProfileRuntime(manifest, rootDir, requestedProfile) {
+  const profile = resolveDemoProfile(manifest, requestedProfile, rootDir);
+  if (!profile) return { demoProfile: null, demoAdapter: null };
+  return { demoProfile: profile, demoAdapter: await loadDemoAdapter(profile.adapterPath) };
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -80,6 +86,7 @@ try {
     const { name: environmentName, environment } = resolveEnvironment(manifest, args.environment);
     const { name: flowName, file: flowFile } = resolveFlow(manifest, args.flow, rootDir);
     const viewport = resolveViewport(manifest, args.viewport);
+    const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
     const result = await runQaFlow({
       manifest,
       rootDir,
@@ -89,12 +96,14 @@ try {
       flowFile,
       viewport,
       outputRoot: args.output ? path.resolve(args.output) : path.resolve('qa-artifacts'),
+      ...profileRuntime,
     });
     console.log(JSON.stringify(result.summary, null, 2));
     console.log(`ARTISYS_QA_OUTPUT=${result.outputDir}`);
   } else if (args.command === 'demo') {
     const { name: environmentName, environment } = resolveEnvironment(manifest, args.environment);
     const demo = resolveDemo(manifest, args.demo, rootDir);
+    const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
     const result = await runDemoFlow({
       manifest,
       rootDir,
@@ -106,6 +115,7 @@ try {
       durationTargetSec: demo.durationTargetSec,
       captureViewport: demo.captureViewport,
       outputRoot: args.output ? path.resolve(args.output) : path.resolve('qa-artifacts'),
+      ...profileRuntime,
     });
     console.log(JSON.stringify(result.summary, null, 2));
     console.log(`ARTISYS_QA_OUTPUT=${result.outputDir}`);
