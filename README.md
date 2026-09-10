@@ -26,8 +26,8 @@ Não entram:
 ## Estado atual
 
 - **49 projetos aprovados** como Git submodules, todos classificados por forma real de execução em `catalog/projects.json`.
-- **7 módulos ArtiSys** registrados.
-- **4 kits executáveis:** `artisys-qa` 1.1.0, `artisys-security` 0.2.0, `artisys-api-contracts` 0.2.0 e `artisys-documents` 0.2.0.
+- **9 módulos ArtiSys** registrados.
+- **6 kits executáveis:** `artisys-qa` 1.1.1, `artisys-pdf` 1.0.0, `artisys-workflows` 1.0.0, `artisys-security` 0.2.0, `artisys-api-contracts` 0.2.0 e `artisys-documents` 0.2.0.
 - Nenhum projeto aprovado exige infraestrutura always-on mantida pelo usuário.
 
 ## Projetos aprovados
@@ -98,6 +98,8 @@ Não entram:
 ## Módulos ArtiSys
 
 - `artisys-qa` — Playwright/Chromium, screenshots, traces, vídeos e fluxos de demo.
+- `artisys-pdf` — geração pdfme, visualização PDF.js e anotações/highlights portáveis.
+- `artisys-workflows` — contrato de workflows, validação/execução e adapters XYFlow/LogicFlow/Rete.js.
 - `artisys-security` — Gitleaks + Trivy + Semgrep.
 - `artisys-documents` — PaddleOCR + OpenCV.
 - `artisys-api-contracts` — OpenAPI Generator + Pact JS.

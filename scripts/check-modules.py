@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-READY = ('artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents')
+READY = ('artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents', 'artisys-pdf', 'artisys-workflows')
 READY_STATUSES = ('implemented', 'stable')
 
 
@@ -41,8 +41,10 @@ def main():
             if not (path / 'LICENSE').is_file():
                 raise ValueError(f'{entry["id"]}: missing local code license')
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
-    for module in ('artisys-qa', 'artisys-api-contracts'):
+    for module in ('artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows'):
         run([npm, 'test'], ROOT / 'modules' / module)
+    for module in ('artisys-pdf', 'artisys-workflows'):
+        run([npm, 'run', 'check'], ROOT / 'modules' / module)
     run([sys.executable, '-m', 'unittest', 'discover', '-s', 'modules/artisys-security/tests', '-v'])
     env = os.environ.copy()
     env['PYTHONPATH'] = str(ROOT / 'modules' / 'artisys-documents' / 'src') + os.pathsep + env.get('PYTHONPATH', '')

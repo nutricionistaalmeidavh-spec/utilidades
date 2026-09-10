@@ -35,6 +35,22 @@
       "recommendedConsumers": ["PDV-ARTISYS", "OBRANAMAOCOMERCIAL", "CLINICASMEDICAS", "ConsulroriaAmamenta-o"]
     },
     {
+      "id": "artisys-pdf",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "upstreams": ["pdfme", "pdfjs", "react-pdf-highlighter"],
+      "recommendedConsumers": ["drefluxo", "OBRANAMAOCOMERCIAL", "CLINICASMEDICAS", "ConsulroriaAmamenta-o", "PDV-ARTISYS"]
+    },
+    {
+      "id": "artisys-workflows",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "upstreams": ["xyflow", "logicflow", "rete"],
+      "recommendedConsumers": ["OBRANAMAOCOMERCIAL", "CLINICASMEDICAS", "cyber-study-hub", "PDV-ARTISYS"]
+    },
+    {
       "id": "artisys-ai-quality",
       "version": "0.1.0",
       "status": "foundation",
