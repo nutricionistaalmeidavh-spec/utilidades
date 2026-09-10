@@ -2,10 +2,8 @@
 
 Esta pasta contém integrações nossas construídas sobre os upstreams aprovados em `projects/`.
 
-QA, Security, API Contracts e Documents possuem implementação 0.2.0 e usam
-`shared`. Documents passou de snapshot para núcleo compartilhado com regras do
-consumidor. Os outros cinco módulos permanecem em `foundation`.
-`implemented` indica código executável; a homologação em cada produto é separada.
+`artisys-qa` está estável em **1.0.0** e fornece Playwright/Chromium, captura de vídeo/screenshots/trace, runner declarativo, suporte web/Electron e GitHub Actions reutilizável. Security, API Contracts e Documents permanecem com implementação 0.2.0. Os demais módulos seguem em `foundation`. `implemented` ou `stable` indica código executável; a homologação em cada produto é separada.
+
 Consulte [instalação e verificações](../docs/MODULE_KITS.md).
 
 ## Princípio
@@ -28,7 +26,7 @@ modules/<id>/
 └─ README.md
 ```
 
-Quando o módulo amadurecer, pode adicionar `src/`, `contracts/`, `templates/`, `tests/` e `examples/` sem mudar sua identidade no catálogo.
+Quando o módulo amadurecer, pode adicionar `src/`, `contracts/`, `templates/`, `tests` e `examples/` sem mudar sua identidade no catálogo.
 
 ## Regra de cópia
 
@@ -36,7 +34,7 @@ Nunca copiar diretamente `projects/<upstream>` para um sistema ArtiSys. O ponto 
 
 ## Módulos iniciais
 
-1. `artisys-qa`
+1. `artisys-qa` — stable 1.0.0
 2. `artisys-security`
 3. `artisys-documents`
 4. `artisys-authz`

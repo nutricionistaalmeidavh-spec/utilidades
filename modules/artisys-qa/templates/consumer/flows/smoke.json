@@ -1,0 +1,7 @@
+{
+  "name": "smoke",
+  "steps": [
+    {"action": "expectVisible", "selector": "body", "name": "body-visible"},
+    {"action": "screenshot", "name": "initial-state", "fullPage": true}
+  ]
+}

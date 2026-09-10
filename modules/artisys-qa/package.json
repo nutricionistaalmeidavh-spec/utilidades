@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -8,17 +8,25 @@
   "exports": {
     ".": "./src/index.js",
     "./config": "./src/config.js",
-    "./fixtures": "./src/fixtures.js"
+    "./fixtures": "./src/fixtures.js",
+    "./manifest": "./src/manifest.js",
+    "./runner": "./src/runner.js",
+    "./helpers": "./src/helpers.js"
+  },
+  "bin": {
+    "artisys-qa": "./src/cli.mjs"
   },
   "files": [
     "src",
+    "templates",
     "examples/pos-reference/*.js",
     "README.md",
     "module.json"
   ],
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:example": "playwright test --config examples/pos-reference/playwright.config.js"
+    "test:example": "playwright test --config examples/pos-reference/playwright.config.js",
+    "check": "node ./src/cli.mjs validate --config ./templates/consumer/artisys-qa.config.json"
   },
   "peerDependencies": {
     "playwright": ">=1.51 <2"

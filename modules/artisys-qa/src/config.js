@@ -1,8 +1,26 @@
 import { defineConfig, devices } from 'playwright/test';
 
-/** Product owns server lifecycle, authentication and scenario selection. */
-export function createQaConfig({ baseURL, testDir = './e2e', webServer, workers = 2, ...overrides } = {}) {
-  if (!baseURL || !['http:', 'https:'].includes(new URL(baseURL).protocol)) throw new TypeError('An HTTP(S) baseURL is required');
+export const VIEWPORTS = Object.freeze({
+  desktop: { width: 1440, height: 900 },
+  tablet: { width: 1024, height: 768 },
+  mobile: { width: 390, height: 844 },
+});
+
+/** Shared Playwright configuration for consumer-owned test suites. */
+export function createQaConfig({
+  baseURL,
+  testDir = './e2e',
+  webServer,
+  workers = 1,
+  viewport = 'desktop',
+  capture = {},
+  ...overrides
+} = {}) {
+  if (!baseURL || !['http:', 'https:', 'file:'].includes(new URL(baseURL).protocol)) {
+    throw new TypeError('An HTTP(S) or file baseURL is required');
+  }
+  const selectedViewport = typeof viewport === 'string' ? VIEWPORTS[viewport] : viewport;
+  if (!selectedViewport?.width || !selectedViewport?.height) throw new TypeError('A valid viewport is required');
   const { use, ...rest } = overrides;
   return defineConfig({
     testDir,
@@ -10,13 +28,20 @@ export function createQaConfig({ baseURL, testDir = './e2e', webServer, workers 
     forbidOnly: Boolean(process.env.CI),
     retries: 0,
     workers,
-    timeout: 30000,
-    expect: { timeout: 5000 },
+    timeout: 45000,
+    expect: { timeout: 7000 },
     reporter: [['list'], ['html', { open: 'never', outputFolder: 'qa-report' }]],
     outputDir: 'qa-results',
-    projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+    projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: selectedViewport } }],
     webServer,
     ...rest,
-    use: { baseURL, trace: 'retain-on-failure', screenshot: 'only-on-failure', video: 'off', ...use },
+    use: {
+      baseURL,
+      viewport: selectedViewport,
+      trace: capture.trace ?? 'retain-on-failure',
+      screenshot: capture.screenshot ?? 'on',
+      video: capture.video ?? 'on',
+      ...use,
+    },
   });
 }

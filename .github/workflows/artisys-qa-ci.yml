@@ -1,0 +1,35 @@
+name: ArtiSys QA CI
+
+on:
+  pull_request:
+    paths:
+      - 'modules/artisys-qa/**'
+      - '.github/actions/artisys-qa/**'
+      - '.github/workflows/artisys-qa-*.yml'
+      - 'catalog/modules.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: modules/artisys-qa/package-lock.json
+      - name: Install
+        run: npm ci --prefix modules/artisys-qa
+      - name: Unit and manifest checks
+        run: |
+          npm test --prefix modules/artisys-qa
+          npm run check --prefix modules/artisys-qa
+      - name: Install Chromium
+        run: npx --prefix modules/artisys-qa playwright install --with-deps chromium
+      - name: Browser reference test
+        run: npm run test:example --prefix modules/artisys-qa

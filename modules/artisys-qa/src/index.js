@@ -34,3 +34,10 @@ export async function withTerminals(browser, { count = 2, contextOptions = {} } 
     await Promise.all(contexts.map(context => context.close()));
   }
 }
+
+export { createQaConfig, VIEWPORTS } from './config.js';
+export { loadQaManifest, validateQaManifest, resolveEnvironment, resolveFlow, resolveViewport } from './manifest.js';
+export { runQaFlow } from './runner.js';
+export { executeStep } from './steps.js';
+export { attachPageTelemetry } from './telemetry.js';
+export { sanitizeName, resolveSecret, stepLabel } from './helpers.js';

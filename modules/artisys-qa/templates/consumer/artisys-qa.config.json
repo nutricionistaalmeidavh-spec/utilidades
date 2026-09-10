@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "systemId": "example-system",
+  "mode": "web",
+  "defaultEnvironment": "production",
+  "defaultFlow": "smoke",
+  "defaultViewport": "desktop",
+  "capture": {
+    "video": true,
+    "screenshotEachStep": true,
+    "fps": 4
+  },
+  "environments": {
+    "production": {
+      "baseURL": "https://example.com"
+    }
+  },
+  "flows": {
+    "smoke": "flows/smoke.json"
+  }
+}
