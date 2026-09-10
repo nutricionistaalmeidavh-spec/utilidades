@@ -18,6 +18,22 @@
     "cash-drawer-adapter",
     "generic-serial-device"
   ],
+  "implementedCapabilities": [
+    "serial-port-discovery",
+    "validated-device-profile",
+    "open-close-state-machine",
+    "concurrent-open-guard",
+    "serial-write-and-drain",
+    "data-subscription",
+    "request-response-timeout",
+    "fragmented-response-buffering",
+    "stable-serial-error-codes",
+    "numeric-weight-parser",
+    "line-buffer",
+    "scale-adapter",
+    "cash-drawer-escpos-pulse",
+    "generic-serial-device"
+  ],
   "packageName": "@artisys/serialport",
   "entrypoint": "./src/index.js",
   "verification": {
