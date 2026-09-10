@@ -13,7 +13,7 @@ A função deste repositório é **guardar, versionar e documentar dependências
 
 ## Estado atual
 
-- **48 projetos incorporados** como Git submodules.
+- **47 projetos incorporados** como Git submodules.
 - **9 módulos ArtiSys prioritários** registrados.
 - Cada submodule está **fixado em um commit exato**.
 - Projetos com copyleft, licença mista ou exigência especial ficam marcados para uso isolado ou com fronteira explícita.
@@ -36,7 +36,6 @@ A função deste repositório é **guardar, versionar e documentar dependências
 - PaddleOCR — OCR e inteligência de documentos.
 - AI Website Cloner Template — reconstrução/análise de sites.
 - PPT Master — apresentações e relatórios editáveis.
-- Postiz — publicação e automação social.
 
 ### Colaboração e processos
 - Yjs — colaboração em tempo real e CRDT.
