@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-printing",
+  "name": "ArtiSys Printing",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["receiptline", "node-thermal-printer"],
+  "boundary": "Reusable receipt model, renderers and local printer drivers; product rules, fiscal decisions and persistent print queues stay in the consumer.",
+  "provides": [
+    "receipt-document",
+    "plain-text-renderer",
+    "receiptline-renderer",
+    "svg-receipt-preview",
+    "electron-printer-driver",
+    "thermal-printer-driver",
+    "generic-transport-printer-driver",
+    "printer-profile",
+    "printer-driver-resolver"
+  ],
+  "implementedCapabilities": [
+    "immutable-receipt-document",
+    "32-42-48-column-rendering",
+    "signed-cent-formatting",
+    "receiptline-markup-adapter",
+    "receiptline-svg-preview",
+    "receiptline-command-rendering",
+    "qr-and-barcode-blocks",
+    "electron-print-driver",
+    "electron-html-escaping-and-cleanup",
+    "generic-transport-printer-driver",
+    "thermal-epson-driver",
+    "thermal-star-driver",
+    "paper-cut-command",
+    "cash-drawer-command",
+    "printer-profile-validation",
+    "explicit-driver-resolver",
+    "stable-printing-error-codes"
+  ],
+  "packageName": "@artisys/printing",
+  "entrypoint": "./src/index.js",
+  "verification": {
+    "unit": "npm test",
+    "syntax": "npm run check"
+  },
+  "compatibility": {
+    "node": ">=22",
+    "receiptline": "4.0.4",
+    "nodeThermalPrinter": "4.6.1"
+  },
+  "limitations": [
+    "Printer model and protocol compatibility must be validated on physical hardware.",
+    "Electron is consumer-injected and is not required by this package.",
+    "Promotion to stable requires real thermal-printer validation."
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}

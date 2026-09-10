@@ -11,13 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
-    'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder'
+    'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder',
+    'artisys-serialport', 'artisys-printing'
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
     'artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows',
     'artisys-capture', 'artisys-dashboard', 'artisys-planning', 'artisys-media',
-    'artisys-office', 'artisys-ui-builder'
+    'artisys-office', 'artisys-ui-builder', 'artisys-serialport', 'artisys-printing'
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -56,7 +57,7 @@ def main():
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
-    for module in ('artisys-pdf', 'artisys-workflows'):
+    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing'):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)

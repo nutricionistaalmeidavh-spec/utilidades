@@ -1,0 +1,27 @@
+{
+  "name": "@artisys/serialport",
+  "version": "0.1.0",
+  "description": "Camada ArtiSys local e reutilizavel para comunicacao serial com perifericos.",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "module.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node --check src/index.js && node --check src/errors.js && node --check src/device-profile.js && node --check src/serial-transport.js && node --check src/serial-port-manager.js && node --check src/request-response-session.js && node --check src/parsers/numeric-weight.js && node --check src/parsers/line-buffer.js && node --check src/adapters/scale.js && node --check src/adapters/drawer.js && node --check src/adapters/generic-device.js"
+  },
+  "dependencies": {
+    "serialport": "13.0.0"
+  },
+  "license": "MIT"
+}
