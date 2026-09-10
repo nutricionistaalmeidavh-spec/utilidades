@@ -126,3 +126,71 @@
 	path = projects/image-annotation/annotorious
 	url = https://github.com/annotorious/annotorious.git
 	branch = main
+[submodule "projects/voice/sherpa-onnx"]
+	path = projects/voice/sherpa-onnx
+	url = https://github.com/k2-fsa/sherpa-onnx.git
+	branch = master
+[submodule "projects/voice/whisper-cpp"]
+	path = projects/voice/whisper-cpp
+	url = https://github.com/ggml-org/whisper.cpp.git
+	branch = master
+[submodule "projects/local-ai/web-llm"]
+	path = projects/local-ai/web-llm
+	url = https://github.com/mlc-ai/web-llm.git
+	branch = main
+[submodule "projects/hardware/node-serialport"]
+	path = projects/hardware/node-serialport
+	url = https://github.com/serialport/node-serialport.git
+	branch = main
+[submodule "projects/printing/receiptline"]
+	path = projects/printing/receiptline
+	url = https://github.com/receiptline/receiptline.git
+	branch = master
+[submodule "projects/printing/node-thermal-printer"]
+	path = projects/printing/node-thermal-printer
+	url = https://github.com/Klemen1337/node-thermal-printer.git
+	branch = master
+[submodule "projects/media/motion-canvas"]
+	path = projects/media/motion-canvas
+	url = https://github.com/motion-canvas/motion-canvas.git
+	branch = main
+[submodule "projects/media/mediabunny"]
+	path = projects/media/mediabunny
+	url = https://github.com/Vanilagy/mediabunny.git
+	branch = main
+[submodule "projects/office/univer"]
+	path = projects/office/univer
+	url = https://github.com/dream-num/univer.git
+	branch = dev
+[submodule "projects/docx/docxjs"]
+	path = projects/docx/docxjs
+	url = https://github.com/VolodymyrBaydalka/docxjs.git
+	branch = master
+[submodule "projects/pdf/react-pdf-highlighter"]
+	path = projects/pdf/react-pdf-highlighter
+	url = https://github.com/agentcooper/react-pdf-highlighter.git
+	branch = main
+[submodule "projects/pdf/pdfme"]
+	path = projects/pdf/pdfme
+	url = https://github.com/pdfme/pdfme.git
+	branch = main
+[submodule "projects/visual-workflows/logicflow"]
+	path = projects/visual-workflows/logicflow
+	url = https://github.com/didi/LogicFlow.git
+	branch = master
+[submodule "projects/visual-workflows/rete"]
+	path = projects/visual-workflows/rete
+	url = https://github.com/retejs/rete.git
+	branch = main
+[submodule "projects/page-builders/craftjs"]
+	path = projects/page-builders/craftjs
+	url = https://github.com/prevwong/craft.js.git
+	branch = main
+[submodule "projects/page-builders/puck"]
+	path = projects/page-builders/puck
+	url = https://github.com/puckeditor/puck.git
+	branch = main
+[submodule "projects/page-builders/grapesjs"]
+	path = projects/page-builders/grapesjs
+	url = https://github.com/GrapesJS/grapesjs.git
+	branch = dev
