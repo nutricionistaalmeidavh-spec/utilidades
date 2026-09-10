@@ -4,7 +4,7 @@
   "modules": [
     {
       "id": "artisys-qa",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "stable",
       "consumptionMode": "shared",
       "upstreams": ["playwright"],
