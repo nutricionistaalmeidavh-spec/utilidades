@@ -35,9 +35,11 @@ export async function withTerminals(browser, { count = 2, contextOptions = {} } 
   }
 }
 
-export { createQaConfig, VIEWPORTS } from './config.js';
-export { loadQaManifest, validateQaManifest, resolveEnvironment, resolveFlow, resolveViewport } from './manifest.js';
+export { createQaConfig, VIEWPORTS, DEMO_PRESETS } from './config.js';
+export { loadQaManifest, validateQaManifest, resolveEnvironment, resolveFlow, resolveViewport, resolveDemo, resolveDemoPreset } from './manifest.js';
 export { runQaFlow } from './runner.js';
+export { runDemoFlow, buildDemoSummary } from './demo.js';
 export { executeStep } from './steps.js';
+export { normalizeDemoVideo, buildNormalizeArgs } from './video.js';
 export { attachPageTelemetry } from './telemetry.js';
 export { sanitizeName, resolveSecret, stepLabel } from './helpers.js';
