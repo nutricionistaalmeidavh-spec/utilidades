@@ -20,6 +20,15 @@ test('ffmpeg normalization preserves aspect ratio and pads to reels canvas', () 
   assert.ok(args.includes('30'));
 });
 
+test('ffmpeg normalization stretches captured media to requested demo duration', () => {
+  const args = buildNormalizeArgs('in.mp4', 'out.mp4', DEMO_PRESETS['reels-9x16'], {
+    sourceDurationSec: 12,
+    durationTargetSec: 30,
+  });
+  const filter = args[args.indexOf('-vf') + 1];
+  assert.match(filter, /^setpts=2\.5\*PTS,/);
+});
+
 test('demo timing deviation is informative and never changes pass status', () => {
   const summary = buildDemoSummary({
     qaSummary: { runId: 'r1', systemId: 'sample', status: 'passed' },
@@ -27,10 +36,12 @@ test('demo timing deviation is informative and never changes pass status', () =>
     preset: DEMO_PRESETS['reels-9x16'],
     durationTargetSec: 30,
     actualDurationSec: 31.25,
+    videoDurationSec: 30.01,
     video: 'demo-video.mp4',
   });
   assert.equal(summary.status, 'passed');
   assert.equal(summary.timingDeviationSec, 1.25);
+  assert.equal(summary.videoDurationSec, 30.01);
   assert.equal(summary.output.width, 1080);
   assert.equal(summary.output.height, 1920);
 });
