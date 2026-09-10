@@ -43,3 +43,12 @@ test('1.2 package exposes demo platform APIs and built-in flow library', async (
   }
   assert.ok(pkg.files.includes('flows'), 'package must publish built-in reusable flows');
 });
+
+test('GitHub action and reusable workflow forward named demo profiles', async () => {
+  const action = await fs.readFile(new URL('../../../.github/actions/artisys-qa/action.yml', import.meta.url), 'utf8');
+  const workflow = await fs.readFile(new URL('../../../.github/workflows/artisys-qa-reusable.yml', import.meta.url), 'utf8');
+  assert.match(action, /\n  profile:\n/);
+  assert.match(action, /--profile/);
+  assert.match(workflow, /\n      profile:\n/);
+  assert.match(workflow, /profile: \$\{\{ inputs\.profile \}\}/);
+});
