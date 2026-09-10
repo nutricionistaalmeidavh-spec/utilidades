@@ -61,6 +61,7 @@ Contém kits ArtiSys reutilizáveis. Cada módulo deve declarar:
 7. Regras de negócio específicas permanecem no sistema consumidor.
 8. Uma atualização de upstream só chega aos consumidores depois de validação no `utilidades`.
 9. O mesmo módulo pode ser adotado por vários produtos sem obrigá-los a usar a mesma regra de negócio.
+10. **Política de custo ArtiSys:** o core obrigatório de qualquer módulo deve poder operar com custo de licença/assinatura **R$ 0**, preferencialmente com solução **open source e/ou self-hosted**. Serviços, APIs, planos comerciais ou recursos pagos só podem existir como **opção explícita**, documentada e substituível, e nunca como dependência silenciosa ou requisito oculto para o funcionamento do core.
 
 ## Grupos de upstreams
 
