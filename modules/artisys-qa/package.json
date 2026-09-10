@@ -1,0 +1,30 @@
+{
+  "name": "@artisys/qa",
+  "version": "0.2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./config": "./src/config.js",
+    "./fixtures": "./src/fixtures.js"
+  },
+  "files": [
+    "src",
+    "examples/pos-reference/*.js",
+    "README.md",
+    "module.json"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:example": "playwright test --config examples/pos-reference/playwright.config.js"
+  },
+  "peerDependencies": {
+    "playwright": ">=1.51 <2"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  },
+  "license": "MIT"
+}

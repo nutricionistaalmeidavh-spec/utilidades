@@ -1,1 +1,46 @@
-{"schemaVersion":1,"id":"artisys-qa","name":"ArtiSys QA","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["playwright"],"boundary":"Test harness and browser automation; no product business rules.","provides":["e2e-tests","chromium-screenshots","critical-flow-regression","visual-smoke-tests"]}
+{
+  "schemaVersion": 1,
+  "id": "artisys-qa",
+  "name": "ArtiSys QA",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [
+    "playwright"
+  ],
+  "boundary": "Test harness and browser automation; no product business rules.",
+  "provides": [
+    "shared-playwright-config",
+    "isolated-browser-terminals",
+    "product-login-fixture",
+    "http-readiness-check",
+    "pos-reference-example"
+  ],
+  "packageName": "@artisys/qa",
+  "entrypoint": "./src/index.js",
+  "implementedCapabilities": [
+    "shared-playwright-config",
+    "isolated-browser-terminals",
+    "product-login-fixture",
+    "http-readiness-check",
+    "pos-reference-example"
+  ],
+  "plannedCapabilities": [],
+  "verification": {
+    "unit": "npm test",
+    "browser": "npm run test:example"
+  },
+  "compatibility": {
+    "node": ">=22",
+    "playwright": ">=1.51 <2"
+  },
+  "limitations": [
+    "Reference POS uses memory only and does not verify any consumer product.",
+    "Electron native process automation is not included."
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}

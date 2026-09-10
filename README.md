@@ -15,6 +15,8 @@ A função deste repositório é **guardar, versionar e documentar dependências
 
 - **47 projetos incorporados** como Git submodules.
 - **9 módulos ArtiSys prioritários** registrados.
+- **4 kits executáveis 0.2.0:** QA, Security, API Contracts e Documents. Os outros cinco continuam em foundation.
+- Instalação, uso local e validação conjunta: [guia dos kits](docs/MODULE_KITS.md).
 - Cada submodule está **fixado em um commit exato**.
 - Projetos com copyleft, licença mista ou exigência especial ficam marcados para uso isolado ou com fronteira explícita.
 

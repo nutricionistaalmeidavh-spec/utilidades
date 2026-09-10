@@ -1,0 +1,14 @@
+node_modules/
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+build/
+dist/
+*.tgz
+qa-report/
+qa-results/
+test-results/
+pacts/
+logs/
+.cache/
