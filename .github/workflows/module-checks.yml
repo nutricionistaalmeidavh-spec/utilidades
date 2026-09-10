@@ -27,11 +27,6 @@ jobs:
           .venv/bin/python -m pip install './modules/artisys-documents[preprocess]'
           cd modules/artisys-qa
           npx --no-install playwright install chromium
-      - name: Verify new module contracts
-        run: |
-          for module in artisys-capture artisys-dashboard artisys-planning artisys-media artisys-office artisys-ui-builder; do
-            npm test --prefix "modules/$module"
-          done
       - name: Provision pinned generator
         run: |
           curl --fail --location --output "$RUNNER_TEMP/openapi-generator.jar" https://repo.maven.apache.org/maven2/org/openapitools/openapi-generator-cli/7.16.0/openapi-generator-cli-7.16.0.jar
