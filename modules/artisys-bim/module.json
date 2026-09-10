@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"artisys-bim","name":"ArtiSys BIM Boundary","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["ifcopenshell"],"boundary":"Explicit LGPL-safe process/API/CLI boundary around IfcOpenShell.","provides":["ifc-read","ifc-properties","geometry-foundation","quantity-foundation","bim-interoperability"]}

@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"artisys-security","name":"ArtiSys Security Pipeline","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["gitleaks","trivy","semgrep"],"boundary":"CI/dev tooling only.","provides":["secret-scanning","dependency-and-image-scanning","static-analysis","security-gates"]}

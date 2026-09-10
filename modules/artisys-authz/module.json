@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"artisys-authz","name":"ArtiSys Authorization","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["openfga"],"boundary":"OpenFGA accessed through ArtiSys authorization adapter.","provides":["relationship-based-authorization","resource-permissions","company-project-module-scope"]}
