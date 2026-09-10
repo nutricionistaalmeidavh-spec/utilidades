@@ -10,10 +10,6 @@
 	path = projects/report-engine/ppt-master
 	url = https://github.com/hugohe3/ppt-master.git
 	branch = main
-[submodule "projects/social-publishing/postiz"]
-	path = projects/social-publishing/postiz
-	url = https://github.com/gitroomhq/postiz-app.git
-	branch = main
 [submodule "projects/collaboration/yjs"]
 	path = projects/collaboration/yjs
 	url = https://github.com/yjs/yjs.git
