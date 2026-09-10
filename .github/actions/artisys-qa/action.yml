@@ -1,0 +1,71 @@
+name: ArtiSys QA
+
+description: Executa um fluxo visual ArtiSys QA com Playwright/Chromium e produz screenshots, vídeo, trace e logs.
+
+inputs:
+  config:
+    description: Caminho do artisys-qa.config.json no repositório consumidor
+    required: false
+    default: qa/artisys-qa.config.json
+  flow:
+    description: Nome do fluxo
+    required: false
+    default: ''
+  environment:
+    description: Ambiente declarado no manifesto
+    required: false
+    default: ''
+  viewport:
+    description: desktop, tablet ou mobile
+    required: false
+    default: desktop
+  output:
+    description: Diretório raiz dos artefatos
+    required: false
+    default: qa-artifacts
+  install-consumer:
+    description: Executa npm ci no consumidor quando package-lock.json existir
+    required: false
+    default: 'true'
+
+outputs:
+  artifact-path:
+    description: Diretório contendo as evidências
+    value: ${{ steps.capture.outputs.artifact-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install consumer dependencies
+      if: ${{ inputs.install-consumer == 'true' }}
+      shell: bash
+      run: |
+        if [ -f package-lock.json ]; then npm ci; fi
+
+    - name: Install QA runtime
+      shell: bash
+      run: |
+        KIT_DIR="${{ github.action_path }}/../../../modules/artisys-qa"
+        npm ci --prefix "$KIT_DIR"
+        npx --prefix "$KIT_DIR" playwright install --with-deps chromium
+        if command -v apt-get >/dev/null 2>&1; then
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg xvfb
+        fi
+
+    - name: Capture visual flow
+      id: capture
+      shell: bash
+      env:
+        QA_CONFIG: ${{ inputs.config }}
+        QA_FLOW: ${{ inputs.flow }}
+        QA_ENVIRONMENT: ${{ inputs.environment }}
+        QA_VIEWPORT: ${{ inputs.viewport }}
+        QA_OUTPUT: ${{ inputs.output }}
+      run: |
+        KIT_DIR="${{ github.action_path }}/../../../modules/artisys-qa"
+        ARGS=(run --config "$QA_CONFIG" --viewport "$QA_VIEWPORT" --output "$QA_OUTPUT")
+        if [ -n "$QA_FLOW" ]; then ARGS+=(--flow "$QA_FLOW"); fi
+        if [ -n "$QA_ENVIRONMENT" ]; then ARGS+=(--environment "$QA_ENVIRONMENT"); fi
+        xvfb-run -a node "$KIT_DIR/src/cli.mjs" "${ARGS[@]}"
+        echo "artifact-path=$QA_OUTPUT" >> "$GITHUB_OUTPUT"
