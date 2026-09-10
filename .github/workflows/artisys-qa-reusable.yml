@@ -1,0 +1,60 @@
+name: ArtiSys QA Reusable
+
+on:
+  workflow_call:
+    inputs:
+      config:
+        type: string
+        required: false
+        default: qa/artisys-qa.config.json
+      flow:
+        type: string
+        required: false
+        default: ''
+      environment:
+        type: string
+        required: false
+        default: ''
+      viewport:
+        type: string
+        required: false
+        default: desktop
+      retention-days:
+        type: number
+        required: false
+        default: 7
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout consumer
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Run ArtiSys QA
+        uses: nutricionistaalmeidavh-spec/utilidades/.github/actions/artisys-qa@main
+        with:
+          config: ${{ inputs.config }}
+          flow: ${{ inputs.flow }}
+          environment: ${{ inputs.environment }}
+          viewport: ${{ inputs.viewport }}
+          output: qa-artifacts
+
+      - name: Upload QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artisys-qa-${{ inputs.flow || 'default' }}-${{ inputs.viewport }}-${{ github.run_number }}
+          path: qa-artifacts
+          if-no-files-found: warn
+          retention-days: ${{ inputs.retention-days }}
