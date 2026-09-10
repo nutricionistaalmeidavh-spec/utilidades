@@ -1,1 +1,0 @@
-Aplica-se a toda busca futura de repositorios para o catalogo.

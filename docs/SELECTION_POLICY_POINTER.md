@@ -1,1 +1,0 @@
-Canonical curation policy: `docs/SELECTION_POLICY.md`.

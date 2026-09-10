@@ -1,1 +1,0 @@
-Nunca apresentar candidatos nao triados como repositorios uteis. Ver `SELECTION_POLICY.md`.

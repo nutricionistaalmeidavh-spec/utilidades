@@ -86,3 +86,43 @@
 	path = projects/computer-vision/opencv
 	url = https://github.com/opencv/opencv.git
 	branch = 5.x
+[submodule "projects/project-planning/frappe-gantt"]
+	path = projects/project-planning/frappe-gantt
+	url = https://github.com/frappe/gantt.git
+	branch = master
+[submodule "projects/scheduling/fullcalendar"]
+	path = projects/scheduling/fullcalendar
+	url = https://github.com/fullcalendar/fullcalendar.git
+	branch = main
+[submodule "projects/dashboard-layout/react-grid-layout"]
+	path = projects/dashboard-layout/react-grid-layout
+	url = https://github.com/react-grid-layout/react-grid-layout.git
+	branch = master
+[submodule "projects/ui-layout/react-resizable-panels"]
+	path = projects/ui-layout/react-resizable-panels
+	url = https://github.com/bvaughn/react-resizable-panels.git
+	branch = main
+[submodule "projects/file-upload/uppy"]
+	path = projects/file-upload/uppy
+	url = https://github.com/transloadit/uppy.git
+	branch = main
+[submodule "projects/file-upload/react-dropzone"]
+	path = projects/file-upload/react-dropzone
+	url = https://github.com/react-dropzone/react-dropzone.git
+	branch = master
+[submodule "projects/pdf-viewer/pdfjs"]
+	path = projects/pdf-viewer/pdfjs
+	url = https://github.com/mozilla/pdf.js.git
+	branch = master
+[submodule "projects/data-grid/glide-data-grid"]
+	path = projects/data-grid/glide-data-grid
+	url = https://github.com/glideapps/glide-data-grid.git
+	branch = main
+[submodule "projects/qr-scanning/html5-qrcode"]
+	path = projects/qr-scanning/html5-qrcode
+	url = https://github.com/mebjas/html5-qrcode.git
+	branch = master
+[submodule "projects/image-annotation/annotorious"]
+	path = projects/image-annotation/annotorious
+	url = https://github.com/annotorious/annotorious.git
+	branch = main
