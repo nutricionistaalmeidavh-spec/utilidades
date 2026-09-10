@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-capture",
+  "name": "ArtiSys Capture",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["html5-qrcode", "opencv"],
+  "boundary": "Portable camera/file capture and image-preprocessing helpers; permissions, persistence and product flows stay in the consumer.",
+  "provides": ["portable-capture-contract", "qr-barcode-result-normalization", "html5-qrcode-file-adapter", "opencv-grayscale", "opencv-threshold"],
+  "packageName": "@artisys/capture",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["capture-request-validation", "code-result-normalization", "scan-file-runtime-boundary", "opencv-mat-grayscale", "opencv-mat-threshold"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["Camera permission and device selection belong to the consumer.", "OpenCV Mat results are caller-owned and must be deleted when no longer needed."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}
