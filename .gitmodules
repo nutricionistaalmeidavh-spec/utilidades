@@ -118,3 +118,75 @@
 	path = projects/bim/ifcopenshell
 	url = https://github.com/IfcOpenShell/IfcOpenShell.git
 	branch = v0.9.0
+[submodule "projects/data-cleaning/openrefine"]
+	path = projects/data-cleaning/openrefine
+	url = https://github.com/OpenRefine/OpenRefine.git
+	branch = master
+[submodule "projects/development-environments/coder"]
+	path = projects/development-environments/coder
+	url = https://github.com/coder/coder.git
+	branch = main
+[submodule "projects/design/penpot"]
+	path = projects/design/penpot
+	url = https://github.com/penpot/penpot.git
+	branch = develop
+[submodule "projects/office-editing/onlyoffice-documentserver"]
+	path = projects/office-editing/onlyoffice-documentserver
+	url = https://github.com/ONLYOFFICE/DocumentServer.git
+	branch = master
+[submodule "projects/media-management/immich"]
+	path = projects/media-management/immich
+	url = https://github.com/immich-app/immich.git
+	branch = main
+[submodule "projects/file-gateway/filestash"]
+	path = projects/file-gateway/filestash
+	url = https://github.com/mickael-kerjean/filestash.git
+	branch = master
+[submodule "projects/commerce/saleor"]
+	path = projects/commerce/saleor
+	url = https://github.com/saleor/saleor.git
+	branch = main
+[submodule "projects/events/pretix"]
+	path = projects/events/pretix
+	url = https://github.com/pretix/pretix.git
+	branch = master
+[submodule "projects/scheduling/cal-diy"]
+	path = projects/scheduling/cal-diy
+	url = https://github.com/calcom/cal.diy.git
+	branch = main
+[submodule "projects/knowledge-base/outline"]
+	path = projects/knowledge-base/outline
+	url = https://github.com/outline/outline.git
+	branch = main
+[submodule "projects/video-generation/remotion"]
+	path = projects/video-generation/remotion
+	url = https://github.com/remotion-dev/remotion.git
+	branch = main
+[submodule "projects/computer-vision/opencv"]
+	path = projects/computer-vision/opencv
+	url = https://github.com/opencv/opencv.git
+	branch = 5.x
+[submodule "projects/authorization/openfga"]
+	path = projects/authorization/openfga
+	url = https://github.com/openfga/openfga.git
+	branch = main
+[submodule "projects/identity/keycloak"]
+	path = projects/identity/keycloak
+	url = https://github.com/keycloak/keycloak.git
+	branch = main
+[submodule "projects/healthcare/medplum"]
+	path = projects/healthcare/medplum
+	url = https://github.com/medplum/medplum.git
+	branch = main
+[submodule "projects/iot/thingsboard"]
+	path = projects/iot/thingsboard
+	url = https://github.com/thingsboard/thingsboard.git
+	branch = master
+[submodule "projects/optimization/timefold-solver"]
+	path = projects/optimization/timefold-solver
+	url = https://github.com/TimefoldAI/timefold-solver.git
+	branch = main
+[submodule "projects/secrets-management/infisical"]
+	path = projects/secrets-management/infisical
+	url = https://github.com/Infisical/infisical.git
+	branch = main
