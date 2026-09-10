@@ -5,6 +5,10 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { runQaFlow } from '../../src/runner.js';
 
+// The reference test executes the QA runner inside Playwright Test. Disable the
+// outer runner capture so the inner QA runner owns tracing/video end-to-end.
+test.use({ trace: 'off', screenshot: 'off', video: 'off' });
+
 test('runner prepares demo profile and passes adapter capabilities without leaking secrets', async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'artisys-qa-runner-profile-'));
   const htmlFile = path.join(dir, 'index.html');
@@ -45,30 +49,24 @@ test('runner prepares demo profile and passes adapter capabilities without leaki
   };
 
   try {
-    let result;
-    try {
-      result = await runQaFlow({
-        manifest: {
-          schemaVersion: 1,
-          systemId: 'profile-runner-reference',
-          mode: 'web',
-          headless: true,
-          capture: { video: false, screenshotEachStep: false },
-        },
-        rootDir: dir,
-        environmentName: 'ci',
-        environment: { baseURL: pathToFileURL(htmlFile).href },
-        flowName: 'profile-flow',
-        flowFile,
-        viewport: { name: 'desktop', width: 900, height: 700 },
-        outputRoot: path.join(dir, 'artifacts'),
-        demoProfile,
-        demoAdapter,
-      });
-    } catch (error) {
-      console.error('ARTISYS_RUN_SUMMARY=' + JSON.stringify(error.summary || { message: error.message }));
-      throw error;
-    }
+    const result = await runQaFlow({
+      manifest: {
+        schemaVersion: 1,
+        systemId: 'profile-runner-reference',
+        mode: 'web',
+        headless: true,
+        capture: { video: false, screenshotEachStep: false },
+      },
+      rootDir: dir,
+      environmentName: 'ci',
+      environment: { baseURL: pathToFileURL(htmlFile).href },
+      flowName: 'profile-flow',
+      flowFile,
+      viewport: { name: 'desktop', width: 900, height: 700 },
+      outputRoot: path.join(dir, 'artifacts'),
+      demoProfile,
+      demoAdapter,
+    });
 
     expect(authenticated).toBe(true);
     expect(result.summary.status).toBe('passed');
