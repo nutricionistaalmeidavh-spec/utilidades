@@ -7,7 +7,19 @@ on:
         type: string
         required: false
         default: qa/artisys-qa.config.json
+      mode:
+        type: string
+        required: false
+        default: run
       flow:
+        type: string
+        required: false
+        default: ''
+      demo:
+        type: string
+        required: false
+        default: ''
+      preset:
         type: string
         required: false
         default: ''
@@ -45,7 +57,10 @@ jobs:
         uses: nutricionistaalmeidavh-spec/utilidades/.github/actions/artisys-qa@main
         with:
           config: ${{ inputs.config }}
+          mode: ${{ inputs.mode }}
           flow: ${{ inputs.flow }}
+          demo: ${{ inputs.demo }}
+          preset: ${{ inputs.preset }}
           environment: ${{ inputs.environment }}
           viewport: ${{ inputs.viewport }}
           output: qa-artifacts
@@ -54,7 +69,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: artisys-qa-${{ inputs.flow || 'default' }}-${{ inputs.viewport }}-${{ github.run_number }}
+          name: artisys-${{ inputs.mode }}-${{ inputs.demo || inputs.flow || 'default' }}-${{ inputs.preset || inputs.viewport }}-${{ github.run_number }}
           path: qa-artifacts
           if-no-files-found: warn
           retention-days: ${{ inputs.retention-days }}
