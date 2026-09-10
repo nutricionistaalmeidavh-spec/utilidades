@@ -61,6 +61,8 @@
 - Consumes: entrega das Tasks 1 e 2.
 - Produces: evidência de que caminhos, upstreams e commits coincidem.
 
-- [ ] Verificar que existem exatamente quatro gitlinks sob `projects/`.
-- [ ] Verificar que os SHAs dos gitlinks são iguais aos `pinnedCommit` do catálogo.
-- [ ] Verificar que `.gitmodules` aponta para os quatro repositórios upstream corretos.
+- [x] Verificado: existem exatamente quatro gitlinks sob `projects/`.
+- [x] Verificado: os SHAs dos gitlinks são iguais aos `pinnedCommit` do catálogo.
+- [x] Verificado: `.gitmodules` aponta para os quatro repositórios upstream corretos.
+
+**Verification evidence:** árvore Git publicada no commit `0e8db052592fd09dc51f805536d71e1299a37ead`, com quatro entradas `mode=160000` e os SHAs fixados no catálogo.
