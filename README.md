@@ -25,7 +25,7 @@ Não entram:
 
 ## Estado atual
 
-- **32 projetos aprovados** como Git submodules, todos classificados por forma real de execução em `catalog/projects.json`.
+- **49 projetos aprovados** como Git submodules, todos classificados por forma real de execução em `catalog/projects.json`.
 - **7 módulos ArtiSys** registrados.
 - **4 kits executáveis:** `artisys-qa` 1.1.0, `artisys-security` 0.2.0, `artisys-api-contracts` 0.2.0 e `artisys-documents` 0.2.0.
 - Nenhum projeto aprovado exige infraestrutura always-on mantida pelo usuário.
@@ -40,22 +40,43 @@ Não entram:
 - PDF.js — visualizador PDF embutido.
 - Glide Data Grid — grade de dados de alta performance no frontend.
 - Annotorious — anotações diretamente sobre imagens.
+- docxjs — renderização de DOCX no cliente.
+- react-pdf-highlighter — highlights e regiões anotáveis em PDF.
+- pdfme — designer e geração de templates PDF.
+- Univer — planilhas, documentos e apresentações embutíveis; serviços externos permanecem opcionais.
 
 ### Frontend, colaboração, fluxos e planejamento
 - Yjs — CRDT embutido; sincronização remota é opcional e não faz parte do core.
 - bpmn-js — modelagem BPMN diretamente no frontend.
 - XYFlow — editores visuais node-based diretamente no frontend.
+- LogicFlow — fluxogramas e processos empresariais editáveis.
+- Rete.js — programação e automações visuais por nós.
 - Storybook — laboratório de componentes durante desenvolvimento/CI.
 - AI Website Cloner Template — ferramenta interna de reconstrução/análise de interfaces.
 - Frappe Gantt — cronograma Gantt embutido.
 - FullCalendar — calendário e agenda drag-and-drop embutidos.
 - react-grid-layout — dashboards com cards reposicionáveis e redimensionáveis.
 - react-resizable-panels — painéis redimensionáveis para layouts de desktop/web.
+- Craft.js — framework para editores visuais React.
+- Puck — page builder visual React embutível.
+- GrapesJS — editor visual de páginas e templates.
 
 ### Arquivos, upload e captura
 - Uppy — uploader modular; serviços externos do ecossistema são opcionais e não fazem parte do core aprovado.
 - react-dropzone — seleção e drag-and-drop de arquivos no frontend.
 - html5-qrcode — leitura de QR/barcode no navegador usando câmera ou arquivos.
+
+### Voz, IA e mídia local
+- sherpa-onnx — STT, TTS, VAD e outros recursos de voz offline/on-device; modelos são avaliados separadamente.
+- whisper.cpp — transcrição local/offline.
+- WebLLM — inferência de LLM no navegador via WebGPU, sem servidor de inferência obrigatório.
+- Motion Canvas — criação programática de animações e vídeos como ferramenta de desenvolvimento.
+- MediaBunny — leitura, escrita e conversão de áudio/vídeo no cliente.
+
+### PDV, impressão e hardware
+- Node SerialPort — comunicação serial com balanças, leitores e equipamentos via runtime desktop/native.
+- ReceiptLine — composição de recibos/cupons para impressão térmica.
+- node-thermal-printer — integração direta com impressoras térmicas em Node/Electron.
 
 ### Desktop, plugins e BIM
 - Wasmtime — runtime WebAssembly embutível.
@@ -106,4 +127,4 @@ cd utilidades
 git submodule update --init --recursive
 ```
 
-Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `modules/README.md`, `docs/INTEGRATION_GUIDE.md` e `docs/LICENSES.md` antes de promover uma utilidade para outro sistema.
+Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `modules/README.md`, `docs/INTEGRATION_GUIDE.md`, `docs/LICENSES.md` e `docs/WEBLLM_NOTES.md` antes de promover uma utilidade para outro sistema.
