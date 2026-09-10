@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"artisys-privacy","name":"ArtiSys Privacy","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["presidio"],"boundary":"PII detection/anonymization service behind local adapter.","provides":["pii-detection","pii-anonymization","logging-redaction-foundation","privacy-preprocessing"]}

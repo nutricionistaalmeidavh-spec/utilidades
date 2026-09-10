@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"artisys-qa","name":"ArtiSys QA","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["playwright"],"boundary":"Test harness and browser automation; no product business rules.","provides":["e2e-tests","chromium-screenshots","critical-flow-regression","visual-smoke-tests"]}

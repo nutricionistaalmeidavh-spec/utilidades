@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-10",
+  "modules": [
+    {"id":"artisys-qa","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["playwright"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},
+    {"id":"artisys-security","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["gitleaks","trivy","semgrep"],"recommendedConsumers":["all-active-products"]},
+    {"id":"artisys-documents","version":"0.1.0","status":"foundation","consumptionMode":"snapshot","upstreams":["paddleocr","opencv"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS"]},
+    {"id":"artisys-authz","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["openfga"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","ObranaM-o-Universidade-DreFluxo","CLINICASMEDICAS"]},
+    {"id":"artisys-optimizer","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["timefold-solver"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","ObranaM-o-Universidade-DreFluxo"]},
+    {"id":"artisys-api-contracts","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["openapi-generator","pact-js"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
+    {"id":"artisys-ai-quality","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["promptfoo"],"recommendedConsumers":["Hackathon","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub"]},
+    {"id":"artisys-privacy","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["presidio"],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
+    {"id":"artisys-bim","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["ifcopenshell"],"recommendedConsumers":["CompatibilizaBIM","cbim"]}
+  ]
+}

@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"artisys-ai-quality","name":"ArtiSys AI Quality","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["promptfoo"],"boundary":"Evaluation and red-team harness; no provider credentials stored here.","provides":["prompt-regression","model-comparison","safety-evals","red-team-scenarios"]}

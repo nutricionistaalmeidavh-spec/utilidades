@@ -1,63 +1,43 @@
 # utilidades
 
-Repositório central de projetos open source aprovados para reutilização nos sistemas ArtiSys/MH.
+Repositório central de projetos open source aprovados e módulos ArtiSys reutilizáveis para os sistemas ArtiSys/MH.
 
-A função deste repositório é **guardar, versionar e documentar dependências open source externas**. Os consumidores devem usar uma fronteira própria (adapter, wrapper, CLI ou API) e respeitar a licença upstream.
+O repositório possui duas camadas deliberadamente separadas:
+
+- `projects/`: upstreams externos intactos, versionados como Git submodules e fixados em commit exato.
+- `modules/`: kits de integração ArtiSys, com contratos, adapters, configuração e política de consumo para os sistemas consumidores.
 
 ## Estado atual
 
-- **30 projetos incorporados** como Git submodules.
-- Cada submodule está **fixado em um commit exato**.
-- `catalog/projects.json` é a fonte de verdade para origem, branch, SHA, licença e política de consumo.
-- Projetos com copyleft, licença mista ou exigência especial ficam marcados para uso isolado ou com fronteira explícita.
+- **48 projetos incorporados** como Git submodules.
+- **9 módulos ArtiSys prioritários** registrados em `catalog/modules.json`.
+- Cada upstream está fixado em um commit exato.
+- `catalog/projects.json` é a fonte de verdade para origem, branch, SHA, licença e política de consumo dos upstreams.
+- `catalog/modules.json` é a fonte de verdade para os módulos reutilizáveis ArtiSys.
+- Projetos com copyleft, licença mista ou exigência especial permanecem isolados por adapter, CLI ou serviço.
 
-## Capacidades disponíveis
+## Módulos ArtiSys prioritários
 
-### Conteúdo e documentos
-- PaddleOCR — OCR e inteligência de documentos.
-- AI Website Cloner Template — reconstrução/análise de sites.
-- PPT Master — apresentações e relatórios editáveis.
-- Postiz — publicação e automação social.
+- `artisys-qa` — Playwright e automação de testes E2E/Chromium.
+- `artisys-security` — Gitleaks, Trivy e Semgrep em pipeline reutilizável.
+- `artisys-documents` — PaddleOCR + OpenCV para documentos, scanner e classificação.
+- `artisys-authz` — autorização fina via OpenFGA.
+- `artisys-optimizer` — otimização de escalas e recursos via Timefold Solver.
+- `artisys-api-contracts` — OpenAPI Generator + Pact JS.
+- `artisys-ai-quality` — testes e regressão de IA via Promptfoo.
+- `artisys-privacy` — detecção/anonimização de PII via Presidio.
+- `artisys-bim` — fronteira BIM baseada em IfcOpenShell.
 
-### Colaboração e processos
-- Yjs — colaboração em tempo real e CRDT.
-- bpmn-js — modelagem visual BPMN 2.0.
-- XYFlow — editores visuais node-based.
+## Regra de consumo
 
-### UI e catálogo de software
-- Storybook — catálogo/laboratório de componentes UI.
-- Backstage — portal e catálogo de software.
-
-### Infraestrutura e comunicação
-- NetBird — rede privada e acesso remoto.
-- Apache APISIX — API gateway.
-- NATS Server — mensageria/eventos distribuídos.
-- Wasmtime — runtime WebAssembly e sandbox de plugins.
-- Ansible — automação de infraestrutura.
-- Renovate — atualização automática de dependências.
-
-### Segurança e supply chain
-- Trivy — vulnerabilidades, misconfig e SBOM.
-- Semgrep — análise estática programável.
-- Gitleaks — detecção de secrets.
-- Cosign — assinatura/verificação de artefatos.
-
-### Quality engineering
-- k6 — testes de carga.
-- Playwright — testes E2E em navegadores.
-- WireMock — mock de APIs.
-- Pact JS — contract testing.
-- OpenAPI Generator — geração de SDKs/clientes.
-
-### IA, privacidade e sync
-- Promptfoo — testes e red teaming de IA.
-- Presidio — detecção/anonimização de dados pessoais.
-- Ollama — modelos de IA locais.
-- Electric — sincronização local-first.
-
-### Construção e BIM
-- WebODM — fotogrametria e imagens aéreas.
-- IfcOpenShell — IFC e geometria BIM.
+1. `projects/` nunca recebe regra de negócio ArtiSys.
+2. `modules/` pode conter código e configuração ArtiSys, mas não deve alterar o upstream.
+3. Cada módulo declara `consumptionMode`: `shared`, `snapshot` ou `service`.
+4. `shared`: manter sincronizado com a versão central sempre que possível.
+5. `snapshot`: copiar uma versão para o consumidor e permitir customização local consciente.
+6. `service`: não copiar o upstream; consumir o serviço por fronteira estável.
+7. Credenciais e secrets pertencem ao ambiente do consumidor, nunca a `utilidades`.
+8. AGPL/GPL, LGPL, MPL, BSL e licenças próprias seguem as restrições em `docs/LICENSES.md`.
 
 ## Clonar com as utilidades
 
@@ -67,19 +47,4 @@ cd utilidades
 git submodule update --init --recursive
 ```
 
-Se já foi clonado sem submodules:
-
-```bash
-git submodule sync --recursive
-git submodule update --init --recursive
-```
-
-## Regra de consumo
-
-1. `utilidades` é a fonte de verdade para qual upstream, commit e licença estão aprovados.
-2. O consumidor usa a forma indicada por `consumption` em `catalog/projects.json`.
-3. Não alterar submodules para incluir regras de negócio dos nossos sistemas.
-4. Atualizações são feitas primeiro aqui, verificadas, e só depois propagadas aos consumidores.
-5. AGPL/GPL, licenças mistas, LGPL e exigências de atribuição recebem tratamento específico em `docs/LICENSES.md`.
-
-Veja `docs/INTEGRATION_GUIDE.md` e `docs/LICENSES.md` antes de conectar uma utilidade a outro projeto.
+Veja `modules/README.md`, `docs/INTEGRATION_GUIDE.md` e `docs/LICENSES.md` antes de conectar uma utilidade a outro projeto.
