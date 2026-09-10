@@ -68,6 +68,11 @@ test('runner prepares demo profile and passes adapter capabilities without leaki
     expect(result.summary.status).toBe('passed');
     expect(result.summary.demoProfile.profile).toBe('default');
     expect(JSON.stringify(result.summary)).not.toContain('ARTISYS_TEST_SECRET_9f4c');
+
+    for (const file of ['run-summary.json', 'telemetry.json']) {
+      const emitted = await fs.readFile(path.join(result.outputDir, file), 'utf8');
+      expect(emitted).not.toContain('ARTISYS_TEST_SECRET_9f4c');
+    }
   } finally {
     if (previousUser == null) delete process.env.DEMO_USER; else process.env.DEMO_USER = previousUser;
     if (previousPass == null) delete process.env.DEMO_PASS; else process.env.DEMO_PASS = previousPass;
