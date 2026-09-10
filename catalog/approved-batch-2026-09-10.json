@@ -1,0 +1,23 @@
+{
+  "approvedAt": "2026-09-10",
+  "count": 17,
+  "projects": [
+    {"id":"sherpa-onnx","upstream":"https://github.com/k2-fsa/sherpa-onnx","branch":"master","pinnedCommit":"11afbd009a7f8c08f4bcf2fc1b265d0df4670fbf","runtimeClass":"embedded/local-on-demand","license":"Apache-2.0"},
+    {"id":"whisper-cpp","upstream":"https://github.com/ggml-org/whisper.cpp","branch":"master","pinnedCommit":"927cfce34f31707e17f2bff35c349632fb9e2c3a","runtimeClass":"local-on-demand","license":"MIT"},
+    {"id":"web-llm","upstream":"https://github.com/mlc-ai/web-llm","branch":"main","pinnedCommit":"5f742443179a5463e83a19f704d7c19f1f019f98","runtimeClass":"embedded","license":"Apache-2.0","notes":"Inference runs on the client via WebGPU; model weights are separate artifacts with their own licenses."},
+    {"id":"node-serialport","upstream":"https://github.com/serialport/node-serialport","branch":"main","pinnedCommit":"9fa68817b0b220d24d7fab9ce0c5cce7c09882a4","runtimeClass":"embedded-desktop","license":"MIT"},
+    {"id":"receiptline","upstream":"https://github.com/receiptline/receiptline","branch":"master","pinnedCommit":"f93b6747d031e03f75ed49d8079d24edbabf63f6","runtimeClass":"embedded","license":"MIT"},
+    {"id":"node-thermal-printer","upstream":"https://github.com/Klemen1337/node-thermal-printer","branch":"master","pinnedCommit":"d65d054f85d635219b86dbc83e1694e9d9da5a66","runtimeClass":"embedded-desktop","license":"MIT"},
+    {"id":"motion-canvas","upstream":"https://github.com/motion-canvas/motion-canvas","branch":"main","pinnedCommit":"7b91435c301d530351dcf5ebb91dd139c002e405","runtimeClass":"dev-tool","license":"MIT"},
+    {"id":"mediabunny","upstream":"https://github.com/Vanilagy/mediabunny","branch":"main","pinnedCommit":"cee57d1cdfd1776d515c081057b50eb337291e32","runtimeClass":"embedded","license":"MPL-2.0"},
+    {"id":"univer","upstream":"https://github.com/dream-num/univer","branch":"dev","pinnedCommit":"646ea2138e8656a3e863bc676743f4e3c93cb1a9","runtimeClass":"embedded","license":"Apache-2.0","notes":"Only the OSS client/core is approved; optional server/commercial services are not core dependencies."},
+    {"id":"docxjs","upstream":"https://github.com/VolodymyrBaydalka/docxjs","branch":"master","pinnedCommit":"191d3e0db009da578fbe4da70d55305cd8d50226","runtimeClass":"embedded","license":"MIT"},
+    {"id":"react-pdf-highlighter","upstream":"https://github.com/agentcooper/react-pdf-highlighter","branch":"main","pinnedCommit":"ae0968f22f8aedcf9eb62207bee31bd71bf095f6","runtimeClass":"embedded","license":"MIT"},
+    {"id":"pdfme","upstream":"https://github.com/pdfme/pdfme","branch":"main","pinnedCommit":"c7c6d3680cf1444c5588e98d6ce9fb4a26221b4b","runtimeClass":"embedded","license":"MIT"},
+    {"id":"logicflow","upstream":"https://github.com/didi/LogicFlow","branch":"master","pinnedCommit":"698019f1ef6dd322afbbb0b4e82b9d31e198adac","runtimeClass":"embedded","license":"Apache-2.0"},
+    {"id":"rete","upstream":"https://github.com/retejs/rete","branch":"main","pinnedCommit":"2aae19950180dc12725306f06c0440f64473bd21","runtimeClass":"embedded","license":"MIT"},
+    {"id":"craftjs","upstream":"https://github.com/prevwong/craft.js","branch":"main","pinnedCommit":"23f44f3208ebf78d1632ec4aa7094001f513eb41","runtimeClass":"embedded","license":"MIT"},
+    {"id":"puck","upstream":"https://github.com/puckeditor/puck","branch":"main","pinnedCommit":"b0d5b49fa190d95de12bdc5d2ea17c4e42a69b05","runtimeClass":"embedded","license":"MIT"},
+    {"id":"grapesjs","upstream":"https://github.com/GrapesJS/grapesjs","branch":"dev","pinnedCommit":"2bdeda85b82b8b9ceae42fd6558cbbcae5ec2d21","runtimeClass":"embedded","license":"BSD-3-Clause"}
+  ]
+}
