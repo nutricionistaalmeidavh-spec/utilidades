@@ -19,22 +19,18 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Install dependencies
-        run: |
-          npm ci --ignore-scripts --prefix modules/artisys-qa
-          npm ci --ignore-scripts --prefix modules/artisys-api-contracts
-          if [ -f modules/artisys-serialport/package-lock.json ]; then npm ci --ignore-scripts --prefix modules/artisys-serialport; fi
-          if [ -f modules/artisys-printing/package-lock.json ]; then npm ci --ignore-scripts --prefix modules/artisys-printing; fi
-          python3 -m venv .venv
-          .venv/bin/python -m pip install './modules/artisys-documents[preprocess]'
-          cd modules/artisys-qa
-          npx --no-install playwright install chromium
       - name: Verify new hardware modules
         run: |
           node --test modules/artisys-serialport/tests/*.test.js
           node --test modules/artisys-printing/tests/*.test.js
-          if [ -f modules/artisys-serialport/package.json ]; then npm run check --prefix modules/artisys-serialport; fi
-          if [ -f modules/artisys-printing/package.json ]; then npm run check --prefix modules/artisys-printing; fi
+      - name: Install dependencies
+        run: |
+          npm ci --ignore-scripts --prefix modules/artisys-qa
+          npm ci --ignore-scripts --prefix modules/artisys-api-contracts
+          python3 -m venv .venv
+          .venv/bin/python -m pip install './modules/artisys-documents[preprocess]'
+          cd modules/artisys-qa
+          npx --no-install playwright install chromium
       - name: Provision pinned generator
         run: |
           curl --fail --location --output "$RUNNER_TEMP/openapi-generator.jar" https://repo.maven.apache.org/maven2/org/openapitools/openapi-generator-cli/7.16.0/openapi-generator-cli-7.16.0.jar
