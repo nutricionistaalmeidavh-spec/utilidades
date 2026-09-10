@@ -31,7 +31,7 @@ test('ffmpeg normalization stretches captured media to requested demo duration',
 
 test('demo timing deviation is informative and never changes pass status', () => {
   const summary = buildDemoSummary({
-    qaSummary: { runId: 'r1', systemId: 'sample', status: 'passed' },
+    qaSummary: { runId: 'r1', systemId: 'sample', status: 'passed', demoProfile: { profile: 'default', strategy: 'persistent' } },
     demoName: 'quick-30s',
     preset: DEMO_PRESETS['reels-9x16'],
     durationTargetSec: 30,
@@ -44,4 +44,5 @@ test('demo timing deviation is informative and never changes pass status', () =>
   assert.equal(summary.videoDurationSec, 30.01);
   assert.equal(summary.output.width, 1080);
   assert.equal(summary.output.height, 1920);
+  assert.deepEqual(summary.demoProfile, { profile: 'default', strategy: 'persistent' });
 });
