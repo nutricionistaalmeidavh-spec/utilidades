@@ -1,0 +1,16 @@
+[submodule "projects/document-intelligence/paddleocr"]
+	path = projects/document-intelligence/paddleocr
+	url = https://github.com/PaddlePaddle/PaddleOCR.git
+	branch = main
+[submodule "projects/site-reconstruction/ai-website-cloner-template"]
+	path = projects/site-reconstruction/ai-website-cloner-template
+	url = https://github.com/JCodesMore/ai-website-cloner-template.git
+	branch = master
+[submodule "projects/report-engine/ppt-master"]
+	path = projects/report-engine/ppt-master
+	url = https://github.com/hugohe3/ppt-master.git
+	branch = main
+[submodule "projects/social-publishing/postiz"]
+	path = projects/social-publishing/postiz
+	url = https://github.com/gitroomhq/postiz-app.git
+	branch = main

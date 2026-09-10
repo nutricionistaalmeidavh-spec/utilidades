@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-09",
+  "projects": [
+    {
+      "id": "paddleocr",
+      "name": "PaddleOCR",
+      "category": "document-intelligence",
+      "path": "projects/document-intelligence/paddleocr",
+      "upstream": "https://github.com/PaddlePaddle/PaddleOCR",
+      "branch": "main",
+      "pinnedCommit": "2661c7c0ef5c613e8f93c6e93b2e052399f0f854",
+      "license": "Apache-2.0",
+      "consumption": "adapter"
+    },
+    {
+      "id": "ai-website-cloner-template",
+      "name": "AI Website Cloner Template",
+      "category": "site-reconstruction",
+      "path": "projects/site-reconstruction/ai-website-cloner-template",
+      "upstream": "https://github.com/JCodesMore/ai-website-cloner-template",
+      "branch": "master",
+      "pinnedCommit": "92872bc40ced2c5edb4d5dc9fd3970d40c77f4ca",
+      "license": "MIT",
+      "consumption": "internal-tool-adapter"
+    },
+    {
+      "id": "ppt-master",
+      "name": "PPT Master",
+      "category": "report-engine",
+      "path": "projects/report-engine/ppt-master",
+      "upstream": "https://github.com/hugohe3/ppt-master",
+      "branch": "main",
+      "pinnedCommit": "64b65839c7f8096a534c872c03d688a2b2491c8f",
+      "license": "MIT",
+      "consumption": "adapter"
+    },
+    {
+      "id": "postiz",
+      "name": "Postiz",
+      "category": "social-publishing",
+      "path": "projects/social-publishing/postiz",
+      "upstream": "https://github.com/gitroomhq/postiz-app",
+      "branch": "main",
+      "pinnedCommit": "36d5fc7b3ac3f17178b1589cf7a7337523017a41",
+      "license": "AGPL-3.0",
+      "consumption": "isolated-service"
+    }
+  ]
+}
