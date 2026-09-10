@@ -1,0 +1,13 @@
+{
+  "name": "quick-30s",
+  "title": "Quick product demo",
+  "durationTargetSec": 30,
+  "steps": [
+    {"action": "waitFor", "selector": "body", "name": "ready", "timeoutMs": 15000, "holdMs": 2500},
+    {"action": "screenshot", "name": "opening", "holdMs": 2500},
+    {"action": "waitForTimeout", "name": "feature-one", "timeoutMs": 5000},
+    {"action": "waitForTimeout", "name": "feature-two", "timeoutMs": 5000},
+    {"action": "waitForTimeout", "name": "feature-three", "timeoutMs": 5000},
+    {"action": "screenshot", "name": "closing", "holdMs": 2500}
+  ]
+}
