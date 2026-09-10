@@ -45,24 +45,30 @@ test('runner prepares demo profile and passes adapter capabilities without leaki
   };
 
   try {
-    const result = await runQaFlow({
-      manifest: {
-        schemaVersion: 1,
-        systemId: 'profile-runner-reference',
-        mode: 'web',
-        headless: true,
-        capture: { video: false, screenshotEachStep: false },
-      },
-      rootDir: dir,
-      environmentName: 'ci',
-      environment: { baseURL: pathToFileURL(htmlFile).href },
-      flowName: 'profile-flow',
-      flowFile,
-      viewport: { name: 'desktop', width: 900, height: 700 },
-      outputRoot: path.join(dir, 'artifacts'),
-      demoProfile,
-      demoAdapter,
-    });
+    let result;
+    try {
+      result = await runQaFlow({
+        manifest: {
+          schemaVersion: 1,
+          systemId: 'profile-runner-reference',
+          mode: 'web',
+          headless: true,
+          capture: { video: false, screenshotEachStep: false },
+        },
+        rootDir: dir,
+        environmentName: 'ci',
+        environment: { baseURL: pathToFileURL(htmlFile).href },
+        flowName: 'profile-flow',
+        flowFile,
+        viewport: { name: 'desktop', width: 900, height: 700 },
+        outputRoot: path.join(dir, 'artifacts'),
+        demoProfile,
+        demoAdapter,
+      });
+    } catch (error) {
+      console.error('ARTISYS_RUN_SUMMARY=' + JSON.stringify(error.summary || { message: error.message }));
+      throw error;
+    }
 
     expect(authenticated).toBe(true);
     expect(result.summary.status).toBe('passed');
