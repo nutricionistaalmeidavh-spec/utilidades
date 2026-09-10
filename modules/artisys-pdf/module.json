@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-pdf",
+  "name": "ArtiSys PDF",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "upstreams": ["pdfme", "pdfjs", "react-pdf-highlighter"],
+  "boundary": "Portable ArtiSys PDF contract; product document rules, storage, permissions and persistence stay in the consumer.",
+  "provides": [
+    "pdf-template-validation",
+    "pdfme-generation-adapter",
+    "pdfjs-document-loader",
+    "portable-highlight-model",
+    "input-normalization",
+    "pdf-cli",
+    "consumer-example"
+  ],
+  "packageName": "@artisys/pdf",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": [
+    "template-contract",
+    "input-normalization",
+    "pdfme-plugin-registry",
+    "injected-generator-testing",
+    "lazy-pdfme-runtime",
+    "lazy-pdfjs-runtime",
+    "portable-highlight-validation",
+    "react-pdf-highlighter-roundtrip-adapter",
+    "cli-template-validation",
+    "cli-pdf-generation"
+  ],
+  "plannedCapabilities": [],
+  "verification": { "unit": "npm test", "manifest": "npm run check", "example": "npm run example" },
+  "compatibility": { "node": ">=22", "pdfme": ">=6 <7", "pdfjsDist": ">=6 <7", "reactPdfHighlighter": ">=8.0.0-rc.0 <9" },
+  "limitations": [
+    "The consumer installs only the optional upstream runtime packages it actually uses.",
+    "The consumer owns storage, access control, document naming and business templates.",
+    "react-pdf-highlighter is a UI dependency; ArtiSys persists a portable normalized annotation contract instead of React component state."
+  ],
+  "costPolicy": { "coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": [] }
+}
