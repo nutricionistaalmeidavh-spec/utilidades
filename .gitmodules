@@ -26,30 +26,10 @@
 	path = projects/ui-engineering/storybook
 	url = https://github.com/storybookjs/storybook.git
 	branch = next
-[submodule "projects/developer-portal/backstage"]
-	path = projects/developer-portal/backstage
-	url = https://github.com/backstage/backstage.git
-	branch = master
-[submodule "projects/networking/netbird"]
-	path = projects/networking/netbird
-	url = https://github.com/netbirdio/netbird.git
-	branch = main
-[submodule "projects/api-infrastructure/apisix"]
-	path = projects/api-infrastructure/apisix
-	url = https://github.com/apache/apisix.git
-	branch = master
-[submodule "projects/messaging/nats-server"]
-	path = projects/messaging/nats-server
-	url = https://github.com/nats-io/nats-server.git
-	branch = main
 [submodule "projects/plugin-runtime/wasmtime"]
 	path = projects/plugin-runtime/wasmtime
 	url = https://github.com/bytecodealliance/wasmtime.git
 	branch = main
-[submodule "projects/infrastructure-automation/ansible"]
-	path = projects/infrastructure-automation/ansible
-	url = https://github.com/ansible/ansible.git
-	branch = devel
 [submodule "projects/dependency-automation/renovate"]
 	path = projects/dependency-automation/renovate
 	url = https://github.com/renovatebot/renovate.git
@@ -98,91 +78,11 @@
 	path = projects/privacy/presidio
 	url = https://github.com/data-privacy-stack/presidio.git
 	branch = main
-[submodule "projects/local-ai/ollama"]
-	path = projects/local-ai/ollama
-	url = https://github.com/ollama/ollama.git
-	branch = main
-[submodule "projects/sync/electric"]
-	path = projects/sync/electric
-	url = https://github.com/electric-sql/electric.git
-	branch = main
-[submodule "projects/photogrammetry/webodm"]
-	path = projects/photogrammetry/webodm
-	url = https://github.com/WebODM/WebODM.git
-	branch = master
 [submodule "projects/bim/ifcopenshell"]
 	path = projects/bim/ifcopenshell
 	url = https://github.com/IfcOpenShell/IfcOpenShell.git
 	branch = v0.9.0
-[submodule "projects/data-cleaning/openrefine"]
-	path = projects/data-cleaning/openrefine
-	url = https://github.com/OpenRefine/OpenRefine.git
-	branch = master
-[submodule "projects/development-environments/coder"]
-	path = projects/development-environments/coder
-	url = https://github.com/coder/coder.git
-	branch = main
-[submodule "projects/design/penpot"]
-	path = projects/design/penpot
-	url = https://github.com/penpot/penpot.git
-	branch = develop
-[submodule "projects/office-editing/onlyoffice-documentserver"]
-	path = projects/office-editing/onlyoffice-documentserver
-	url = https://github.com/ONLYOFFICE/DocumentServer.git
-	branch = master
-[submodule "projects/media-management/immich"]
-	path = projects/media-management/immich
-	url = https://github.com/immich-app/immich.git
-	branch = main
-[submodule "projects/file-gateway/filestash"]
-	path = projects/file-gateway/filestash
-	url = https://github.com/mickael-kerjean/filestash.git
-	branch = master
-[submodule "projects/commerce/saleor"]
-	path = projects/commerce/saleor
-	url = https://github.com/saleor/saleor.git
-	branch = main
-[submodule "projects/events/pretix"]
-	path = projects/events/pretix
-	url = https://github.com/pretix/pretix.git
-	branch = master
-[submodule "projects/scheduling/cal-diy"]
-	path = projects/scheduling/cal-diy
-	url = https://github.com/calcom/cal.diy.git
-	branch = main
-[submodule "projects/knowledge-base/outline"]
-	path = projects/knowledge-base/outline
-	url = https://github.com/outline/outline.git
-	branch = main
-[submodule "projects/video-generation/remotion"]
-	path = projects/video-generation/remotion
-	url = https://github.com/remotion-dev/remotion.git
-	branch = main
 [submodule "projects/computer-vision/opencv"]
 	path = projects/computer-vision/opencv
 	url = https://github.com/opencv/opencv.git
 	branch = 5.x
-[submodule "projects/authorization/openfga"]
-	path = projects/authorization/openfga
-	url = https://github.com/openfga/openfga.git
-	branch = main
-[submodule "projects/identity/keycloak"]
-	path = projects/identity/keycloak
-	url = https://github.com/keycloak/keycloak.git
-	branch = main
-[submodule "projects/healthcare/medplum"]
-	path = projects/healthcare/medplum
-	url = https://github.com/medplum/medplum.git
-	branch = main
-[submodule "projects/iot/thingsboard"]
-	path = projects/iot/thingsboard
-	url = https://github.com/thingsboard/thingsboard.git
-	branch = master
-[submodule "projects/optimization/timefold-solver"]
-	path = projects/optimization/timefold-solver
-	url = https://github.com/TimefoldAI/timefold-solver.git
-	branch = main
-[submodule "projects/secrets-management/infisical"]
-	path = projects/secrets-management/infisical
-	url = https://github.com/Infisical/infisical.git
-	branch = main

@@ -1,1 +1,0 @@
-{"schemaVersion":1,"id":"artisys-optimizer","name":"ArtiSys Optimizer","version":"0.1.0","status":"foundation","consumptionMode":"service","upstreams":["timefold-solver"],"boundary":"Optimization service with product-defined constraints and neutral request/response contracts.","provides":["constraint-solving","workforce-allocation","schedule-optimization","resource-allocation"]}
