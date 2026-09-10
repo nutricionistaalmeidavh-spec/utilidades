@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { VIEWPORTS } from './config.js';
+import { VIEWPORTS, DEMO_PRESETS } from './config.js';
 
 const MODES = new Set(['web', 'electron']);
 
@@ -17,7 +17,9 @@ export function validateQaManifest(manifest) {
   if (manifest.schemaVersion !== 1) throw new TypeError('schemaVersion must be 1');
   if (!manifest.systemId || typeof manifest.systemId !== 'string') throw new TypeError('systemId is required');
   if (!MODES.has(manifest.mode)) throw new TypeError('mode must be web or electron');
-  if (!manifest.flows || typeof manifest.flows !== 'object' || !Object.keys(manifest.flows).length) throw new TypeError('At least one flow is required');
+  const flowCount = manifest.flows && typeof manifest.flows === 'object' ? Object.keys(manifest.flows).length : 0;
+  const demoCount = manifest.demos && typeof manifest.demos === 'object' ? Object.keys(manifest.demos).length : 0;
+  if (!flowCount && !demoCount) throw new TypeError('At least one flow or demo is required');
   if (!manifest.environments || typeof manifest.environments !== 'object') throw new TypeError('environments is required');
   for (const [name, env] of Object.entries(manifest.environments)) {
     if (!env || typeof env !== 'object') throw new TypeError(`Invalid environment: ${name}`);
@@ -31,6 +33,14 @@ export function validateQaManifest(manifest) {
     throw new TypeError(`Unknown viewport: ${manifest.defaultViewport}`);
   }
   if (manifest.mode === 'electron' && !manifest.electron?.entry) throw new TypeError('electron.entry is required in electron mode');
+  for (const [name, demo] of Object.entries(manifest.demos || {})) {
+    const normalized = typeof demo === 'string' ? { file: demo } : demo;
+    if (!normalized?.file || typeof normalized.file !== 'string') throw new TypeError(`Demo ${name} requires file`);
+    resolveDemoPreset(normalized.preset || 'landscape-16x9');
+    if (normalized.durationTargetSec != null && (!Number.isFinite(normalized.durationTargetSec) || normalized.durationTargetSec <= 0)) {
+      throw new TypeError(`Demo ${name} durationTargetSec must be positive`);
+    }
+  }
   return true;
 }
 
@@ -42,10 +52,34 @@ export function resolveEnvironment(manifest, requested) {
 }
 
 export function resolveFlow(manifest, requested, rootDir) {
-  const name = requested || manifest.defaultFlow || Object.keys(manifest.flows)[0];
-  const relative = manifest.flows[name];
+  const flows = manifest.flows || {};
+  const name = requested || manifest.defaultFlow || Object.keys(flows)[0];
+  const relative = flows[name];
   if (!relative) throw new Error(`Unknown flow: ${name}`);
   return { name, file: path.resolve(rootDir, relative) };
+}
+
+export function resolveDemoPreset(name = 'landscape-16x9') {
+  const preset = DEMO_PRESETS[name];
+  if (!preset) throw new Error(`Unknown demo preset: ${name}`);
+  return { name: preset.name, width: preset.width, height: preset.height, captureViewport: { ...preset.captureViewport } };
+}
+
+export function resolveDemo(manifest, requested, rootDir) {
+  const demos = manifest.demos || {};
+  const name = requested || manifest.defaultDemo || Object.keys(demos)[0];
+  const raw = demos[name];
+  if (!raw) throw new Error(`Unknown demo: ${name}`);
+  const demo = typeof raw === 'string' ? { file: raw } : raw;
+  const preset = demo.preset || 'landscape-16x9';
+  resolveDemoPreset(preset);
+  return {
+    name,
+    file: path.resolve(rootDir, demo.file),
+    preset,
+    durationTargetSec: demo.durationTargetSec ?? null,
+    captureViewport: demo.captureViewport || null,
+  };
 }
 
 export function resolveViewport(manifest, requested) {
