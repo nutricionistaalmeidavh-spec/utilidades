@@ -2,6 +2,12 @@
 
 Esta pasta contém integrações nossas construídas sobre os upstreams aprovados em `projects/`.
 
+QA, Security, API Contracts e Documents possuem implementação 0.2.0 e usam
+`shared`. Documents passou de snapshot para núcleo compartilhado com regras do
+consumidor. Os outros cinco módulos permanecem em `foundation`.
+`implemented` indica código executável; a homologação em cada produto é separada.
+Consulte [instalação e verificações](../docs/MODULE_KITS.md).
+
 ## Princípio
 
 Um sistema consumidor não deve conhecer detalhes do upstream quando isso puder ser evitado. Ele consome um contrato ArtiSys estável e o módulo decide como conversar com a biblioteca, CLI ou serviço externo.

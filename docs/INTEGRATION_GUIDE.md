@@ -35,6 +35,11 @@ Registra componentes open source externos aprovados, controlando origem, versão
 
 ## Camada `modules/`
 
+Para os quatro kits executáveis 0.2.0, use [MODULE_KITS.md](MODULE_KITS.md).
+`artisys-documents` agora usa `shared`: classificar e escolher destinos são hooks
+do consumidor, sem duplicar o núcleo de processamento. Nenhum serviço pago é
+necessário para executar esses kits; workflows hospedados são opcionais.
+
 Contém kits ArtiSys reutilizáveis. Cada módulo deve declarar:
 
 - upstreams utilizados;

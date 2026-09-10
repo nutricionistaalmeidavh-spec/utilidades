@@ -1,0 +1,46 @@
+{
+  "name": "@artisys/api-contracts",
+  "version": "0.2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": "./src/index.mjs",
+    "./pact": "./src/pact.mjs"
+  },
+  "bin": {
+    "artisys-contracts": "./bin/contracts.mjs"
+  },
+  "files": [
+    "src",
+    "bin",
+    "schemas",
+    "examples",
+    "README.md",
+    "module.json"
+  ],
+  "scripts": {
+    "test": "node --test tests/core.test.mjs",
+    "test:pact": "node --test tests/pact.test.mjs",
+    "test:generator": "node --test tests/generator.test.mjs",
+    "example": "node examples/verify.mjs"
+  },
+  "dependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  },
+  "peerDependencies": {
+    "@pact-foundation/pact": "17.1.4"
+  },
+  "peerDependenciesMeta": {
+    "@pact-foundation/pact": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@pact-foundation/pact": "17.1.4",
+    "typescript": "5.9.3"
+  },
+  "license": "MIT"
+}
