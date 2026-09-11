@@ -29,7 +29,7 @@ test('cloud mirror posts heartbeat and job events using agent auth', async () =>
   assert.equal(event.version, '2.4.1');
 });
 
-test('cloud mirror uploads artifact bytes with project metadata', async () => {
+test('cloud mirror streams artifact with project metadata and safe relative path', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'qa-cloud-'));
   const file = path.join(root, 'shot.png');
   await fs.writeFile(file, Buffer.from('png-data'));
@@ -43,10 +43,19 @@ test('cloud mirror uploads artifact bytes with project metadata', async () => {
     return new Response(JSON.stringify({ ok: true, id: 'artifact-1' }), { status: 201, headers: { 'content-type': 'application/json' } });
   };
   const cloud = createCloudTelemetryMirror({ endpoint: 'https://qa.example.workers.dev', token: 'x', machineId: 'pc', fetchImpl });
-  await cloud.recordArtifact({ jobId: 'job-1', projectId: 'pdv-artisys', type: 'screenshot', name: 'shot.png', localPath: file, createdAt: '2026-09-11T20:00:00.000Z' });
+  await cloud.recordArtifact({
+    jobId: 'job-1',
+    projectId: 'pdv-artisys',
+    type: 'screenshot',
+    name: 'shot.png',
+    relativePath: 'flow-a/screenshots/shot.png',
+    localPath: file,
+    createdAt: '2026-09-11T20:00:00.000Z',
+  });
   assert.equal(calls.length, 1);
   assert.match(calls[0].url, /\/api\/v1\/jobs\/job-1\/artifacts\?/);
   assert.match(calls[0].url, /projectId=pdv-artisys/);
+  assert.match(calls[0].url, /relativePath=flow-a%2Fscreenshots%2Fshot.png/);
   assert.equal(calls[0].options.headers['content-type'], 'image/png');
 });
 
