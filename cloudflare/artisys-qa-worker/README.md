@@ -116,6 +116,12 @@ powershell -ExecutionPolicy Bypass -File .\show-reader-token.ps1
 
 O dashboard pode gerar um link temporário de um único job com validade máxima de uma hora. Esse é o mecanismo recomendado para inspeção externa/assistida sem revelar o token privado de leitura.
 
+## O que ainda depende de ação externa
+
+Depois que esta versão estiver na `main` e o agente atualizar para 2.4.1, falta somente executar `setup-production.ps1` uma vez no PC. O script precisa que você autorize o login Cloudflare no navegador, porque credenciais da sua conta nunca são armazenadas no repositório nem acessíveis ao agente automaticamente.
+
+Se a integração GitHub do Worker ainda não estiver apontando para `cloudflare/artisys-qa-worker`, ajuste uma vez o Root directory no painel conforme acima. Depois disso, commits em `main` podem continuar o deploy normal.
+
 ## Política de falha
 
 Cloudflare é somente espelho de observabilidade. Falha de rede, D1, R2 ou Worker nunca altera o resultado do QA local, o release gate, o upload para Drive, a bridge nem o updater A/B.
