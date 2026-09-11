@@ -4,7 +4,7 @@ import { defaultAgentRoot, loadAgentState, registerAgentProject, unregisterAgent
 import { readAgentHealth, startAgentSupervisor } from './agent-supervisor.js';
 import { checkForStableUpdate } from './agent-updater.js';
 import { bridgePollOnce, configureBridgeDrive, ensureBridgeConfiguration, DEFAULT_DRIVE_ROOT_FOLDER_ID } from './bridge-worker.js';
-import { assertRcloneRemote } from './drive-uploader.js';
+import { assertRcloneRemote, ensureDriveProjectFolder } from './drive-uploader.js';
 
 function parseArgs(argv) {
   const [command = 'status', ...rest] = argv;
@@ -83,7 +83,11 @@ try {
       host: args.host && args.host !== true ? String(args.host) : '0.0.0.0',
       port,
     }, { root });
-    console.log(JSON.stringify({ ...safeProject(project), token: project.token }, null, 2));
+    const state = await ensureBridgeConfiguration(root);
+    const driveFolder = state.bridge.drive.enabled
+      ? await ensureDriveProjectFolder(project, state.bridge.drive)
+      : { created: false, reason: 'drive-disabled' };
+    console.log(JSON.stringify({ ...safeProject(project), token: project.token, driveFolder }, null, 2));
     console.log('Project registered. The running agent will pick it up automatically.');
   } else if (args.command === 'unregister') {
     const project = requestedProject(args);
@@ -144,7 +148,11 @@ try {
         rootFolderId: args['root-folder-id'] && args['root-folder-id'] !== true ? String(args['root-folder-id']) : state.bridge.drive.rootFolderId,
       }, root);
       await assertRcloneRemote(drive.remote);
-      console.log(JSON.stringify(drive, null, 2));
+      const folders = [];
+      for (const project of state.projects.filter(item => item.enabled !== false)) {
+        folders.push(await ensureDriveProjectFolder(project, drive));
+      }
+      console.log(JSON.stringify({ ...drive, projectFolders: folders }, null, 2));
     } else if (operation === 'disable') {
       console.log(JSON.stringify(await configureBridgeDrive({ enabled: false }, root), null, 2));
     } else {
