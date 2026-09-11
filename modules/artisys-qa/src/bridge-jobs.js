@@ -20,9 +20,14 @@ export function sanitizeJobOptions(options = {}) {
   const clean = {};
   for (const [key, value] of Object.entries(options)) {
     if (!ALLOWED_OPTION_KEYS.has(key)) throw new Error(`Unsupported bridge option: ${key}`);
-    if (value == null || value === false || value === '') continue;
-    if (key === 'visual') clean.visual = Boolean(value);
-    else clean[key] = String(value);
+    if (value == null || value === '') continue;
+    if (key === 'visual') {
+      if (typeof value !== 'boolean') throw new TypeError('visual option must be boolean');
+      if (value) clean.visual = true;
+      continue;
+    }
+    if (typeof value !== 'string') throw new TypeError(`${key} option must be a string`);
+    clean[key] = value;
   }
   if (clean.viewport && !['desktop', 'tablet', 'mobile'].includes(clean.viewport)) throw new Error(`Unsupported viewport: ${clean.viewport}`);
   return clean;
@@ -34,8 +39,9 @@ export function validateBridgeJob(job, { machineId, projects = [], now = Date.no
   if (!/^[A-Za-z0-9._-]{16,256}$/.test(String(job.nonce || ''))) throw new Error('bridge job nonce is invalid');
   if (!ALLOWED_BRIDGE_ACTIONS.includes(job.action)) throw new Error(`Unsupported bridge action: ${job.action}`);
   if (!job.projectId || typeof job.projectId !== 'string') throw new Error('bridge job projectId is required');
+  if (!job.machineId || typeof job.machineId !== 'string') throw new Error('bridge job machineId is required');
   if (!projects.some(project => project.id === job.projectId && project.enabled !== false)) throw new Error(`Unknown or disabled bridge project: ${job.projectId}`);
-  if (job.machineId && job.machineId !== '*' && machineId && job.machineId !== machineId) throw new Error('bridge job targets another machine');
+  if (job.machineId !== '*' && machineId && job.machineId !== machineId) throw new Error('bridge job targets another machine');
 
   const requestedAt = Date.parse(job.requestedAt || '');
   const expiresAt = Date.parse(job.expiresAt || '');
@@ -48,7 +54,7 @@ export function validateBridgeJob(job, { machineId, projects = [], now = Date.no
   return {
     id: String(job.id),
     nonce: String(job.nonce),
-    machineId: job.machineId ? String(job.machineId) : '*',
+    machineId: job.machineId,
     projectId: String(job.projectId),
     action: job.action,
     requestedAt: new Date(requestedAt).toISOString(),
