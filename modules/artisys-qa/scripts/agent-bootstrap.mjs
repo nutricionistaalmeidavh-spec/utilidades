@@ -13,7 +13,7 @@ const healthFile = path.join(root, 'agent-health.json');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function readJson(file) {
-  return JSON.parse(await fs.readFile(file, 'utf8'));
+  return JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
 }
 
 async function writeJsonAtomic(file, value) {
@@ -42,14 +42,14 @@ async function rollback(state, reason) {
   return true;
 }
 
-async function confirmActivation(state, child) {
+async function confirmActivation(state, execution) {
   const pending = state.lastUpdateResult?.status === 'activated';
   const deadline = Date.now() + (pending ? 20_000 : 12_000);
   while (Date.now() < deadline) {
-    if (child.exitCode != null) return false;
+    if (execution.getExit()) return false;
     try {
       const health = await readJson(healthFile);
-      if (health.status === 'running' && Number(health.pid) === Number(child.pid)) {
+      if (health.status === 'running' && Number(health.pid) === Number(execution.child.pid)) {
         if (pending) {
           const latest = await readState();
           if (latest.activeSlot === state.activeSlot && latest.lastUpdateResult?.status === 'activated') {
@@ -74,11 +74,27 @@ async function runSlot(state) {
     windowsHide: true,
     stdio: ['ignore', 'inherit', 'inherit'],
   });
-  return child;
+  let exitResult = null;
+  const completion = new Promise(resolve => {
+    let settled = false;
+    const finish = result => {
+      if (settled) return;
+      settled = true;
+      exitResult = result;
+      resolve(result);
+    };
+    child.once('exit', (code, signal) => finish({ code, signal }));
+    child.once('error', error => finish({ code: 1, error }));
+  });
+  return { child, completion, getExit: () => exitResult };
 }
 
 let stopping = false;
-const stop = () => { stopping = true; };
+let currentChild = null;
+const stop = () => {
+  stopping = true;
+  if (currentChild && currentChild.exitCode == null && !currentChild.killed) currentChild.kill();
+};
 process.once('SIGINT', stop);
 process.once('SIGTERM', stop);
 
@@ -86,20 +102,20 @@ while (!stopping) {
   let state;
   try {
     state = await readState();
-    const child = await runSlot(state);
-    const healthy = await confirmActivation(state, child);
+    const execution = await runSlot(state);
+    currentChild = execution.child;
+    const healthy = await confirmActivation(state, execution);
     if (!healthy && state.lastUpdateResult?.status === 'activated') {
-      if (child.exitCode == null) child.kill();
+      if (execution.child.exitCode == null && !execution.child.killed) execution.child.kill();
+      await execution.completion.catch(() => {});
+      currentChild = null;
       await rollback(await readState(), 'new agent slot failed startup health check');
       await wait(1000);
       continue;
     }
 
-    const exit = await new Promise(resolve => {
-      child.once('exit', (code, signal) => resolve({ code, signal }));
-      child.once('error', error => resolve({ code: 1, error }));
-    });
-
+    const exit = await execution.completion;
+    currentChild = null;
     if (stopping) break;
     if (exit.code === RESTART_EXIT_CODE) {
       await wait(500);
@@ -107,6 +123,7 @@ while (!stopping) {
     }
     await wait(3000);
   } catch (error) {
+    currentChild = null;
     console.error(`ArtiSys QA bootstrap: ${error?.message || error}`);
     try {
       const current = state || await readState();
@@ -115,6 +132,6 @@ while (!stopping) {
         continue;
       }
     } catch {}
-    await wait(5000);
+    if (!stopping) await wait(5000);
   }
 }
