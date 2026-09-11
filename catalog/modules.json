@@ -27,8 +27,8 @@
     {"id":"artisys-ocr","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-local-on-demand","upstreams":["paddleocr","opencv","tesseract","tesseract-js"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
     {"id":"artisys-product-qa","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-or-ci","upstreams":["playwright","gitleaks","trivy","semgrep","pact-js","openapi-generator"],"recommendedConsumers":["all-active-products"]},
     {"id":"artisys-licensing","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-local-on-demand","upstreams":[],"recommendedConsumers":["all-commercial-desktop-products"]},
-    {"id":"artisys-ai-quality","version":"0.1.0","status":"foundation","consumptionMode":"shared","upstreams":["promptfoo"],"recommendedConsumers":["Hackathon","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub"]},
-    {"id":"artisys-privacy","version":"0.1.0","status":"foundation","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["presidio"],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
-    {"id":"artisys-bim","version":"0.1.0","status":"foundation","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["ifcopenshell"],"recommendedConsumers":["CompatibilizaBIM","cbim"]}
+    {"id":"artisys-ai-quality","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["promptfoo"],"recommendedConsumers":["Hackathon","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub"]},
+    {"id":"artisys-privacy","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["presidio"],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
+    {"id":"artisys-bim","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["ifcopenshell"],"recommendedConsumers":["CompatibilizaBIM","cbim"]}
   ]
 }
