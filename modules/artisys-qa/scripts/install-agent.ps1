@@ -63,13 +63,28 @@ $binDir = Join-Path $AgentRoot 'bin'
 New-Item -ItemType Directory -Force -Path $AgentRoot, $slotsRoot, $binDir | Out-Null
 
 $existingState = $null
+$preservedProjects = @()
+$preservedAutoUpdate = $true
+$preservedUpdateIntervalMinutes = 60
 if (Test-Path $stateFile) {
   $existingState = Get-Content $stateFile -Raw | ConvertFrom-Json
+  if ($existingState.PSObject.Properties.Name -contains 'projects') { $preservedProjects = @($existingState.projects) }
+  if ($existingState.PSObject.Properties.Name -contains 'autoUpdate') { $preservedAutoUpdate = [bool]$existingState.autoUpdate }
+  if ($existingState.PSObject.Properties.Name -contains 'updateIntervalMinutes') { $preservedUpdateIntervalMinutes = [int]$existingState.updateIntervalMinutes }
 }
 
 if ($Repair -and (Test-Path $slotsRoot)) {
   Write-Step 'Repair requested: stopping scheduled task and rebuilding slots.'
   & schtasks.exe /End /TN $TaskName 2>$null | Out-Null
+  try {
+    $healthFile = Join-Path $AgentRoot 'agent-health.json'
+    if (Test-Path $healthFile) {
+      $health = Get-Content $healthFile -Raw | ConvertFrom-Json
+      if ($health.PSObject.Properties.Name -contains 'pid' -and [int]$health.pid -gt 0) {
+        & taskkill.exe /PID ([int]$health.pid) /T /F 2>$null | Out-Null
+      }
+    }
+  } catch {}
   Remove-Item $slotsRoot -Recurse -Force -ErrorAction SilentlyContinue
   New-Item -ItemType Directory -Force -Path $slotsRoot | Out-Null
   $existingState = $null
@@ -107,16 +122,16 @@ if (-not $existingState) {
 
   $state = [ordered]@{
     schemaVersion = 1
-    autoUpdate = $true
-    updateIntervalMinutes = 60
+    autoUpdate = $preservedAutoUpdate
+    updateIntervalMinutes = $preservedUpdateIntervalMinutes
     repository = $Repository
     stableRef = $StableRef
     activeSlot = 'slot-a'
     previousSlot = $null
-    projects = @()
+    projects = @($preservedProjects)
     lastUpdateCheckAt = $null
     lastUpdateResult = [ordered]@{
-      status = 'installed'
+      status = $(if ($Repair) { 'repaired' } else { 'installed' })
       version = $package.version
       candidateSha = $candidateSha
       installedAt = (Get-Date).ToUniversalTime().ToString('o')
