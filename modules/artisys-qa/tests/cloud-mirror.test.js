@@ -22,7 +22,7 @@ test('routes heartbeat, job and event telemetry with agent bearer auth', async (
   assert.equal(calls.every(call => call.options.headers.authorization === 'Bearer agent-token'), true);
 });
 
-test('uploads artifact bytes to the job artifact endpoint', async () => {
+test('uploads artifact bytes to the job artifact endpoint preserving safe relative path', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'qa-cloud-artifact-'));
   const file = path.join(root, 'shot.png');
   await fs.writeFile(file, 'png-data');
@@ -35,8 +35,8 @@ test('uploads artifact bytes to the job artifact endpoint', async () => {
       return new Response('{}', { status: 201 });
     },
   });
-  await mirror.publish({ type: 'artifact', payload: { jobId: 'job-1', projectId: 'pdv-artisys', type: 'screenshot', name: 'shot.png', localPath: file } });
-  assert.equal(new URL(seen.url).pathname, '/api/v1/artifacts/job-1/shot.png');
+  await mirror.publish({ type: 'artifact', payload: { jobId: 'job-1', projectId: 'pdv-artisys', type: 'screenshot', name: 'shot.png', relativePath: 'flow-a/screenshots/shot.png', localPath: file } });
+  assert.equal(new URL(seen.url).pathname, '/api/v1/artifacts/job-1/flow-a/screenshots/shot.png');
   assert.equal(seen.options.method, 'PUT');
   assert.equal(seen.options.headers['x-project-id'], 'pdv-artisys');
   assert.equal(String(seen.options.body), 'png-data');
