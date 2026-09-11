@@ -205,7 +205,7 @@ export async function startAgentSupervisor({
   }
 
   const state = await reconcile();
-  const intervalMs = Math.max(5, Number(state.updateIntervalMinutes || 60)) * 60_000;
+  const intervalMs = Math.max(1, Number(state.updateIntervalMinutes || 1)) * 60_000;
   reconcileTimer = setInterval(() => { void reconcile().catch(error => logger.error(error)); }, reconcileIntervalMs);
   updateTimer = setInterval(() => { void updateCycle().catch(error => logger.error(error)); }, intervalMs);
   initialUpdateTimer = setTimeout(() => { void updateCycle().catch(error => logger.error(error)); }, Math.max(1000, initialUpdateDelayMs));

@@ -13,6 +13,7 @@ const MODULE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const REPO_DIR = path.resolve(MODULE_DIR, '..', '..');
 const CLI_FILE = path.join(MODULE_DIR, 'src', 'cli.mjs');
 export const DEFAULT_DRIVE_ROOT_FOLDER_ID = '1mb4R9Robq18JSXMxZiboOitoIjtYL70O';
+export const DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS = 20;
 
 function machineId() {
   const host = os.hostname().replace(/[^A-Za-z0-9._-]+/g, '-').slice(0, 48) || 'windows';
@@ -29,7 +30,7 @@ export async function ensureBridgeConfiguration(root = defaultAgentRoot()) {
   const defaults = {
     enabled: true,
     machineId: machineId(),
-    pollIntervalSeconds: 60,
+    pollIntervalSeconds: DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS,
     ref: state.stableRef || 'main',
     drive: {
       enabled: false,
@@ -42,6 +43,10 @@ export async function ensureBridgeConfiguration(root = defaultAgentRoot()) {
       state.bridge[key] = value;
       changed = true;
     }
+  }
+  if (!Number.isFinite(Number(state.bridge.pollIntervalSeconds)) || Number(state.bridge.pollIntervalSeconds) > DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS) {
+    state.bridge.pollIntervalSeconds = DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS;
+    changed = true;
   }
   if (!state.bridge.drive || typeof state.bridge.drive !== 'object') {
     state.bridge.drive = { ...defaults.drive };
@@ -266,11 +271,11 @@ export function startBridgePolling({ root = defaultAgentRoot(), logger = console
     try {
       const state = await ensureBridgeConfiguration(root);
       await bridgePollOnce({ root, logger });
-      const seconds = Math.max(30, Number(state.bridge.pollIntervalSeconds || 60));
+      const seconds = Math.max(10, Number(state.bridge.pollIntervalSeconds || DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS));
       if (!stopped) timer = setTimeout(cycle, seconds * 1000);
     } catch (error) {
       logger.error(`[bridge] ${error.stack || error.message || error}`);
-      if (!stopped) timer = setTimeout(cycle, 60_000);
+      if (!stopped) timer = setTimeout(cycle, DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS * 1000);
     } finally {
       busy = false;
     }

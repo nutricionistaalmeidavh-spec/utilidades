@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import { ensureDir, sanitizeName } from './helpers.js';
 
 export const DEFAULT_AGENT_PORT = 4173;
+export const DEFAULT_UPDATE_INTERVAL_MINUTES = 1;
 
 export function defaultAgentRoot(env = process.env) {
   const base = env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
@@ -19,7 +20,7 @@ export function createDefaultAgentState() {
   return {
     schemaVersion: 1,
     autoUpdate: true,
-    updateIntervalMinutes: 60,
+    updateIntervalMinutes: DEFAULT_UPDATE_INTERVAL_MINUTES,
     repository: 'https://github.com/nutricionistaalmeidavh-spec/utilidades.git',
     stableRef: 'main',
     activeSlot: 'slot-a',
@@ -34,7 +35,13 @@ export async function loadAgentState(root = defaultAgentRoot()) {
   const file = agentStateFile(root);
   try {
     const parsed = JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
-    return { ...createDefaultAgentState(), ...parsed, projects: Array.isArray(parsed.projects) ? parsed.projects : [] };
+    const state = { ...createDefaultAgentState(), ...parsed, projects: Array.isArray(parsed.projects) ? parsed.projects : [] };
+    // Migrate the legacy hourly cadence so existing installations become responsive
+    // without requiring another manual configuration step.
+    if (!Number.isFinite(Number(state.updateIntervalMinutes)) || Number(state.updateIntervalMinutes) > DEFAULT_UPDATE_INTERVAL_MINUTES) {
+      state.updateIntervalMinutes = DEFAULT_UPDATE_INTERVAL_MINUTES;
+    }
+    return state;
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
     return createDefaultAgentState();
