@@ -2,14 +2,20 @@
 
 Módulo compartilhado ArtiSys para QA, automação e gravação de demonstrações em aplicações web ou Electron.
 
-A versão **1.4.0** adiciona o **QA Remote Control** opcional: um painel web mobile-first, self-hosted, que dispara o mesmo runner local sem depender do GitHub Actions. O Actions continua disponível e independente. O Remote Control só existe enquanto o comando `remote` estiver explicitamente em execução.
+A versão **2.0.0** consolida o módulo como produto reutilizável de QA: perfis `quick`, `full` e `release`, smoke de executável desktop, helpers de rede/concorrência, packs de negócio, relatório HTML/JSON com histórico local, gate de release fail-closed e Remote Control 2.0 com execução por perfil.
 
-A plataforma de **Demo Profiles** prepara/reutiliza conta demo, workspace isolado, fixtures versionadas e fluxos compartilhados antes de executar Playwright. Regras específicas de cada produto ficam atrás de um adapter pequeno do consumidor.
+O **QA Remote Control** continua opcional, mobile-first e self-hosted. Ele dispara o mesmo runner local sem tornar GitHub Actions obrigatório. O Actions continua disponível e independente.
 
 ## O que o módulo centraliza
 
 - Playwright web e Electron;
 - QA flows e Demo Flows declarativos;
+- perfis de execução `quick`, `full` e `release`;
+- smoke de executável desktop;
+- helpers de concorrência e recuperação de falhas transitórias de rede;
+- packs reutilizáveis `auth`, `commerce`, `finance` e `workforce`;
+- relatórios JSON/HTML e histórico local limitado;
+- release gate que falha fechado em verificações críticas;
 - conta demo idempotente (`find` → `create if missing` → `authenticate`);
 - workspaces `persistent`, `snapshot` ou `ephemeral`;
 - fixtures genéricas e packs específicos do produto;
@@ -18,8 +24,110 @@ A plataforma de **Demo Profiles** prepara/reutiliza conta demo, workspace isolad
 - screenshots, trace, telemetria e vídeo;
 - regressão visual opt-in;
 - QA Remote Control opt-in para celular/rede local;
-- MP4 social 16:9, 1:1 e Reels 9:16;
 - redaction de secrets nos summaries, telemetria e logs de processo.
+
+## Perfis de QA
+
+Os três perfis usam o mesmo `runQaFlow` central e apenas orquestram os flows já declarados pelo consumidor.
+
+```sh
+artisys-qa quick --config qa/artisys-qa.config.json
+artisys-qa full --config qa/artisys-qa.config.json
+artisys-qa release --config qa/artisys-qa.config.json
+```
+
+Comportamento padrão:
+
+| Perfil | Objetivo | Gate crítico |
+|---|---|---|
+| `quick` | smoke e poucos fluxos críticos durante desenvolvimento | não |
+| `full` | todos os flows declarados, mais checks adicionais disponíveis | não |
+| `release` | validação completa antes de publicação | sim |
+
+O consumidor pode sobrescrever os flows de cada perfil:
+
+```json
+{
+  "qaProfiles": {
+    "quick": {
+      "flows": ["smoke", "login", "sale"]
+    },
+    "full": {
+      "flows": ["smoke", "login", "sale", "cancel-sale", "cash-close"]
+    },
+    "release": {
+      "flows": ["smoke", "login", "sale", "cancel-sale", "cash-close"],
+      "criticalFlows": ["smoke", "sale", "cancel-sale", "cash-close"]
+    }
+  }
+}
+```
+
+O `release` bloqueia a saída quando uma verificação crítica falha. Override existe apenas de forma explícita e auditável:
+
+```sh
+artisys-qa release --config qa/artisys-qa.config.json \
+  --override-release-gate \
+  --override-reason "motivo documentado"
+```
+
+## Desktop / executável
+
+Para consumidores que possuem um `.exe`, o perfil `full`/`release` pode executar smoke do processo quando o manifest declara:
+
+```json
+{
+  "desktop": {
+    "executable": "dist/MyApp.exe",
+    "args": [],
+    "startupGraceMs": 1500,
+    "shutdownTimeoutMs": 5000
+  }
+}
+```
+
+O kit verifica abertura, saída prematura, captura stdout/stderr e encerramento. Regras específicas de instalador permanecem no consumidor/release-validator; o QA não hard-coda NSIS/MSI.
+
+## Packs de negócio
+
+O módulo expõe metadados reutilizáveis para mapear flows comuns:
+
+- `auth`: `login`, `logout`, `permissions`, `session`;
+- `commerce`: `sale`, `cancel-sale`, `cash-open`, `cash-close`, `customer`, `inventory`;
+- `finance`: `income`, `expense`, `reconciliation`, `dre`;
+- `workforce`: `employee`, `attendance`, `payment`, `receipt`.
+
+O pack não inventa seletores nem regras do produto: ele apenas resolve os flows que o consumidor realmente declarou.
+
+## Rede e concorrência
+
+A API pública inclui:
+
+- `withTerminals(...)` para múltiplos contextos Playwright isolados no mesmo servidor;
+- `runConcurrent(...)` para executar ações simultâneas;
+- `retryTransient(...)` para falhas transitórias como `ECONNRESET`, `ECONNREFUSED`, `ETIMEDOUT`, `EAI_AGAIN`, `ENETDOWN` e `ENETUNREACH`.
+
+Essas primitivas permitem que cada produto defina cenários como venda simultânea, alteração concorrente de estoque, queda e retorno de rede sem acoplar regras de negócio ao core.
+
+## Relatórios e histórico
+
+Cada execução por perfil gera:
+
+```text
+qa-artifacts/
+├── history.json
+├── reports/
+│   └── <sistema>-<perfil>-<timestamp>/
+│       ├── report.json
+│       └── report.html
+└── <execuções individuais>/
+    ├── screenshots/
+    ├── trace.zip
+    ├── telemetry.json
+    └── run-summary.json
+```
+
+O relatório agregado inclui total, aprovados, falhas, detalhes por flow/check e o estado do release gate. O histórico é local e limitado para não crescer indefinidamente.
 
 ## Demo Profile
 
@@ -50,8 +158,6 @@ Credenciais nunca ficam no JSON: os campos `*Env` apontam para variáveis de amb
 
 ### Ciclo da conta
 
-Em cada execução com profile:
-
 ```text
 resolve profile
   → findDemoAccount
@@ -63,14 +169,12 @@ resolve profile
   → executar flow
 ```
 
-A conta pode permanecer no backend do sistema entre gravações. O adapter deve implementar `findDemoAccount` de forma determinística para a mesma identidade ser reutilizada.
-
 ### Estratégias de workspace
 
 | Estratégia | Uso |
 |---|---|
-| `persistent` | Web/staging ou backend persistente. Conta e workspace continuam disponíveis entre execuções. |
-| `snapshot` | Electron/local. O adapter pode restaurar/exportar um snapshot de dados demo. |
+| `persistent` | Web/staging ou backend persistente. |
+| `snapshot` | Electron/local. |
 | `ephemeral` | Workspace descartável por execução. |
 
 Reset destrutivo é bloqueado se o adapter não devolver o workspace com `demo: true`.
@@ -93,20 +197,6 @@ export default {
 };
 ```
 
-Veja `templates/consumer/demo-adapter.mjs` e `templates/consumer/artisys-qa.demo-profile.example.json`.
-
-## Fixtures reutilizáveis
-
-Packs centrais iniciais:
-
-- `common/base`
-- `common/customer`
-- `common/employee`
-- `commerce/catalog`
-- `commerce/order`
-
-Cada pack possui `id` e `revision`. O adapter materializa esses dados no schema real do produto usando upsert/chaves determinísticas. Packs específicos, por exemplo `pdv/salon` ou `obra/project`, ficam no consumidor usando o mesmo contrato.
-
 ## Flows reutilizáveis
 
 Um flow pode incluir outro:
@@ -121,119 +211,64 @@ Um flow pode incluir outro:
 }
 ```
 
-Biblioteca central inicial:
-
-- `common/login`
-- `common/logout`
-- `common/dashboard-tour`
-- `common/create-record`
-- `common/search-record`
-- `common/report-tour`
-
-`uses` também aceita arquivos JSON relativos. Inclusões recursivas são rejeitadas.
-
-Ações específicas continuam disponíveis normalmente: `goto`, `click`, `fill`, `press`, `check`, `uncheck`, `hover`, `selectOption`, `reload`, `waitFor`, `waitForTimeout`, `expectVisible`, `expectText`, `expectURL`, `screenshot` e `capability`.
-
 ## CLI
 
 ```sh
 artisys-qa validate --config qa/artisys-qa.config.json
 artisys-qa list --config qa/artisys-qa.config.json
 
-artisys-qa demo-profile status --config qa/artisys-qa.config.json --profile default
-artisys-qa demo-profile prepare --config qa/artisys-qa.config.json --profile default
-artisys-qa demo-profile reset --config qa/artisys-qa.config.json --profile default
+artisys-qa quick --config qa/artisys-qa.config.json
+artisys-qa full --config qa/artisys-qa.config.json --visual
+artisys-qa release --config qa/artisys-qa.config.json
 
 artisys-qa run --config qa/artisys-qa.config.json --flow smoke --profile default
 artisys-qa demo --config qa/artisys-qa.config.json --demo quick-30s --profile default --preset reels-9x16
 ```
 
-Quando existe `defaultDemoProfile`, `run` e `demo` o utilizam automaticamente. Configurações antigas sem profile continuam funcionando sem alteração.
+Configurações antigas sem `qaProfiles` continuam funcionando.
 
 ## QA Remote Control — opcional
 
-O Remote Control não substitui o GitHub Actions e não inicia sozinho. Para controle apenas no próprio PC:
+Para controle apenas no próprio PC:
 
 ```sh
 artisys-qa remote --config qa/artisys-qa.config.json
 ```
 
-Para abrir o painel no celular conectado à mesma rede local/Wi-Fi:
+Para abrir no celular conectado à mesma rede local/Wi-Fi:
 
 ```sh
 artisys-qa remote --config qa/artisys-qa.config.json --host 0.0.0.0 --port 4173
 ```
 
-A CLI imprime um endereço `LAN: http://<ip-do-pc>:4173` e um `TOKEN=<token-aleatorio>`. Abra o endereço no celular e informe esse token. Também é possível definir o token previamente por `--token` ou `ARTISYS_QA_REMOTE_TOKEN`.
+A CLI imprime `LAN: http://<ip-do-pc>:4173` e `TOKEN=<token-aleatorio>`.
 
-No painel é possível escolher somente valores já declarados no manifest:
+No painel 2.0 é possível escolher:
 
-- flow;
+- execução por perfil `quick`, `full` ou `release`;
+- ou flow individual;
 - environment;
 - viewport desktop/tablet/mobile;
-- regressão visual opt-in.
+- regressão visual opt-in;
+- visualizar o estado da execução e histórico resumido local.
 
-O navegador **não envia comandos de shell arbitrários** ao PC. O servidor aceita uma execução por vez e reutiliza `runQaFlow`, o mesmo núcleo usado pela CLI. Atualização de baseline visual não é exposta pelo painel remoto.
+O navegador **não envia comandos de shell arbitrários** ao PC. O servidor aceita uma execução por vez. Atualização de baseline visual não é exposta pelo painel remoto.
 
-O computador/runner precisa estar ligado durante a execução. O modo LAN é voltado a rede confiável. Para acesso pela internet, use separadamente uma VPN/reverse proxy seguro self-hosted; isso não é dependência do núcleo. Se preferir, continue disparando o QA pelo GitHub Actions.
-
-## Resultado QA
-
-```text
-qa-artifacts/<sistema>-<fluxo>-<viewport>-<timestamp>/
-├── screenshots/
-├── video.webm              # web
-├── video.mp4               # Electron
-├── trace.zip
-├── telemetry.json
-├── run-summary.json
-└── process.log             # quando houver startCommand
-```
-
-`run-summary.json` inclui somente metadados seguros do Demo Profile (nome, estratégia, ids não sensíveis e revisões de fixtures).
-
-## Demo Flows e vídeo social
-
-| Preset | Saída |
-|---|---|
-| `landscape-16x9` | 1920×1080 MP4 |
-| `square-1x1` | 1080×1080 MP4 |
-| `reels-9x16` | 1080×1920 MP4 |
-
-```json
-{
-  "demos": {
-    "quick-30s": {
-      "file": "demo/quick-30s.json",
-      "preset": "reels-9x16",
-      "durationTargetSec": 30
-    }
-  }
-}
-```
-
-`holdMs` controla o ritmo de uma etapa. O vídeo final é normalizado por ffmpeg/ffprobe para o preset e duração solicitados.
-
-Em Electron, a viewport desktop é preservada e encaixada no canvas social. Em web responsiva, o preset também pode dirigir a viewport de captura.
+O computador/runner precisa estar ligado durante a execução. O modo LAN é voltado a rede confiável. Para internet, use separadamente VPN/reverse proxy seguro self-hosted; isso não é dependência do núcleo.
 
 ## Segurança
 
 - nunca coloque senha/token literal no manifest;
-- use `usernameEnv`, `passwordEnv`, `tokenEnv` etc.;
+- use variáveis de ambiente;
 - o runner aplica redaction dos valores sensíveis em summaries, telemetria e `process.log`;
-- traces/screenshots/vídeos ainda podem registrar conteúdo visível da aplicação: use exclusivamente dados demo/sintéticos;
-- adapters devem isolar a conta/workspace demo de dados reais;
+- use dados demo/sintéticos em screenshots/traces/vídeos;
 - reset exige `workspace.demo === true`;
 - o Remote Control exige token para a API e não recebe shell arbitrário;
-- não exponha diretamente a porta do Remote Control à internet sem uma camada segura própria.
+- não exponha diretamente a porta do Remote Control à internet sem camada segura própria.
 
 ## GitHub Actions
 
-O repositório fornece action composta e workflow reutilizável. O consumidor pode disparar QA/Demo pelo GitHub, inclusive pelo celular, e receber `qa-artifacts`.
-
-O Remote Control é uma alternativa opt-in para executar no runner local/self-hosted quando você não quiser usar Actions. Nenhum dos dois depende do outro.
-
-Para repositórios que não podem consumir diretamente um workflow privado compartilhado, use runtime pinado no consumidor e registre versão/commit de origem. Atualizações centrais não devem entrar silenciosamente em aplicativos já publicados: o consumidor atualiza o pin e gera um novo build/redeploy.
+O repositório fornece action composta e workflow reutilizável. O consumidor pode continuar usando GitHub Actions normalmente. O Remote Control e os comandos locais são alternativas independentes; nenhum é dependência do outro.
 
 ## Compatibilidade
 
@@ -256,4 +291,4 @@ npm pack --dry-run
 
 ## Custo
 
-O núcleo não exige serviço pago. Playwright, o QA Remote Control e ffmpeg rodam localmente ou no runner escolhido pelo consumidor.
+O núcleo não exige serviço pago. Playwright, os perfis QA, relatórios, release gate, Remote Control e helpers de rede/desktop rodam localmente ou no runner escolhido pelo consumidor.
