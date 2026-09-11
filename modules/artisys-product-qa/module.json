@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-product-qa",
+  "name": "ArtiSys Product QA",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-or-ci",
+  "upstreams": ["playwright", "gitleaks", "trivy", "semgrep", "pact-js", "openapi-generator"],
+  "boundary": "Aggregate product acceptance contract over ArtiSys QA, Security and API Contracts.",
+  "provides": ["multi-check-runner", "severity-policy", "blocking-summary"],
+  "packageName": "@artisys/product-qa",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["multi-check-runner", "severity-policy", "blocking-summary"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Does not replace consumer-specific acceptance tests."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

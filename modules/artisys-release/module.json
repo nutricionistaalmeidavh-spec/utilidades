@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-release",
+  "name": "ArtiSys Release",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-or-ci",
+  "upstreams": ["playwright", "gitleaks", "trivy", "semgrep", "pact-js", "openapi-generator", "cosign"],
+  "boundary": "Release gate orchestration over existing QA, security, contract and signing runners.",
+  "provides": ["release-plan", "sequential-gates", "artifact-sha256", "blocking-summary"],
+  "packageName": "@artisys/release",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["release-plan", "sequential-gates", "artifact-sha256", "blocking-summary"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Actual build/signing commands are injected by the consumer."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}
