@@ -1,9 +1,16 @@
 # artisys-privacy
 
-Camada de privacidade baseada em Presidio para detectar e anonimizar dados pessoais antes de logs, exportações ou processamento externo.
+Kit compartilhado de privacidade/PII para execução local ou CI.
 
-**Consumir como:** `shared`.
+Normaliza jobs `analyze`/`anonymize`, cria o boundary Presidio e inclui redator determinístico por spans. O runtime Presidio é opcional e não exige serviço permanente.
 
-**Execução:** local sob demanda ou em GitHub Actions/CI. Não existe requisito de servidor/daemon permanente.
+## Verificação
 
-Regras brasileiras específicas, como CPF/CNPJ, devem ser adicionadas no adapter ArtiSys sem modificar o upstream.
+```bash
+npm test
+npm run check
+npm run example
+npm pack --dry-run
+```
+
+Textos sensíveis e modelos/recognizers específicos permanecem no consumidor.
