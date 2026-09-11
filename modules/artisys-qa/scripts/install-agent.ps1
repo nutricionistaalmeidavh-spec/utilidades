@@ -39,10 +39,16 @@ function Invoke-Checked {
   }
 }
 
+function Write-Utf8NoBom([string]$Path, [string]$Content) {
+  $encoding = New-Object System.Text.UTF8Encoding($false)
+  [System.IO.File]::WriteAllText($Path, $Content, $encoding)
+}
+
 if ($env:OS -ne 'Windows_NT') { throw 'ArtiSys QA Agent installer supports Windows only.' }
 
 $node = Assert-Command 'node.exe'
 $npm = Assert-Command 'npm.cmd'
+$npx = Assert-Command 'npx.cmd'
 $git = Assert-Command 'git.exe'
 $nodeMajor = [int]((& $node -p "process.versions.node.split('.')[0]").Trim())
 if ($nodeMajor -lt 22) { throw "Node.js 22+ is required. Found Node.js $nodeMajor." }
@@ -74,7 +80,7 @@ if (-not $existingState) {
   if (Test-Path $slotA) { Remove-Item $slotA -Recurse -Force }
   Invoke-Checked $git @('clone', '--no-checkout', $Repository, $slotA)
   Invoke-Checked $git @('-C', $slotA, 'fetch', '--quiet', 'origin', $StableRef)
-  $remoteRef = "origin/$StableRef"
+  $remoteRef = 'FETCH_HEAD'
   $channelRaw = (& $git -C $slotA show "$remoteRef`:modules/artisys-qa/stable-channel.json") -join "`n"
   if ($LASTEXITCODE -ne 0) { throw 'Could not read stable-channel.json from repository.' }
   $channel = $channelRaw | ConvertFrom-Json
@@ -96,7 +102,7 @@ if (-not $existingState) {
   Invoke-Checked $npm @('run', 'check') $moduleDir
   if (-not $SkipChromium) {
     Write-Step 'Installing Playwright Chromium runtime.'
-    Invoke-Checked 'npx.cmd' @('playwright', 'install', 'chromium') $moduleDir
+    Invoke-Checked $npx @('playwright', 'install', 'chromium') $moduleDir
   }
 
   $state = [ordered]@{
@@ -116,7 +122,8 @@ if (-not $existingState) {
       installedAt = (Get-Date).ToUniversalTime().ToString('o')
     }
   }
-  $state | ConvertTo-Json -Depth 8 | Set-Content $stateFile -Encoding UTF8
+  $stateJson = $state | ConvertTo-Json -Depth 8
+  Write-Utf8NoBom $stateFile $stateJson
   $activeSlot = $slotA
 } else {
   $activeSlot = Join-Path $slotsRoot ([string]$existingState.activeSlot)
