@@ -45,8 +45,19 @@ export function sanitizeArtifactName(value) {
   return base.replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 160) || 'artifact';
 }
 
-export function artifactKey(projectId, jobId, name) {
-  return `projects/${safeId(projectId, 'projectId')}/${safeId(jobId, 'jobId')}/${sanitizeArtifactName(name)}`;
+export function sanitizeArtifactPath(value) {
+  const normalized = String(value || '').replace(/\\/g, '/');
+  const parts = normalized.split('/').filter(Boolean);
+  if (!parts.length || parts.some(part => part === '.' || part === '..')) throw new Error('artifact path is invalid');
+  return parts.map(part => {
+    const clean = part.replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 160);
+    if (!clean) throw new Error('artifact path is invalid');
+    return clean;
+  }).join('/');
+}
+
+export function artifactKey(projectId, jobId, relativePath) {
+  return `projects/${safeId(projectId, 'projectId')}/${safeId(jobId, 'jobId')}/${sanitizeArtifactPath(relativePath)}`;
 }
 
 let schemaReadyFor = null;
@@ -137,21 +148,22 @@ async function insertEvent(env, body) {
 
 async function putArtifact(request, env, parts) {
   const jobId = safeId(parts[0], 'jobId');
-  const name = sanitizeArtifactName(parts.slice(1).join('/') || request.headers.get('x-artifact-name') || 'artifact');
+  const relativePath = sanitizeArtifactPath(parts.slice(1).join('/') || request.headers.get('x-artifact-name') || 'artifact');
+  const name = sanitizeArtifactName(relativePath);
   const projectId = safeId(request.headers.get('x-project-id'), 'projectId');
   const typeRaw = String(request.headers.get('x-artifact-type') || 'file').toLowerCase();
   const type = ALLOWED_ARTIFACT_TYPES.has(typeRaw) ? typeRaw : 'file';
-  const key = artifactKey(projectId, jobId, name);
+  const key = artifactKey(projectId, jobId, relativePath);
   const contentType = request.headers.get('content-type') || 'application/octet-stream';
-  await env.R2.put(key, request.body, { httpMetadata: { contentType }, customMetadata: { jobId, projectId, type, name } });
+  await env.R2.put(key, request.body, { httpMetadata: { contentType }, customMetadata: { jobId, projectId, type, name, relativePath } });
   const object = await env.R2.head(key);
   const size = Number(object?.size || request.headers.get('content-length') || 0);
   const createdAt = new Date().toISOString();
-  const id = `${jobId}:${name}`.slice(0, 240);
+  const id = `${jobId}:${relativePath}`.slice(0, 480);
   await env.DB.prepare(`INSERT INTO artifacts (id,job_id,project_id,type,name,r2_key,size,content_type,created_at) VALUES (?,?,?,?,?,?,?,?,?)
     ON CONFLICT(id) DO UPDATE SET type=excluded.type,name=excluded.name,r2_key=excluded.r2_key,size=excluded.size,content_type=excluded.content_type,created_at=excluded.created_at`)
-    .bind(id, jobId, projectId, type, name, key, size, contentType, createdAt).run();
-  return { ok: true, id, jobId, projectId, type, name, key, size, createdAt };
+    .bind(id, jobId, projectId, type, relativePath, key, size, contentType, createdAt).run();
+  return { ok: true, id, jobId, projectId, type, name, relativePath, key, size, createdAt };
 }
 
 async function listArtifacts(env, jobId) {
