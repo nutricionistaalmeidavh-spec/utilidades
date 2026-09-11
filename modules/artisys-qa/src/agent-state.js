@@ -36,6 +36,10 @@ export function createDefaultAgentState() {
       port: DEFAULT_CONSOLE_PORT,
       token: null,
     },
+    cloud: {
+      enabled: false,
+      endpoint: null,
+    },
   };
 }
 
@@ -49,6 +53,7 @@ export async function loadAgentState(root = defaultAgentRoot()) {
       ...parsed,
       projects: Array.isArray(parsed.projects) ? parsed.projects : [],
       console: { ...defaults.console, ...(parsed.console && typeof parsed.console === 'object' ? parsed.console : {}) },
+      cloud: { ...defaults.cloud, ...(parsed.cloud && typeof parsed.cloud === 'object' ? parsed.cloud : {}) },
     };
     if (!Number.isFinite(Number(state.updateIntervalMinutes)) || Number(state.updateIntervalMinutes) > DEFAULT_UPDATE_INTERVAL_MINUTES) {
       state.updateIntervalMinutes = DEFAULT_UPDATE_INTERVAL_MINUTES;
@@ -91,6 +96,26 @@ export async function setAgentConsoleLan(enabled, { root = defaultAgentRoot() } 
   state.console.host = state.console.lanEnabled ? '0.0.0.0' : '127.0.0.1';
   await saveAgentState(state, root);
   return { ...state.console };
+}
+
+export async function configureAgentCloud({ enabled, endpoint } = {}, { root = defaultAgentRoot() } = {}) {
+  const state = await loadAgentState(root);
+  const current = state.cloud && typeof state.cloud === 'object' ? state.cloud : {};
+  let normalizedEndpoint = current.endpoint || null;
+  if (endpoint != null) {
+    const url = new URL(String(endpoint));
+    if (url.protocol !== 'https:' && !['127.0.0.1', 'localhost'].includes(url.hostname)) {
+      throw new Error('Cloud observability endpoint must use HTTPS');
+    }
+    normalizedEndpoint = url.toString().replace(/\/$/, '');
+  }
+  state.cloud = {
+    enabled: enabled == null ? current.enabled === true : Boolean(enabled),
+    endpoint: normalizedEndpoint,
+  };
+  if (state.cloud.enabled && !state.cloud.endpoint) throw new Error('Cloud observability endpoint is required when enabling cloud mode');
+  await saveAgentState(state, root);
+  return { ...state.cloud };
 }
 
 function normalizePort(value) {
