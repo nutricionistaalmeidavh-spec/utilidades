@@ -1,9 +1,16 @@
 # artisys-bim
 
-Fronteira BIM reutilizável sobre IfcOpenShell.
+Kit compartilhado de boundary IFC para CompatibilizaBIM/CBIM e outros produtos de engenharia.
 
-**Consumir como:** `shared`.
+Valida consultas IFC, cria jobs locais para IfcOpenShell, resume entidades por tipo e executa operações via adapter injetado. O kit não exige servidor permanente.
 
-**Execução:** biblioteca/CLI/processo local iniciado sob demanda pelo CompatibilizaBIM/CBIM e encerrado ao terminar a operação. Não exige servidor permanente.
+## Verificação
 
-O consumidor deve depender de um contrato ArtiSys (`IIfcEngine` ou equivalente), permitindo substituir a implementação sem espalhar APIs específicas do upstream pelo domínio e mantendo a fronteira técnica necessária para o componente LGPL.
+```bash
+npm test
+npm run check
+npm run example
+npm pack --dry-run
+```
+
+IfcOpenShell e processamento geométrico pesado continuam como runtime local opcional, preservando a separação de licença e arquitetura.

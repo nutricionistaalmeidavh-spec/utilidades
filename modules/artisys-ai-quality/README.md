@@ -1,7 +1,16 @@
 # artisys-ai-quality
 
-Harness compartilhado de avaliação de IA baseado em Promptfoo.
+Kit compartilhado para regressão e avaliação de funcionalidades de IA.
 
-**Consumir como:** `shared`.
+Expõe validação de suites, geração de configuração Promptfoo, resumo de resultados e execução por adapter injetado. Nenhuma credencial de provedor ou dataset sensível é armazenado no kit.
 
-Prompts e critérios genéricos podem ser centrais; datasets sensíveis e secrets ficam no consumidor/ambiente de execução.
+## Verificação
+
+```bash
+npm test
+npm run check
+npm run example
+npm pack --dry-run
+```
+
+Promptfoo e as credenciais dos modelos são instalados/configurados somente no ambiente que executa a avaliação.
