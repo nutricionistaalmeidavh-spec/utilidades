@@ -152,7 +152,6 @@ function createArtifactWatcher({ root, outputDir, job, project, telemetry, inter
   const artifactRoot = path.join(root, 'artifacts');
   let timer = null;
   let busy = false;
-  let stopped = false;
 
   async function scan() {
     if (busy) return;
@@ -175,25 +174,30 @@ function createArtifactWatcher({ root, outputDir, job, project, telemetry, inter
   return {
     scan,
     async stop() {
-      stopped = true;
       if (timer) clearInterval(timer);
       timer = null;
-      if (!stopped || !busy) await scan();
-      else {
-        while (busy) await new Promise(resolve => setTimeout(resolve, 20));
-        await scan();
-      }
+      while (busy) await new Promise(resolve => setTimeout(resolve, 20));
+      await scan();
     },
   };
 }
 
-export async function executeBridgeJob({ job, project, bridge, root = defaultAgentRoot(), telemetry = null }) {
+export async function executeBridgeJob({
+  job,
+  project,
+  bridge,
+  root = defaultAgentRoot(),
+  telemetry = null,
+  runProcessImpl = runProcess,
+  uploadImpl = uploadRunArtifacts,
+  artifactScanIntervalMs = 1000,
+} = {}) {
   const outputDir = path.join(root, 'artifacts', project.id, 'bridge', job.id);
   await fs.mkdir(outputDir, { recursive: true });
   const startedAt = new Date().toISOString();
   const { command, args } = commandForJob(project, job, outputDir);
   await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'STARTING_QA', detail: `Iniciando ${job.action}` });
-  const watcher = createArtifactWatcher({ root, outputDir, job, project, telemetry });
+  const watcher = createArtifactWatcher({ root, outputDir, job, project, telemetry, intervalMs: artifactScanIntervalMs });
   await watcher.scan();
   let lastBeatAt = 0;
   const activity = () => {
@@ -205,12 +209,12 @@ export async function executeBridgeJob({ job, project, bridge, root = defaultAge
   await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'RUNNING_QA', detail: `Executando ${job.action}` });
 
   try {
-    const result = await runProcess(command, args, { cwd: path.dirname(project.config), onActivity: activity });
+    const result = await runProcessImpl(command, args, { cwd: path.dirname(project.config), onActivity: activity });
     await watcher.scan();
     await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'GENERATING_REPORT', detail: 'Consolidando evidências e relatório' });
     await watcher.scan();
     await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'UPLOADING_ARTIFACTS', detail: 'Enviando artefatos para o Drive' });
-    const upload = await uploadRunArtifacts({
+    const upload = await uploadImpl({
       project,
       job,
       sourceDir: outputDir,
@@ -219,8 +223,8 @@ export async function executeBridgeJob({ job, project, bridge, root = defaultAge
         status: 'passed',
         startedAt,
         finishedAt: new Date().toISOString(),
-        stdout: result.stdout.slice(-12000),
-        stderr: result.stderr.slice(-12000),
+        stdout: String(result.stdout || '').slice(-12000),
+        stderr: String(result.stderr || '').slice(-12000),
       },
     }).catch(error => ({ uploaded: false, reason: 'upload-failed', error: error.message }));
     await watcher.scan();
@@ -233,8 +237,8 @@ export async function executeBridgeJob({ job, project, bridge, root = defaultAge
       status: 'passed',
       outputDir,
       upload,
-      stdout: result.stdout.slice(-12000),
-      stderr: result.stderr.slice(-12000),
+      stdout: String(result.stdout || '').slice(-12000),
+      stderr: String(result.stderr || '').slice(-12000),
     };
   } catch (error) {
     const failureManifest = {
@@ -252,7 +256,7 @@ export async function executeBridgeJob({ job, project, bridge, root = defaultAge
     await fs.writeFile(path.join(outputDir, 'bridge-result.json'), `${JSON.stringify(failureManifest, null, 2)}\n`, 'utf8');
     await watcher.scan();
     await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'UPLOADING_ARTIFACTS', detail: 'QA falhou; preservando e enviando evidências' });
-    const upload = await uploadRunArtifacts({ project, job, sourceDir: outputDir, drive: bridge.drive, manifest: failureManifest })
+    const upload = await uploadImpl({ project, job, sourceDir: outputDir, drive: bridge.drive, manifest: failureManifest })
       .catch(uploadError => ({ uploaded: false, reason: 'upload-failed', error: uploadError.message }));
     await watcher.scan();
     await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'FAILED', detail: `QA falhou: ${error.message}`, error: error.message });
