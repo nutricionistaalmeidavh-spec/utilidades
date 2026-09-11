@@ -49,7 +49,7 @@ async function readJson(file) {
   return JSON.parse(await fs.readFile(file, 'utf8'));
 }
 
-export async function readStableChannel(repoDir, remoteRef = 'origin/main', { run = runCommand } = {}) {
+export async function readStableChannel(repoDir, remoteRef = 'FETCH_HEAD', { run = runCommand } = {}) {
   const { stdout } = await run('git', ['-C', repoDir, 'show', `${remoteRef}:modules/artisys-qa/stable-channel.json`]);
   const channel = JSON.parse(stdout);
   if (channel.channel !== 'stable') throw new Error('stable-channel.json must declare channel=stable');
@@ -94,7 +94,7 @@ export async function checkForStableUpdate({ root = defaultAgentRoot(), run = ru
 
   try {
     await run('git', ['-C', activeDir, 'fetch', '--quiet', 'origin', stableRef], { timeout: 2 * 60_000 });
-    const remoteRef = `origin/${stableRef}`;
+    const remoteRef = 'FETCH_HEAD';
     const channel = await readStableChannel(activeDir, remoteRef, { run });
     state.lastUpdateCheckAt = now();
 
