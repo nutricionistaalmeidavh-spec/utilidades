@@ -4,6 +4,12 @@ on:
     paths:
       - 'modules/artisys-release-validator/**'
       - '.github/workflows/artisys-release-validator-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'modules/artisys-release-validator/**'
+      - '.github/workflows/artisys-release-validator-ci.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,5 +28,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run contract tests
-        run: npm test --prefix modules/artisys-release-validator
+      - name: Verify module
+        working-directory: modules/artisys-release-validator
+        run: |
+          npm test
+          npm run check
+          npm run example
+          npm pack --dry-run
