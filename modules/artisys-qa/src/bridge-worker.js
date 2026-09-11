@@ -169,10 +169,47 @@ export async function executeBridgeJob({ job, project, bridge, root = defaultAge
   }
 }
 
+async function retryPendingUploads({ state, processed, root, logger }) {
+  if (!state.bridge.drive.enabled) return 0;
+  let retried = 0;
+  for (const [jobId, record] of Object.entries(processed)) {
+    if (record?.status !== 'pending-upload' || !record.outputDir || !record.projectId) continue;
+    const project = state.projects.find(item => item.id === record.projectId && item.enabled !== false);
+    if (!project) continue;
+    const job = { id: jobId, projectId: record.projectId, action: record.action || 'full' };
+    try {
+      const upload = await uploadRunArtifacts({
+        project,
+        job,
+        sourceDir: record.outputDir,
+        drive: state.bridge.drive,
+        manifest: {
+          status: record.qaStatus || 'passed',
+          retriedUploadAt: new Date().toISOString(),
+          error: record.error || null,
+        },
+      });
+      await markBridgeJobProcessed(jobId, {
+        ...record,
+        status: record.qaStatus || 'passed',
+        upload,
+      }, root);
+      processed[jobId] = { ...record, status: record.qaStatus || 'passed', upload };
+      retried += 1;
+    } catch (error) {
+      logger.error(`[bridge] upload retry ${jobId}: ${error.message}`);
+    }
+  }
+  return retried;
+}
+
 export async function bridgePollOnce({ root = defaultAgentRoot(), repoDir = REPO_DIR, logger = console } = {}) {
   const state = await ensureBridgeConfiguration(root);
   if (!state.bridge.enabled) return { enabled: false, processed: 0 };
+  if (!state.bridge.drive.enabled) return { enabled: true, processed: 0, reason: 'waiting-for-drive' };
+
   const processed = await loadProcessedJobs(root);
+  const retriedUploads = await retryPendingUploads({ state, processed, root, logger });
   const entries = await listPendingBridgeJobs({ repoDir, ref: state.bridge.ref || state.stableRef || 'main' });
   let count = 0;
   for (const entry of entries) {
@@ -190,17 +227,20 @@ export async function bridgePollOnce({ root = defaultAgentRoot(), repoDir = REPO
     }
     const project = state.projects.find(item => item.id === job.projectId);
     const result = await executeBridgeJob({ job, project, bridge: state.bridge, root });
+    const persistedStatus = result.upload?.uploaded ? result.status : 'pending-upload';
     await markBridgeJobProcessed(job.id, {
-      status: result.status,
+      status: persistedStatus,
+      qaStatus: result.status,
       projectId: job.projectId,
       action: job.action,
       outputDir: result.outputDir,
       upload: result.upload,
       error: result.error || null,
     }, root);
+    processed[job.id] = { status: persistedStatus };
     count += 1;
   }
-  return { enabled: true, processed: count, discovered: entries.length };
+  return { enabled: true, processed: count, discovered: entries.length, retriedUploads };
 }
 
 export function startBridgePolling({ root = defaultAgentRoot(), logger = console } = {}) {
