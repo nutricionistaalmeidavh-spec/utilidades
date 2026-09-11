@@ -12,7 +12,8 @@ if (!['qa', 'agent'].includes(surface)) {
 }
 
 try {
-  const state = JSON.parse(await fs.readFile(path.join(root, 'agent-state.json'), 'utf8'));
+  const stateText = (await fs.readFile(path.join(root, 'agent-state.json'), 'utf8')).replace(/^\uFEFF/, '');
+  const state = JSON.parse(stateText);
   const entry = surface === 'agent' ? 'agent-cli.mjs' : 'cli.mjs';
   const target = path.join(root, 'slots', state.activeSlot || 'slot-a', 'modules', 'artisys-qa', 'src', entry);
   await fs.access(target);
@@ -27,8 +28,11 @@ try {
     process.exit(1);
   });
   child.once('exit', (code, signal) => {
-    if (signal) process.kill(process.pid, signal);
-    else process.exit(code ?? 1);
+    if (signal) {
+      console.error(`ArtiSys QA child exited by signal ${signal}`);
+      process.exit(1);
+    }
+    process.exit(code ?? 1);
   });
 } catch (error) {
   console.error(`ArtiSys QA launcher: ${error?.message || error}`);
