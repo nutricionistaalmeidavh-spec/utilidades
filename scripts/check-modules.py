@@ -14,8 +14,8 @@ READY = (
     'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder',
     'artisys-upload', 'artisys-annotations', 'artisys-serialport', 'artisys-printing',
     'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
-    'artisys-remote-support', 'artisys-release', 'artisys-desktop-shell',
-    'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
+    'artisys-remote-support', 'artisys-release', 'artisys-release-validator',
+    'artisys-desktop-shell', 'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
     'artisys-ai-quality', 'artisys-privacy', 'artisys-bim'
 )
 READY_STATUSES = ('implemented', 'stable')
@@ -25,7 +25,7 @@ JS_MODULES = (
     'artisys-office', 'artisys-ui-builder', 'artisys-upload', 'artisys-annotations',
     'artisys-serialport', 'artisys-printing', 'artisys-video-engine',
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
-    'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
+    'artisys-release', 'artisys-release-validator', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
     'artisys-privacy', 'artisys-bim'
 )
@@ -36,7 +36,7 @@ NEW_PRODUCT_MODULES = (
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
-    'artisys-privacy', 'artisys-bim'
+    'artisys-privacy', 'artisys-bim', 'artisys-release-validator'
 )
 
 
