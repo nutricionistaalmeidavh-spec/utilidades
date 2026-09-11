@@ -140,11 +140,7 @@ export function createTelemetryStore({ root, machineId, redact = value => value,
   async function persistJob(job, artifacts = null) {
     if (!job?.jobId) return null;
     const existing = await readJson(jobFile(job.jobId), {});
-    const merged = redact({
-      ...existing,
-      ...job,
-      artifacts: artifacts ?? existing.artifacts ?? [],
-    });
+    const merged = redact({ ...existing, ...job, artifacts: artifacts ?? existing.artifacts ?? [] });
     await atomicJson(jobFile(job.jobId), merged);
     return merged;
   }
@@ -232,6 +228,7 @@ export function createTelemetryStore({ root, machineId, redact = value => value,
         projectId: input.projectId ? safeId(input.projectId, 'projectId') : null,
         type: String(input.type || 'file'),
         name: String(input.name || path.basename(localPath)),
+        relativePath: input.relativePath == null ? null : String(input.relativePath).replace(/\\/g, '/'),
         localPath,
         createdAt: input.createdAt || iso(now),
         size: Number.isFinite(Number(input.size)) ? Number(input.size) : null,
