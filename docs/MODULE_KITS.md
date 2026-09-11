@@ -29,12 +29,15 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | OCR | 0.1.0 | embedded/local | seleção PaddleOCR/Tesseract/Tesseract.js |
 | Product QA | 0.1.0 | local/Actions | agregação QA + security + API contracts |
 | Licensing | 0.1.0 | embedded/local | assinatura Ed25519 e validação offline |
+| AI Quality | 0.2.0 | local/Actions | suites de avaliação, config Promptfoo e resumo de resultados |
+| Privacy | 0.2.0 | local/Actions | PII, anonymization e redaction por spans |
+| BIM | 0.2.0 | local sob demanda | boundary IFC/IfcOpenShell, propriedades e quantidades |
 
 `implemented` ou `stable` significa código executável e verificado no kit; homologação em produto consumidor é separada.
 
 ## Verificação
 
-Node 22+, Python 3.10+; Java 17+ apenas para o OpenAPI Generator. Os runtimes GStreamer/MLT/libopenshot, Gotenberg, PocketBase, RustDesk e OCR nativo são opcionais e instalados somente pelos produtos que usam essas capacidades.
+Node 22+, Python 3.10+; Java 17+ apenas para o OpenAPI Generator. Runtimes nativos/externos como GStreamer, Gotenberg, PocketBase, RustDesk, Presidio, Promptfoo e IfcOpenShell são opcionais e instalados somente onde a capacidade correspondente é usada.
 
 ```bash
 npm ci --ignore-scripts --prefix modules/artisys-qa
@@ -44,7 +47,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/check-modules.py --browser --pact --generator
 ```
 
-Os módulos JS executam testes de contrato sem serviço externo obrigatório. Os novos kits também expõem `npm run check`, `npm run example` e `npm pack --dry-run`.
+Os módulos JS executam testes de contrato sem serviço externo obrigatório. Kits executáveis expõem `npm test`, `npm run check`, `npm run example` e `npm pack --dry-run` quando aplicável.
 
 ## Segurança de licenciamento
 
