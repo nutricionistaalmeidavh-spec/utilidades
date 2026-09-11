@@ -1,0 +1,6 @@
+{
+  "channel": "stable",
+  "version": "2.1.0",
+  "minimumNode": "22",
+  "notes": "Windows local agent with logon startup, project registry, stable auto-update and A/B rollback."
+}
