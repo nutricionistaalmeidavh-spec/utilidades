@@ -9,20 +9,14 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "artisys-qa",
+      "database_name": "__D1_DATABASE_NAME__",
       "database_id": "__D1_DATABASE_ID__"
     }
   ],
   "r2_buckets": [
     {
       "binding": "R2",
-      "bucket_name": "artisysqa"
+      "bucket_name": "__R2_BUCKET_NAME__"
     }
-  ],
-  "secrets": {
-    "required": [
-      "ARTISYS_QA_AGENT_TOKEN",
-      "ARTISYS_QA_READ_TOKEN"
-    ]
-  }
+  ]
 }
