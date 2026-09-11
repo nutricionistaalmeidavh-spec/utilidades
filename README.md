@@ -6,15 +6,15 @@ A regra é simples: um projeto só entra aqui se puder ser usado **sem manter in
 
 ## Critério de entrada
 
-Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram servidores/daemons 24/7, VPS/PC dedicado, serviços pagos obrigatórios, bibliotecas triviais ou projetos sem caminho real de integração.
+Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram servidores/daemons 24/7, VPS/PC dedicado, serviços pagos obrigatórios, bibliotecas triviais ou projetos sem caminho real de integração. Aplicações completas e projetos com copyleft forte podem ser incorporados como **referência curada/isolada**, sem virar dependência de runtime dos produtos ArtiSys.
 
 ## Estado atual
 
-- **49 projetos aprovados** como Git submodules em `catalog/projects.json`.
+- **60 projetos upstream curados**: 49 aprovados como Git submodules + 11 referências incorporadas e pinadas por commit.
 - **19 módulos ArtiSys** registrados.
 - **16 kits executáveis**: 11 `stable` e 5 `implemented`.
 - **3 foundations** ainda precisam ser promovidas.
-- Nenhum projeto aprovado exige infraestrutura always-on mantida pelo usuário.
+- Nenhum projeto incorporado exige infraestrutura always-on mantida pelo usuário por padrão.
 
 ## Kits stable
 
@@ -52,19 +52,29 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 - **QA/segurança:** Renovate, Trivy, Semgrep, Gitleaks, Cosign, k6, Playwright, WireMock, Pact JS, OpenAPI Generator, Promptfoo.
 - **Ferramenta interna:** AI Website Cloner Template.
 
+## Referências incorporadas
+
+Estas referências estão salvas em `catalog/incorporated-repos-2026-09-10.json`, com branch e commit pinados. Podem ser usadas para extrair arquitetura, adapters ou funcionalidades, mas continuam opt-in.
+
+- **Mídia/edição:** GStreamer, MLT, Shotcut, libopenshot.
+- **Documentos/OCR:** Gotenberg, Tesseract, Tesseract.js.
+- **Desktop:** Microsoft PowerToys, RustDesk.
+- **PDV:** OpenSourcePOS.
+- **Backend local:** PocketBase.
+
 ## Arquitetura
 
 ```text
 Produto ArtiSys
       ↓
-modules/artisys-*
+modules/artisys-* / adapter / referência isolada
       ↓
-adapter / biblioteca / CLI / job CI
+catálogo curado
       ↓
-projects/<upstream>
+projects/<upstream> ou catalog/incorporated-*.json
 ```
 
-Regras de negócio continuam no consumidor. Os kits deste repositório não são integrados automaticamente aos produtos.
+Regras de negócio continuam no consumidor. Os kits e referências deste repositório não são integrados automaticamente aos produtos.
 
 ## Clonar
 
@@ -74,4 +84,4 @@ cd utilidades
 git submodule update --init --recursive
 ```
 
-Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `modules/README.md` e `docs/INTEGRATION_GUIDE.md`.
+Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/incorporated-repos-2026-09-10.json`, `catalog/modules.json`, `modules/README.md` e `docs/INTEGRATION_GUIDE.md`.
