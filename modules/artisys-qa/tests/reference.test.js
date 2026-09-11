@@ -35,10 +35,10 @@ test('health checks time out and respect cancellation', async () => {
   await assert.rejects(waitForHealth('http://127.0.0.1:1', { signal: AbortSignal.abort() }), { name: 'AbortError' });
 });
 
-test('1.2 package exposes demo platform APIs and built-in flow library', async () => {
+test('1.3 package exposes demo and visual QA platform APIs', async () => {
   const pkg = JSON.parse(await fs.readFile(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(pkg.version, '1.2.0');
-  for (const key of ['./demo-profile', './adapters', './fixture-registry', './flow-library', './redaction']) {
+  assert.equal(pkg.version, '1.3.0');
+  for (const key of ['./demo-profile', './adapters', './fixture-registry', './flow-library', './redaction', './visual']) {
     assert.ok(pkg.exports[key], `missing package export ${key}`);
   }
   assert.ok(pkg.files.includes('flows'), 'package must publish built-in reusable flows');
