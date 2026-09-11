@@ -49,3 +49,4 @@ export { normalizeDemoVideo, buildNormalizeArgs } from './video.js';
 export { attachPageTelemetry } from './telemetry.js';
 export { sanitizeName, resolveSecret, stepLabel } from './helpers.js';
 export { isVisualValidationRequested, shouldUpdateVisualBaselines, sanitizeVisualName, validateVisualSnapshot, VisualValidationError } from './visual.js';
+export { createQaRemoteControl } from './remote-control.js';
