@@ -30,6 +30,13 @@ function artifactName(value) {
   return String(value || 'artifact').replace(/\\/g, '/').split('/').filter(Boolean).pop()?.replace(/[^A-Za-z0-9._-]+/g, '-') || 'artifact';
 }
 
+function artifactPath(value) {
+  const normalized = String(value || '').replace(/\\/g, '/');
+  const parts = normalized.split('/').filter(Boolean);
+  if (!parts.length || parts.some(part => part === '.' || part === '..')) throw new Error('artifact relativePath is invalid');
+  return parts.map(part => part.replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'item').join('/');
+}
+
 async function readResponse(response) {
   const type = response.headers.get('content-type') || '';
   if (type.includes('application/json')) return response.json().catch(() => ({}));
@@ -47,10 +54,7 @@ export function createCloudMirror({ endpoint, token, fetchImpl = fetch, timeoutM
     try {
       const response = await fetchImpl(`${base}${relative}`, {
         ...options,
-        headers: {
-          authorization: `Bearer ${token}`,
-          ...(options.headers || {}),
-        },
+        headers: { authorization: `Bearer ${token}`, ...(options.headers || {}) },
         signal: options.signal || controller.signal,
       });
       if (!response.ok) {
@@ -64,11 +68,7 @@ export function createCloudMirror({ endpoint, token, fetchImpl = fetch, timeoutM
   }
 
   async function postJson(relative, payload) {
-    return request(relative, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    return request(relative, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
   }
 
   async function uploadArtifact(payload) {
@@ -76,9 +76,11 @@ export function createCloudMirror({ endpoint, token, fetchImpl = fetch, timeoutM
     const projectId = safePart(payload?.projectId, 'projectId');
     const localPath = path.resolve(String(payload?.localPath || ''));
     const name = artifactName(payload?.name || path.basename(localPath));
+    const relativePath = payload?.relativePath ? artifactPath(payload.relativePath) : name;
     const body = await fs.readFile(localPath);
     const contentType = CONTENT_TYPES.get(path.extname(name).toLowerCase()) || 'application/octet-stream';
-    return request(`/api/v1/artifacts/${encodeURIComponent(jobId)}/${encodeURIComponent(name)}`, {
+    const encodedPath = relativePath.split('/').map(encodeURIComponent).join('/');
+    return request(`/api/v1/artifacts/${encodeURIComponent(jobId)}/${encodedPath}`, {
       method: 'PUT',
       headers: {
         'content-type': contentType,
