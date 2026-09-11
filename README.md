@@ -12,8 +12,8 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 
 - **60 projetos upstream curados**: 49 aprovados como Git submodules + 11 referências incorporadas e pinadas por commit.
 - **28 módulos ArtiSys** registrados.
-- **25 kits executáveis**: 11 `stable` e 14 `implemented`.
-- **3 foundations** ainda precisam ser promovidas.
+- **28 kits executáveis**: 11 `stable` e 17 `implemented`.
+- **0 foundations** pendentes.
 - Nenhum projeto incorporado exige infraestrutura always-on mantida pelo usuário por padrão.
 
 ## Kits stable
@@ -46,12 +46,9 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 - `artisys-ocr` — implemented — OCR unificado PaddleOCR/Tesseract/Tesseract.js.
 - `artisys-product-qa` — implemented — agregador QA + security + API contracts.
 - `artisys-licensing` — implemented — licenças offline Ed25519, device binding, expiração e features.
-
-## Foundations
-
-- `artisys-ai-quality` — foundation — Promptfoo.
-- `artisys-privacy` — foundation — Presidio local/CI.
-- `artisys-bim` — foundation — IfcOpenShell local sob demanda.
+- `artisys-ai-quality` — implemented — regressão/model comparison e configuração Promptfoo sem credenciais embutidas.
+- `artisys-privacy` — implemented — PII/anonymization via boundary Presidio + redaction por spans.
+- `artisys-bim` — implemented — boundary IFC/IfcOpenShell, propriedades, quantidades e resumo de entidades.
 
 ## Repos aprovados por capacidade
 
