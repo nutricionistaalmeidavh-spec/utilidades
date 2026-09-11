@@ -40,7 +40,7 @@
 - [x] Verify tests and packaging.
 
 ### Task 5: Repository integration
-- [ ] Register all nine modules in `catalog/modules.json`.
-- [ ] Extend `scripts/check-modules.py` for incorporated upstream references and new JS kits.
-- [ ] Update module and kit documentation/counts.
-- [ ] Run diff review and merge only after verification.
+- [x] Register all nine modules in `catalog/modules.json`.
+- [x] Extend `scripts/check-modules.py` for incorporated upstream references and new JS kits.
+- [x] Update module and kit documentation/counts.
+- [x] Run diff review and merge only after verification.
