@@ -46,8 +46,8 @@ function normalizeList(values, kind, { required = false } = {}) {
 
 export function defineValidationProfile(value) {
   object(value, 'profile');
-  if (value.schemaVersion !== 1) throw new TypeError('schemaVersion must be 1');
   const product = string(value.product, 'product');
+  if (value.schemaVersion !== 1) throw new TypeError('schemaVersion must be 1');
   const version = string(value.version, 'version');
   const artifact = string(value.artifact, 'artifact');
   const workspace = string(value.workspace, 'workspace');
