@@ -6,6 +6,9 @@ import { loadQaManifest, resolveEnvironment, resolveFlow, resolveViewport, resol
 import { loadDemoAdapter } from './adapters.js';
 import { prepareDemoProfile, resetDemoProfile, getDemoProfileStatus } from './demo-profile.js';
 import { runQaFlow } from './runner.js';
+import { runQaProfile } from './profile-runner.js';
+import { listQaProfiles } from './profiles.js';
+import { readQaHistory } from './reporting.js';
 import { runDemoFlow } from './demo.js';
 import { createQaRemoteControl } from './remote-control.js';
 
@@ -26,7 +29,7 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual] [--update-visual-baselines]\n  remote --config qa/artisys-qa.config.json [--host 127.0.0.1|0.0.0.0] [--port 4173] [--token secret] [--profile default] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
+  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual] [--update-visual-baselines]\n  quick --config qa/artisys-qa.config.json [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts]\n  full --config qa/artisys-qa.config.json [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual]\n  release --config qa/artisys-qa.config.json [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--override-release-gate --override-reason reason]\n  remote --config qa/artisys-qa.config.json [--host 127.0.0.1|0.0.0.0] [--port 4173] [--token secret] [--profile default] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
 }
 
 async function resolveProfileRuntime(manifest, rootDir, requestedProfile) {
@@ -42,6 +45,7 @@ function remoteMeta(manifest) {
   return {
     systemId: manifest.systemId,
     flows,
+    profiles: listQaProfiles(manifest),
     environments,
     viewports: ['desktop', 'tablet', 'mobile'],
     defaults: {
@@ -62,6 +66,25 @@ function lanUrls(port) {
   return [...new Set(urls)];
 }
 
+async function runNamedProfile({ profileName, args, manifest, rootDir }) {
+  const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
+  const outputRoot = args.output ? path.resolve(String(args.output)) : path.resolve('qa-artifacts');
+  const result = await runQaProfile({
+    manifest,
+    rootDir,
+    profileName,
+    environment: args.environment,
+    viewport: args.viewport,
+    outputRoot,
+    ...profileRuntime,
+    releaseOverride: args['override-release-gate'] === true,
+    releaseOverrideReason: args['override-reason'] === true ? null : args['override-reason'],
+  });
+  console.log(JSON.stringify({ profile: result.profile.name, gate: result.gate, counts: result.report.counts }, null, 2));
+  console.log(`ARTISYS_QA_REPORT=${result.jsonFile}`);
+  return result;
+}
+
 async function runRemoteServer({ args, manifest, rootDir }) {
   const host = args.host === true || !args.host ? '127.0.0.1' : String(args.host);
   const port = args.port === true || !args.port ? 4173 : Number(args.port);
@@ -76,15 +99,28 @@ async function runRemoteServer({ args, manifest, rootDir }) {
     port,
     token,
     meta,
+    getHistory: () => readQaHistory(outputRoot),
     runJob: async request => {
       const previousVisual = process.env.ARTISYS_QA_VISUAL;
       if (request.visual) process.env.ARTISYS_QA_VISUAL = '1';
       else delete process.env.ARTISYS_QA_VISUAL;
       try {
+        const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
+        if (request.profile) {
+          const result = await runQaProfile({
+            manifest,
+            rootDir,
+            profileName: request.profile,
+            environment: request.environment,
+            viewport: request.viewport,
+            outputRoot,
+            ...profileRuntime,
+          });
+          return { profile: result.profile.name, gate: result.gate, counts: result.report.counts, report: result.jsonFile };
+        }
         const { name: environmentName, environment } = resolveEnvironment(manifest, request.environment);
         const { name: flowName, file: flowFile } = resolveFlow(manifest, request.flow, rootDir);
         const viewport = resolveViewport(manifest, request.viewport);
-        const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
         const result = await runQaFlow({
           manifest,
           rootDir,
@@ -153,6 +189,7 @@ try {
       mode: manifest.mode,
       environments: Object.keys(manifest.environments),
       flows: Object.keys(manifest.flows || {}),
+      qaProfiles: listQaProfiles(manifest),
       demos: Object.keys(manifest.demos || {}),
       demoProfiles: profileNames,
       viewports: ['desktop', 'tablet', 'mobile'],
@@ -194,6 +231,8 @@ try {
     });
     console.log(JSON.stringify(result.summary, null, 2));
     console.log(`ARTISYS_QA_OUTPUT=${result.outputDir}`);
+  } else if (['quick', 'full', 'release'].includes(args.command)) {
+    await runNamedProfile({ profileName: args.command, args, manifest, rootDir });
   } else if (args.command === 'remote') {
     await runRemoteServer({ args, manifest, rootDir });
   } else if (args.command === 'demo') {
