@@ -170,13 +170,24 @@ if ($pathParts -notcontains $binDir) {
 if (($env:Path -split ';') -notcontains $binDir) { $env:Path = "$binDir;$env:Path" }
 
 Write-Step 'Creating logon task.'
-$taskCommand = '"{0}" "{1}"' -f $node, $bootstrapFile
-& schtasks.exe /Create /TN $TaskName /SC ONLOGON /TR $taskCommand /RL LIMITED /F | Out-Null
-if ($LASTEXITCODE -ne 0) { throw 'Could not create Windows Task Scheduler entry.' }
+try {
+  Import-Module ScheduledTasks -ErrorAction Stop
+  $taskAction = New-ScheduledTaskAction -Execute $node -Argument ('"{0}"' -f $bootstrapFile)
+  $taskTrigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+  $taskPrincipal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive -RunLevel Limited
+  $taskSettings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew
+  $task = New-ScheduledTask -Action $taskAction -Trigger $taskTrigger -Principal $taskPrincipal -Settings $taskSettings
+  Register-ScheduledTask -TaskName $TaskName -InputObject $task -Force | Out-Null
+} catch {
+  throw "Could not create Windows Task Scheduler entry: $($_.Exception.Message)"
+}
 
 Write-Step 'Starting agent.'
-& schtasks.exe /Run /TN $TaskName | Out-Null
-if ($LASTEXITCODE -ne 0) { throw 'Could not start ArtiSys QA Agent scheduled task.' }
+try {
+  Start-ScheduledTask -TaskName $TaskName
+} catch {
+  throw "Could not start ArtiSys QA Agent scheduled task: $($_.Exception.Message)"
+}
 
 Write-Host ''
 Write-Host 'ArtiSys QA Agent installed.' -ForegroundColor Green
