@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -21,6 +21,9 @@
     "./agent-state": "./src/agent-state.js",
     "./agent-updater": "./src/agent-updater.js",
     "./agent-supervisor": "./src/agent-supervisor.js",
+    "./bridge-jobs": "./src/bridge-jobs.js",
+    "./bridge-worker": "./src/bridge-worker.js",
+    "./drive-uploader": "./src/drive-uploader.js",
     "./demo": "./src/demo.js",
     "./video": "./src/video.js",
     "./helpers": "./src/helpers.js",
@@ -40,6 +43,7 @@
     "src",
     "scripts",
     "stable-channel.json",
+    "bridge",
     "flows",
     "templates",
     "examples/pos-reference/*.js",
