@@ -2,58 +2,84 @@
 
 Backend opcional de observabilidade remota do ArtiSys QA. O QA local continua funcionando sem Cloudflare.
 
-## Bindings esperados
+## Produção atual
 
-- `env.DB` -> D1 `artisys-qa`
-- `env.R2` -> R2 bucket `artisysqa`
+A configuração real já está versionada em `wrangler.jsonc` com os valores confirmados:
 
-## Secrets esperados
+- Worker: `utilidades`
+- D1: `artisysqa`
+- D1 id: `ad323bd1-fa46-434b-8285-b5eb94a8f716`
+- D1 binding: `env.DB`
+- R2 bucket: `artisysqa`
+- R2 binding: `env.R2`
 
-- `ARTISYS_QA_AGENT_TOKEN` -> autentica escrita do agente Windows
-- `ARTISYS_QA_READ_TOKEN` -> autentica dashboard/API de leitura
+O `database_id` e os nomes de bindings não são secrets. Nenhuma credencial é commitada.
 
-Nunca comite os valores dos secrets.
+## Secrets
+
+O Worker exige duas credenciais diferentes:
+
+- `ARTISYS_QA_AGENT_TOKEN` -> escrita do agente Windows
+- `ARTISYS_QA_READ_TOKEN` -> dashboard/API privada de leitura
+
+Não é necessário criá-las manualmente no painel. O script `setup-production.ps1` gera valores aleatórios localmente, envia-os ao Cloudflare via Wrangler sem imprimi-los e guarda o token de leitura protegido pelo DPAPI do Windows.
 
 ## Estrutura
 
-- `src/worker.js` -> entrypoint recomendado; dashboard remoto
-- `src/api.js` -> implementação autenticada da API D1/R2
+- `src/worker.js` -> entrypoint e dashboard remoto
+- `src/api.js` -> API autenticada D1/R2
 - `migrations/0001_init.sql` -> schema do D1
-- `wrangler.jsonc.template` -> template de configuração; copie para `wrangler.jsonc` somente depois de preencher o nome real do Worker e o `database_id` real do D1
+- `wrangler.jsonc` -> configuração real do Worker `utilidades`
+- `wrangler.jsonc.template` -> template reutilizável
+- `setup-production.ps1` -> login, secrets, migration, deploy e vínculo do agente
+- `show-reader-token.ps1` -> recupera localmente o token de leitura protegido
+
+## Setup automático recomendado
+
+No PC que executa o ArtiSys QA Agent, a partir de um checkout atualizado do repo:
+
+```powershell
+cd cloudflare\artisys-qa-worker
+powershell -ExecutionPolicy Bypass -File .\setup-production.ps1
+```
+
+O script executa:
+
+1. `npm install` do Wrangler;
+2. verifica login Cloudflare e abre autorização se necessário;
+3. gera `ARTISYS_QA_AGENT_TOKEN` e `ARTISYS_QA_READ_TOKEN` separadamente;
+4. grava os dois como Worker secrets sem mostrar os valores;
+5. aplica as migrations no D1 `artisysqa`;
+6. faz deploy do Worker `utilidades`;
+7. tenta descobrir automaticamente a URL `workers.dev`;
+8. salva `ARTISYS_QA_CLOUD_AGENT_TOKEN` no ambiente do usuário Windows;
+9. aponta o ArtiSys QA Agent para o Worker e reinicia a tarefa agendada;
+10. guarda o token de leitura criptografado com DPAPI em `%LOCALAPPDATA%\ArtiSys\QA`.
+
+Se o deploy não retornar a URL automaticamente, o script pede apenas a URL do Worker. Ele não pede para você criar ou copiar secrets.
 
 ## Cloudflare Workers Builds
 
-Para o repositório monorepo `utilidades`, configure no Worker conectado ao GitHub:
+Para o repositório monorepo `utilidades`, o Worker conectado ao GitHub deve usar:
 
 - Root directory: `cloudflare/artisys-qa-worker`
 - Build command: vazio ou `npm install`
 - Deploy command: `npx wrangler deploy --config wrangler.jsonc`
 - Production branch: `main`
 
-O nome em `wrangler.jsonc` precisa ser exatamente o nome do Worker já existente no dashboard.
+Como `wrangler.jsonc` já contém os valores reais, não é necessário copiar o template para produção.
 
 ## D1
 
-Aplique `migrations/0001_init.sql` no banco `artisys-qa`. Via Wrangler, após criar o `wrangler.jsonc` real:
+O setup automático aplica `migrations/0001_init.sql` no banco `artisysqa`.
+
+Equivalente manual:
 
 ```powershell
-cd cloudflare/artisys-qa-worker
+cd cloudflare\artisys-qa-worker
 npm install
-npx wrangler d1 migrations apply artisys-qa --remote --config wrangler.jsonc
+npx wrangler d1 migrations apply artisysqa --remote --config wrangler.jsonc
 ```
-
-Também é possível executar o SQL da migration pelo console D1 no dashboard.
-
-## Secrets
-
-No dashboard do Worker, adicione dois Secrets criptografados com valores diferentes e aleatórios:
-
-```text
-ARTISYS_QA_AGENT_TOKEN
-ARTISYS_QA_READ_TOKEN
-```
-
-O `ARTISYS_QA_AGENT_TOKEN` também deve existir apenas no PC que executa o ArtiSys QA Agent, como variável de ambiente `ARTISYS_QA_CLOUD_AGENT_TOKEN`.
 
 ## API
 
@@ -78,22 +104,18 @@ GET /api/v1/artifacts/:artifactId
 POST /api/v1/jobs/:jobId/share
 ```
 
-`GET /health` é público e informa somente se os bindings `DB` e `R2` estão presentes.
+`GET /health` é público e informa apenas disponibilidade dos bindings, nunca secrets.
 
-## Links temporários para revisão externa
+## Dashboard e links temporários
 
-O dashboard pode gerar um link de leitura temporário de um job. O link expira em no máximo 1 hora e dá acesso somente ao job e aos artefatos daquele job. Isso permite compartilhar uma execução específica sem revelar `ARTISYS_QA_READ_TOKEN`.
-
-## Configuração do agente Windows
-
-Depois do Worker estar publicado e os secrets existirem, configure o endpoint e o token local sem colocá-lo no histórico do terminal:
+O dashboard usa `ARTISYS_QA_READ_TOKEN`. Para consultar o token apenas no PC que fez o setup:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\modules\artisys-qa\scripts\setup-cloud.ps1 -Url https://SEU-WORKER.workers.dev
+powershell -ExecutionPolicy Bypass -File .\show-reader-token.ps1
 ```
 
-O script solicita o token de forma oculta, grava `ARTISYS_QA_CLOUD_AGENT_TOKEN` no ambiente do usuário Windows, habilita o endpoint e tenta reiniciar a tarefa `ArtiSys QA Agent`.
+O dashboard pode gerar um link temporário de um único job com validade máxima de uma hora. Esse é o mecanismo recomendado para inspeção externa/assistida sem revelar o token privado de leitura.
 
 ## Política de falha
 
-Cloudflare é espelho de observabilidade. Falha de rede, D1, R2 ou Worker nunca deve alterar o resultado do QA local, o release gate, o upload para Drive ou o updater A/B.
+Cloudflare é somente espelho de observabilidade. Falha de rede, D1, R2 ou Worker nunca altera o resultado do QA local, o release gate, o upload para Drive, a bridge nem o updater A/B.
