@@ -8,9 +8,7 @@ export async function waitForHealth(url, { timeoutMs = 15000, intervalMs = 100, 
   while (Date.now() < deadline) {
     signal?.throwIfAborted();
     try {
-      const response = await fetch(url, {
-        signal: AbortSignal.any([AbortSignal.timeout(Math.max(1, deadline - Date.now())), ...(signal ? [signal] : [])]),
-      });
+      const response = await fetch(url, { signal: AbortSignal.any([AbortSignal.timeout(Math.max(1, deadline - Date.now())), ...(signal ? [signal] : [])]) });
       await response.body?.cancel();
       if (response.ok) return;
       lastError = new Error(`HTTP ${response.status}`);
@@ -50,13 +48,14 @@ export { runDesktopSmoke } from './desktop.js';
 export { retryTransient, runConcurrent } from './network.js';
 export { aggregateQaReport, renderQaReportHtml, writeQaReport, readQaHistory } from './reporting.js';
 export { evaluateReleaseGate } from './release-gate.js';
-export { DEFAULT_AGENT_PORT, DEFAULT_UPDATE_INTERVAL_MINUTES, DEFAULT_CONSOLE_PORT, defaultAgentRoot, agentStateFile, createDefaultAgentState, loadAgentState, saveAgentState, ensureAgentConsoleConfiguration, setAgentConsoleLan, normalizeProjectRegistration, registerAgentProject, unregisterAgentProject, setAgentAutoUpdate } from './agent-state.js';
+export { DEFAULT_AGENT_PORT, DEFAULT_UPDATE_INTERVAL_MINUTES, DEFAULT_CONSOLE_PORT, DEFAULT_CLOUD_TOKEN_ENV, defaultAgentRoot, agentStateFile, createDefaultAgentState, loadAgentState, saveAgentState, ensureAgentConsoleConfiguration, setAgentConsoleLan, ensureAgentCloudConfiguration, configureAgentCloud, normalizeProjectRegistration, registerAgentProject, unregisterAgentProject, setAgentAutoUpdate } from './agent-state.js';
 export { compareVersions, isNewerVersion, inactiveSlotName, normalizeWindowsCommand, readStableChannel, readInstalledVersion, validateCandidate, prepareInactiveSlot, checkForStableUpdate, rollbackAgentSlot, AGENT_RESTART_EXIT_CODE } from './agent-updater.js';
 export { agentHealthFile, buildProjectRemoteCommand, writeAgentHealth, readAgentHealth, startAgentSupervisor } from './agent-supervisor.js';
 export { ALLOWED_BRIDGE_ACTIONS, BRIDGE_JOB_ROOT, processedJobsFile, sanitizeJobOptions, validateBridgeJob, loadProcessedJobs, markBridgeJobProcessed, listPendingBridgeJobs } from './bridge-jobs.js';
 export { DEFAULT_DRIVE_ROOT_FOLDER_ID, DEFAULT_BRIDGE_POLL_INTERVAL_SECONDS, ensureBridgeConfiguration, configureBridgeDrive, executeBridgeJob, bridgePollOnce, startBridgePolling } from './bridge-worker.js';
 export { PROJECT_REGISTRY_PATH, managedProjectsRoot, normalizeManagedProject, readManagedProjectRegistry, syncManagedProjects } from './project-bootstrap.js';
 export { buildDriveProjectPath, buildDriveRunPath, assertRcloneRemote, ensureDriveProjectFolder, uploadRunArtifacts } from './drive-uploader.js';
+export { createCloudMirror } from './cloud-mirror.js';
 export { runDemoFlow, buildDemoSummary } from './demo.js';
 export { executeStep } from './steps.js';
 export { normalizeDemoVideo, buildNormalizeArgs } from './video.js';
