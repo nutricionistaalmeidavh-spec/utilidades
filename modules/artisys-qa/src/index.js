@@ -43,6 +43,13 @@ export { createFixtureRegistry, resolveFixturePacks, listBuiltInFixturePacks } f
 export { resolveFlowComposition, loadFlowFile, BUILTIN_FLOW_ROOT } from './flow-library.js';
 export { redactSecrets, collectProfileSecretValues } from './redaction.js';
 export { runQaFlow } from './runner.js';
+export { runQaProfile } from './profile-runner.js';
+export { resolveQaProfile, listQaProfiles } from './profiles.js';
+export { BUSINESS_PACKS, listBusinessPacks, resolveBusinessPack } from './business-packs.js';
+export { runDesktopSmoke } from './desktop.js';
+export { retryTransient, runConcurrent } from './network.js';
+export { aggregateQaReport, renderQaReportHtml, writeQaReport, readQaHistory } from './reporting.js';
+export { evaluateReleaseGate } from './release-gate.js';
 export { runDemoFlow, buildDemoSummary } from './demo.js';
 export { executeStep } from './steps.js';
 export { normalizeDemoVideo, buildNormalizeArgs } from './video.js';

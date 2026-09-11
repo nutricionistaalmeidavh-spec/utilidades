@@ -5,6 +5,7 @@ import { createQaRemoteControl } from '../src/remote-control.js';
 const meta = {
   systemId: 'oficina-agro',
   flows: ['smoke', 'regression'],
+  profiles: ['quick', 'full', 'release'],
   environments: ['local'],
   viewports: ['desktop', 'tablet', 'mobile'],
   defaults: { flow: 'smoke', environment: 'local', viewport: 'desktop' },
@@ -66,10 +67,32 @@ test('API exposes only configured QA choices and starts the same QA runner', asy
       await new Promise(resolve => setTimeout(resolve, 10));
     }
 
-    assert.deepEqual(calls, [{ flow: 'regression', environment: 'local', viewport: 'mobile', visual: true }]);
+    assert.deepEqual(calls, [{ profile: null, flow: 'regression', environment: 'local', viewport: 'mobile', visual: true }]);
     const finalStatus = await (await api(baseURL, 'secret', '/api/status')).json();
     assert.equal(finalStatus.state, 'passed');
     assert.equal(finalStatus.result.summary.failed, 0);
+  });
+});
+
+test('API can start a whitelisted QA profile and ignores flow selection', async () => {
+  const calls = [];
+  await withServer({ host: '127.0.0.1', port: 0, token: 'secret', meta, runJob: async request => { calls.push(request); return {}; } }, async ({ baseURL }) => {
+    const response = await api(baseURL, 'secret', '/api/run', {
+      method: 'POST',
+      body: JSON.stringify({ profile: 'release', flow: 'regression', environment: 'local', viewport: 'desktop' }),
+    });
+    assert.equal(response.status, 202);
+    for (let i = 0; i < 20 && !calls.length; i++) await new Promise(resolve => setTimeout(resolve, 10));
+    assert.equal(calls[0].profile, 'release');
+    assert.equal(calls[0].flow, null);
+  });
+});
+
+test('API exposes bounded local history when configured', async () => {
+  await withServer({ host: '127.0.0.1', port: 0, token: 'secret', meta, runJob: async () => ({}), getHistory: async () => [{ profile: 'quick' }] }, async ({ baseURL }) => {
+    const response = await api(baseURL, 'secret', '/api/history');
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), [{ profile: 'quick' }]);
   });
 });
 
