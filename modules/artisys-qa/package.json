@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -21,6 +21,10 @@
     "./agent-state": "./src/agent-state.js",
     "./agent-updater": "./src/agent-updater.js",
     "./agent-supervisor": "./src/agent-supervisor.js",
+    "./agent-console": "./src/agent-console.js",
+    "./telemetry-store": "./src/telemetry-store.js",
+    "./artifact-index": "./src/artifact-index.js",
+    "./progress-protocol": "./src/progress-protocol.js",
     "./bridge-jobs": "./src/bridge-jobs.js",
     "./bridge-worker": "./src/bridge-worker.js",
     "./drive-uploader": "./src/drive-uploader.js",
