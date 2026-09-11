@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import worker, { artifactKey, authorize, sanitizeArtifactName, sanitizeArtifactPath } from '../src/index.js';
+import worker, { artifactId, artifactKey, authorize, sanitizeArtifactName, sanitizeArtifactPath } from '../src/index.js';
 
 test('uses separate agent and read credentials', () => {
   const env = { ARTISYS_QA_AGENT_TOKEN: 'agent-secret', ARTISYS_QA_READ_TOKEN: 'read-secret' };
@@ -13,6 +13,9 @@ test('artifact paths preserve safe folders and reject traversal', () => {
   assert.equal(sanitizeArtifactName('screenshots/video.mp4'), 'video.mp4');
   assert.equal(sanitizeArtifactPath('flow-a/screenshots/shot 1.png'), 'flow-a/screenshots/shot-1.png');
   assert.equal(artifactKey('pdv-artisys', 'job-1', 'flow-a/screenshots/shot.png'), 'projects/pdv-artisys/job-1/flow-a/screenshots/shot.png');
+  assert.match(artifactId('job-1', 'flow-a/screenshots/shot.png'), /^job-1-[a-f0-9]{16}$/);
+  assert.equal(artifactId('job-1', 'flow-a/screenshots/shot.png'), artifactId('job-1', 'flow-a/screenshots/shot.png'));
+  assert.notEqual(artifactId('job-1', 'flow-a/screenshots/shot.png'), artifactId('job-1', 'flow-b/screenshots/shot.png'));
   assert.throws(() => sanitizeArtifactPath('../../shot.png'), /invalid/i);
   assert.throws(() => artifactKey('../pdv', 'job-1', 'x.png'), /invalid/i);
 });
