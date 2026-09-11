@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { loadAgentState, defaultAgentRoot } from './agent-state.js';
 import { checkForStableUpdate, AGENT_RESTART_EXIT_CODE } from './agent-updater.js';
+import { startBridgePolling } from './bridge-worker.js';
 
 const MODULE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CLI_FILE = path.join(MODULE_DIR, 'src', 'cli.mjs');
@@ -73,6 +74,7 @@ export async function startAgentSupervisor({
   let reconcileTimer = null;
   let updateTimer = null;
   let initialUpdateTimer = null;
+  let bridgeControl = null;
   let version = 'unknown';
   try {
     const pkg = JSON.parse((await fs.readFile(path.join(MODULE_DIR, 'package.json'), 'utf8')).replace(/^\uFEFF/, ''));
@@ -152,6 +154,16 @@ export async function startAgentSupervisor({
       version,
       updatedAt: new Date().toISOString(),
       autoUpdate: state.autoUpdate,
+      bridge: state.bridge ? {
+        enabled: state.bridge.enabled !== false,
+        machineId: state.bridge.machineId || null,
+        pollIntervalSeconds: state.bridge.pollIntervalSeconds || 60,
+        drive: state.bridge.drive ? {
+          enabled: state.bridge.drive.enabled === true,
+          remote: state.bridge.drive.remote || null,
+          rootFolderId: state.bridge.drive.rootFolderId || null,
+        } : null,
+      } : null,
       projects: state.projects.map(project => ({
         id: project.id,
         name: project.name,
@@ -185,6 +197,7 @@ export async function startAgentSupervisor({
     if (reconcileTimer) clearInterval(reconcileTimer);
     if (updateTimer) clearInterval(updateTimer);
     if (initialUpdateTimer) clearTimeout(initialUpdateTimer);
+    bridgeControl?.stop();
     for (const id of [...restartTimers.keys()]) clearRestart(id);
     desired.clear();
     for (const id of [...children.keys()]) stopProject(id);
@@ -196,10 +209,11 @@ export async function startAgentSupervisor({
   reconcileTimer = setInterval(() => { void reconcile().catch(error => logger.error(error)); }, reconcileIntervalMs);
   updateTimer = setInterval(() => { void updateCycle().catch(error => logger.error(error)); }, intervalMs);
   initialUpdateTimer = setTimeout(() => { void updateCycle().catch(error => logger.error(error)); }, Math.max(1000, initialUpdateDelayMs));
+  bridgeControl = startBridgePolling({ root, logger });
 
   const shutdown = () => { void stop().finally(() => exit(0)); };
   process.once('SIGINT', shutdown);
   process.once('SIGTERM', shutdown);
 
-  return { stop, reconcile, updateCycle, children };
+  return { stop, reconcile, updateCycle, children, bridgeControl };
 }
