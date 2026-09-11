@@ -53,3 +53,12 @@ test('recovers an active job as interrupted', async () => {
   assert.equal(recovered.stage, 'INTERRUPTED');
   assert.equal((await telemetry.readJob('job-1')).stage, 'INTERRUPTED');
 });
+
+test('heartbeat can expose agent-level bootstrap stage without a job', async () => {
+  const root = await tempRoot();
+  const telemetry = createTelemetryStore({ root, machineId: 'victor-pc' });
+  await telemetry.heartbeat({ stage: 'SYNCING_PROJECT', detail: 'Syncing pdv-artisys', projectId: 'pdv-artisys' });
+  const snapshot = await telemetry.getSnapshot();
+  assert.equal(snapshot.agent.stage, 'SYNCING_PROJECT');
+  assert.equal(snapshot.agent.projectId, 'pdv-artisys');
+});
