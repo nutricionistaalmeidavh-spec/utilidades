@@ -29,6 +29,7 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 | `artisys-local-backend` 0.1.0 | implemented | PocketBase local com bind seguro em loopback |
 | `artisys-remote-support` 0.1.0 | implemented | sessões de suporte remoto isoladas via RustDesk |
 | `artisys-release` 0.1.0 | implemented | gates QA/segurança/API/assinatura e hash de artefatos |
+| `artisys-release-validator` 0.1.0 | implemented | validação executável de instalador/release, stress, upgrade e relatórios |
 | `artisys-desktop-shell` 0.1.0 | implemented | manifest desktop, deep links, settings, logs e update hooks |
 | `artisys-ocr` 0.1.0 | implemented | contrato OCR unificado Paddle/Tesseract/browser |
 | `artisys-product-qa` 0.1.0 | implemented | agregador QA + security + API contracts |

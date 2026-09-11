@@ -25,6 +25,7 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | Local Backend | 0.1.0 | local sob demanda | PocketBase local com loopback seguro |
 | Remote Support | 0.1.0 | local sob demanda | sessão explícita de suporte RustDesk |
 | Release | 0.1.0 | local/Actions | gates, SHA-256 e bloqueio de release |
+| Release Validator | 0.1.0 | local/Actions | instalação, boot, stress, upgrade/uninstall e relatórios |
 | Desktop Shell | 0.1.0 | embedded/local | deep links, settings, logs e update hooks |
 | OCR | 0.1.0 | embedded/local | seleção PaddleOCR/Tesseract/Tesseract.js |
 | Product QA | 0.1.0 | local/Actions | agregação QA + security + API contracts |
@@ -34,6 +35,10 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | BIM | 0.2.0 | local sob demanda | boundary IFC/IfcOpenShell, propriedades e quantidades |
 
 `implemented` ou `stable` significa código executável e verificado no kit; homologação em produto consumidor é separada.
+
+## Release e validação de artefato
+
+`artisys-release` coordena gates gerais de publicação como QA, segurança, contratos e assinatura. `artisys-release-validator` atua depois do build sobre o artefato distribuível: instala, executa fases/cenários do consumidor, permite stress e upgrade/uninstall, calcula SHA-256 e gera relatórios JSON/HTML. O segundo não substitui o primeiro e não contém regras específicas de nenhum produto.
 
 ## Verificação
 

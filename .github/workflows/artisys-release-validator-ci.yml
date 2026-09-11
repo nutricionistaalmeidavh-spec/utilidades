@@ -1,0 +1,37 @@
+name: ArtiSys release validator
+on:
+  pull_request:
+    paths:
+      - 'modules/artisys-release-validator/**'
+      - '.github/workflows/artisys-release-validator-ci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'modules/artisys-release-validator/**'
+      - '.github/workflows/artisys-release-validator-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  module:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify module
+        working-directory: modules/artisys-release-validator
+        run: |
+          npm test
+          npm run check
+          npm run example
+          npm pack --dry-run

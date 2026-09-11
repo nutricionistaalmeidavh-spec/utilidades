@@ -23,6 +23,8 @@ jobs:
         run: |
           npm test --prefix modules/artisys-upload
           npm test --prefix modules/artisys-annotations
+      - name: Verify release validator contracts
+        run: npm test --prefix modules/artisys-release-validator
       - name: Verify ArtiSys hardware module units
         run: |
           node --test modules/artisys-serialport/tests/*.test.js
