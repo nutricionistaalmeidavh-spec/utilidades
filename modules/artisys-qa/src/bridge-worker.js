@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { defaultAgentRoot, loadAgentState, saveAgentState } from './agent-state.js';
 import { listPendingBridgeJobs, loadProcessedJobs, markBridgeJobProcessed, validateBridgeJob } from './bridge-jobs.js';
 import { uploadRunArtifacts } from './drive-uploader.js';
+import { syncManagedProjects } from './project-bootstrap.js';
 
 const MODULE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_DIR = path.resolve(MODULE_DIR, '..', '..');
@@ -204,9 +205,20 @@ async function retryPendingUploads({ state, processed, root, logger }) {
 }
 
 export async function bridgePollOnce({ root = defaultAgentRoot(), repoDir = REPO_DIR, logger = console } = {}) {
-  const state = await ensureBridgeConfiguration(root);
+  let state = await ensureBridgeConfiguration(root);
   if (!state.bridge.enabled) return { enabled: false, processed: 0 };
-  if (!state.bridge.drive.enabled) return { enabled: true, processed: 0, reason: 'waiting-for-drive' };
+
+  const projectSync = await syncManagedProjects({
+    root,
+    controlRepoDir: repoDir,
+    ref: state.bridge.ref || state.stableRef || 'main',
+    logger,
+  }).catch(error => ({ registryCount: 0, results: [], error: error.message }));
+  state = await ensureBridgeConfiguration(root);
+
+  if (!state.bridge.drive.enabled) {
+    return { enabled: true, processed: 0, reason: 'waiting-for-drive', projectSync };
+  }
 
   const processed = await loadProcessedJobs(root);
   const retriedUploads = await retryPendingUploads({ state, processed, root, logger });
@@ -240,7 +252,7 @@ export async function bridgePollOnce({ root = defaultAgentRoot(), repoDir = REPO
     processed[job.id] = { status: persistedStatus };
     count += 1;
   }
-  return { enabled: true, processed: count, discovered: entries.length, retriedUploads };
+  return { enabled: true, processed: count, discovered: entries.length, retriedUploads, projectSync };
 }
 
 export function startBridgePolling({ root = defaultAgentRoot(), logger = console } = {}) {
