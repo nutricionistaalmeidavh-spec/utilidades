@@ -61,6 +61,31 @@ test('serializes concurrent heartbeat, stage and artifact mutations', async () =
   assert.equal((await telemetry.readJob('job-race')).artifacts.length, 2);
 });
 
+test('publishes cloud messages asynchronously without making telemetry depend on cloud', async () => {
+  const root = await tempRoot();
+  const published = [];
+  const telemetry = createTelemetryStore({
+    root,
+    machineId: 'victor-pc',
+    onPublish: async message => {
+      published.push(message.type);
+      if (message.type === 'event') throw new Error('cloud unavailable');
+    },
+  });
+  await telemetry.transition({ jobId: 'job-cloud', projectId: 'pdv', stage: 'QUEUED' });
+  await telemetry.heartbeat({ stage: 'SYNCING_PROJECT', projectId: 'pdv' });
+  const artifact = path.join(root, 'artifacts', 'pdv', 'cloud.png');
+  await fs.mkdir(path.dirname(artifact), { recursive: true });
+  await fs.writeFile(artifact, 'x');
+  await telemetry.recordArtifact({ jobId: 'job-cloud', projectId: 'pdv', type: 'screenshot', localPath: artifact });
+  await new Promise(resolve => setTimeout(resolve, 20));
+  assert.equal((await telemetry.readJob('job-cloud')).stage, 'QUEUED');
+  assert.equal(published.includes('event'), true);
+  assert.equal(published.includes('job'), true);
+  assert.equal(published.includes('heartbeat'), true);
+  assert.equal(published.includes('artifact'), true);
+});
+
 test('rejects invalid transitions and artifact traversal', async () => {
   const root = await tempRoot();
   const telemetry = createTelemetryStore({ root, machineId: 'victor-pc' });
