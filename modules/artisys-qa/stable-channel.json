@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "minimumNode": "22",
-  "notes": "Agent observability console: durable live telemetry, flow/step progress, heartbeat/stall detection, authenticated read-only LAN dashboard on port 4160, and live artifact previews without changing the existing bridge or Drive archive behavior."
+  "notes": "Adds optional Cloudflare observability mirroring using D1 binding DB and R2 binding R2, while keeping local telemetry, LAN console, Drive archive, bridge and A/B updater independent."
 }
