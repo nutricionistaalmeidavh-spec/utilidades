@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-10",
+  "updatedAt": "2026-09-11",
   "modules": [
-    {"id":"artisys-qa","version":"1.2.0","status":"stable","consumptionMode":"shared","upstreams":["playwright"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},
+    {"id":"artisys-qa","version":"1.3.0","status":"stable","consumptionMode":"shared","upstreams":["playwright"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},
     {"id":"artisys-pdf","version":"1.0.0","status":"stable","consumptionMode":"shared","upstreams":["pdfme","pdfjs","react-pdf-highlighter"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","PDV-ARTISYS"]},
     {"id":"artisys-workflows","version":"1.0.0","status":"stable","consumptionMode":"shared","upstreams":["xyflow","logicflow","rete"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub","PDV-ARTISYS"]},
     {"id":"artisys-capture","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["html5-qrcode","opencv"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},

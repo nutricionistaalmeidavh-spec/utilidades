@@ -23,7 +23,7 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
+  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual] [--update-visual-baselines]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
 }
 
 async function resolveProfileRuntime(manifest, rootDir, requestedProfile) {
@@ -33,6 +33,12 @@ async function resolveProfileRuntime(manifest, rootDir, requestedProfile) {
 }
 
 const args = parseArgs(process.argv.slice(2));
+if (args.visual) process.env.ARTISYS_QA_VISUAL = '1';
+if (args['update-visual-baselines']) {
+  process.env.ARTISYS_QA_VISUAL = '1';
+  process.env.ARTISYS_QA_UPDATE_VISUAL_BASELINES = '1';
+}
+
 if (args.help || args.command === 'help') {
   usage();
   process.exit(0);
