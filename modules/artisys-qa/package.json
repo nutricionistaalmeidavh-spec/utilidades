@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -11,6 +11,13 @@
     "./fixtures": "./src/fixtures.js",
     "./manifest": "./src/manifest.js",
     "./runner": "./src/runner.js",
+    "./profile-runner": "./src/profile-runner.js",
+    "./profiles": "./src/profiles.js",
+    "./business-packs": "./src/business-packs.js",
+    "./desktop": "./src/desktop.js",
+    "./network": "./src/network.js",
+    "./reporting": "./src/reporting.js",
+    "./release-gate": "./src/release-gate.js",
     "./demo": "./src/demo.js",
     "./video": "./src/video.js",
     "./helpers": "./src/helpers.js",
