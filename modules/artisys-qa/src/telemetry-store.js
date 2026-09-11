@@ -77,7 +77,16 @@ export function createTelemetryStore({ root, machineId, redact = value => value,
   const jobsRoot = path.join(telemetryRoot, 'jobs');
   const artifactRoot = path.join(root, 'artifacts');
 
-  const baseSnapshot = () => ({ schemaVersion: 1, machineId, updatedAt: iso(now), heartbeatAt: null, currentJob: null, lastJob: null, artifacts: [] });
+  const baseSnapshot = () => ({
+    schemaVersion: 1,
+    machineId,
+    updatedAt: iso(now),
+    heartbeatAt: null,
+    currentJob: null,
+    lastJob: null,
+    artifacts: [],
+    agent: { stage: 'IDLE', detail: null, projectId: null, updatedAt: iso(now) },
+  });
 
   async function getSnapshot() {
     return await readJson(currentFile, baseSnapshot());
@@ -157,7 +166,14 @@ export function createTelemetryStore({ root, machineId, redact = value => value,
   async function heartbeat(detail = null) {
     const snapshot = await getSnapshot();
     const at = iso(now);
-    if (snapshot.currentJob && detail) snapshot.currentJob = { ...snapshot.currentJob, detail: String(detail), updatedAt: at };
+    const payload = detail && typeof detail === 'object' && !Array.isArray(detail) ? detail : { detail };
+    if (snapshot.currentJob && payload.detail) snapshot.currentJob = { ...snapshot.currentJob, detail: String(payload.detail), updatedAt: at };
+    snapshot.agent = {
+      stage: payload.stage ? String(payload.stage) : snapshot.agent?.stage || 'IDLE',
+      detail: payload.detail == null ? snapshot.agent?.detail || null : String(payload.detail),
+      projectId: payload.projectId == null ? snapshot.agent?.projectId || null : String(payload.projectId),
+      updatedAt: at,
+    };
     snapshot.heartbeatAt = at;
     return writeSnapshot(snapshot);
   }
