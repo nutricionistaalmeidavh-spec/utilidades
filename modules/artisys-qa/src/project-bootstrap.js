@@ -14,6 +14,10 @@ const MANAGED_PROJECT_REMOTE_REF = 'refs/remotes/origin/artisys-managed';
 const ALLOWED_SETUP = new Set(['none', 'npm-ci', 'npm-install', 'dotnet-restore', 'pip-requirements']);
 const ALLOWED_REPOSITORY = /^https:\/\/github\.com\/nutricionistaalmeidavh-spec\/([A-Za-z0-9._-]+?)(?:\.git)?$/i;
 
+async function heartbeat(telemetry, payload) {
+  try { await telemetry?.heartbeat(payload); } catch {}
+}
+
 export function managedProjectsRoot(root = defaultAgentRoot()) {
   return path.join(root, 'projects');
 }
@@ -125,7 +129,7 @@ function nextManagedPort(state, id) {
   return port;
 }
 
-export async function syncManagedProjects({ root = defaultAgentRoot(), controlRepoDir, ref = 'main', logger = console } = {}) {
+export async function syncManagedProjects({ root = defaultAgentRoot(), controlRepoDir, ref = 'main', logger = console, telemetry = null } = {}) {
   const definitions = await readManagedProjectRegistry({ controlRepoDir, ref });
   await fs.mkdir(managedProjectsRoot(root), { recursive: true });
   const results = [];
@@ -140,12 +144,15 @@ export async function syncManagedProjects({ root = defaultAgentRoot(), controlRe
 
     const destination = path.join(managedProjectsRoot(root), definition.id);
     try {
+      await heartbeat(telemetry, { stage: 'SYNCING_PROJECT', detail: `Sincronizando ${definition.name}`, projectId: definition.id });
       const sha = await ensureRepository(definition, destination);
       const config = path.join(destination, ...definition.configPath.split('/'));
       await fs.access(config);
       if (!existing || existing.managedCommit !== sha || existing.managedSetup !== definition.setup) {
+        await heartbeat(telemetry, { stage: 'INSTALLING_DEPENDENCIES', detail: `Preparando dependências de ${definition.name}`, projectId: definition.id });
         await runSetup(definition, destination);
       }
+      await heartbeat(telemetry, { stage: 'REGISTERING_PROJECT', detail: `Registrando ${definition.name}`, projectId: definition.id });
       const port = nextManagedPort(state, definition.id);
       await registerAgentProject({
         id: definition.id,
@@ -166,8 +173,10 @@ export async function syncManagedProjects({ root = defaultAgentRoot(), controlRe
         managedSetup: definition.setup,
       };
       await saveAgentState(state, root);
+      await heartbeat(telemetry, { stage: 'IDLE', detail: `${definition.name} pronto`, projectId: definition.id });
       results.push({ id: definition.id, status: existing?.managedCommit === sha ? 'current' : 'synced', commit: sha, config });
     } catch (error) {
+      await heartbeat(telemetry, { stage: 'FAILED', detail: `Falha ao preparar ${definition.name}: ${error.message}`, projectId: definition.id });
       logger.error(`[projects] ${definition.id}: ${error.message}`);
       results.push({ id: definition.id, status: 'failed', error: error.message });
     }
