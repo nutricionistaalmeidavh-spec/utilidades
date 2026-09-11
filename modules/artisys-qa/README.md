@@ -2,7 +2,9 @@
 
 Módulo compartilhado ArtiSys para QA, automação e gravação de demonstrações em aplicações web ou Electron.
 
-A versão **1.2.0** adiciona uma plataforma reutilizável de **Demo Profiles**: o módulo pode preparar/reutilizar conta demo, workspace isolado, fixtures versionadas e fluxos compartilhados antes de executar Playwright. Regras específicas de cada produto ficam atrás de um adapter pequeno do consumidor.
+A versão **1.4.0** adiciona o **QA Remote Control** opcional: um painel web mobile-first, self-hosted, que dispara o mesmo runner local sem depender do GitHub Actions. O Actions continua disponível e independente. O Remote Control só existe enquanto o comando `remote` estiver explicitamente em execução.
+
+A plataforma de **Demo Profiles** prepara/reutiliza conta demo, workspace isolado, fixtures versionadas e fluxos compartilhados antes de executar Playwright. Regras específicas de cada produto ficam atrás de um adapter pequeno do consumidor.
 
 ## O que o módulo centraliza
 
@@ -14,6 +16,8 @@ A versão **1.2.0** adiciona uma plataforma reutilizável de **Demo Profiles**: 
 - biblioteca de fluxos reutilizáveis via `uses`;
 - ações abstratas via `capability` mapeadas pelo adapter;
 - screenshots, trace, telemetria e vídeo;
+- regressão visual opt-in;
+- QA Remote Control opt-in para celular/rede local;
 - MP4 social 16:9, 1:1 e Reels 9:16;
 - redaction de secrets nos summaries, telemetria e logs de processo.
 
@@ -144,7 +148,34 @@ artisys-qa run --config qa/artisys-qa.config.json --flow smoke --profile default
 artisys-qa demo --config qa/artisys-qa.config.json --demo quick-30s --profile default --preset reels-9x16
 ```
 
-Quando existe `defaultDemoProfile`, `run` e `demo` o utilizam automaticamente. Configurações 1.1.1 sem profile continuam funcionando sem alteração.
+Quando existe `defaultDemoProfile`, `run` e `demo` o utilizam automaticamente. Configurações antigas sem profile continuam funcionando sem alteração.
+
+## QA Remote Control — opcional
+
+O Remote Control não substitui o GitHub Actions e não inicia sozinho. Para controle apenas no próprio PC:
+
+```sh
+artisys-qa remote --config qa/artisys-qa.config.json
+```
+
+Para abrir o painel no celular conectado à mesma rede local/Wi-Fi:
+
+```sh
+artisys-qa remote --config qa/artisys-qa.config.json --host 0.0.0.0 --port 4173
+```
+
+A CLI imprime um endereço `LAN: http://<ip-do-pc>:4173` e um `TOKEN=<token-aleatorio>`. Abra o endereço no celular e informe esse token. Também é possível definir o token previamente por `--token` ou `ARTISYS_QA_REMOTE_TOKEN`.
+
+No painel é possível escolher somente valores já declarados no manifest:
+
+- flow;
+- environment;
+- viewport desktop/tablet/mobile;
+- regressão visual opt-in.
+
+O navegador **não envia comandos de shell arbitrários** ao PC. O servidor aceita uma execução por vez e reutiliza `runQaFlow`, o mesmo núcleo usado pela CLI. Atualização de baseline visual não é exposta pelo painel remoto.
+
+O computador/runner precisa estar ligado durante a execução. O modo LAN é voltado a rede confiável. Para acesso pela internet, use separadamente uma VPN/reverse proxy seguro self-hosted; isso não é dependência do núcleo. Se preferir, continue disparando o QA pelo GitHub Actions.
 
 ## Resultado QA
 
@@ -192,11 +223,15 @@ Em Electron, a viewport desktop é preservada e encaixada no canvas social. Em w
 - o runner aplica redaction dos valores sensíveis em summaries, telemetria e `process.log`;
 - traces/screenshots/vídeos ainda podem registrar conteúdo visível da aplicação: use exclusivamente dados demo/sintéticos;
 - adapters devem isolar a conta/workspace demo de dados reais;
-- reset exige `workspace.demo === true`.
+- reset exige `workspace.demo === true`;
+- o Remote Control exige token para a API e não recebe shell arbitrário;
+- não exponha diretamente a porta do Remote Control à internet sem uma camada segura própria.
 
 ## GitHub Actions
 
 O repositório fornece action composta e workflow reutilizável. O consumidor pode disparar QA/Demo pelo GitHub, inclusive pelo celular, e receber `qa-artifacts`.
+
+O Remote Control é uma alternativa opt-in para executar no runner local/self-hosted quando você não quiser usar Actions. Nenhum dos dois depende do outro.
 
 Para repositórios que não podem consumir diretamente um workflow privado compartilhado, use runtime pinado no consumidor e registre versão/commit de origem. Atualizações centrais não devem entrar silenciosamente em aplicativos já publicados: o consumidor atualiza o pin e gera um novo build/redeploy.
 
@@ -221,4 +256,4 @@ npm pack --dry-run
 
 ## Custo
 
-O núcleo não exige serviço pago. Playwright e ffmpeg rodam localmente ou no runner escolhido pelo consumidor.
+O núcleo não exige serviço pago. Playwright, o QA Remote Control e ffmpeg rodam localmente ou no runner escolhido pelo consumidor.

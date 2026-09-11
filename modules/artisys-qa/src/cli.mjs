@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 import path from 'node:path';
+import os from 'node:os';
+import { randomBytes } from 'node:crypto';
 import { loadQaManifest, resolveEnvironment, resolveFlow, resolveViewport, resolveDemo, resolveDemoProfile } from './manifest.js';
 import { loadDemoAdapter } from './adapters.js';
 import { prepareDemoProfile, resetDemoProfile, getDemoProfileStatus } from './demo-profile.js';
 import { runQaFlow } from './runner.js';
 import { runDemoFlow } from './demo.js';
+import { createQaRemoteControl } from './remote-control.js';
 
 function parseArgs(argv) {
   const [command = 'run', ...rest] = argv;
@@ -23,13 +26,98 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual] [--update-visual-baselines]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
+  console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual] [--update-visual-baselines]\n  remote --config qa/artisys-qa.config.json [--host 127.0.0.1|0.0.0.0] [--port 4173] [--token secret] [--profile default] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
 }
 
 async function resolveProfileRuntime(manifest, rootDir, requestedProfile) {
   const profile = resolveDemoProfile(manifest, requestedProfile, rootDir);
   if (!profile) return { demoProfile: null, demoAdapter: null };
   return { demoProfile: profile, demoAdapter: await loadDemoAdapter(profile.adapterPath) };
+}
+
+function remoteMeta(manifest) {
+  const flows = Object.keys(manifest.flows || {});
+  const environments = Object.keys(manifest.environments || {});
+  if (!flows.length) throw new Error('Remote control requires at least one QA flow');
+  return {
+    systemId: manifest.systemId,
+    flows,
+    environments,
+    viewports: ['desktop', 'tablet', 'mobile'],
+    defaults: {
+      flow: manifest.defaultFlow || flows[0],
+      environment: manifest.defaultEnvironment || environments[0],
+      viewport: typeof manifest.defaultViewport === 'string' ? manifest.defaultViewport : 'desktop',
+    },
+  };
+}
+
+function lanUrls(port) {
+  const urls = [];
+  for (const entries of Object.values(os.networkInterfaces())) {
+    for (const entry of entries || []) {
+      if (entry.family === 'IPv4' && !entry.internal) urls.push(`http://${entry.address}:${port}`);
+    }
+  }
+  return [...new Set(urls)];
+}
+
+async function runRemoteServer({ args, manifest, rootDir }) {
+  const host = args.host === true || !args.host ? '127.0.0.1' : String(args.host);
+  const port = args.port === true || !args.port ? 4173 : Number(args.port);
+  const token = args.token === true
+    ? randomBytes(24).toString('hex')
+    : args.token || process.env.ARTISYS_QA_REMOTE_TOKEN || randomBytes(24).toString('hex');
+  const outputRoot = args.output ? path.resolve(String(args.output)) : path.resolve('qa-artifacts');
+  const meta = remoteMeta(manifest);
+
+  const control = createQaRemoteControl({
+    host,
+    port,
+    token,
+    meta,
+    runJob: async request => {
+      const previousVisual = process.env.ARTISYS_QA_VISUAL;
+      if (request.visual) process.env.ARTISYS_QA_VISUAL = '1';
+      else delete process.env.ARTISYS_QA_VISUAL;
+      try {
+        const { name: environmentName, environment } = resolveEnvironment(manifest, request.environment);
+        const { name: flowName, file: flowFile } = resolveFlow(manifest, request.flow, rootDir);
+        const viewport = resolveViewport(manifest, request.viewport);
+        const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
+        const result = await runQaFlow({
+          manifest,
+          rootDir,
+          environmentName,
+          environment,
+          flowName,
+          flowFile,
+          viewport,
+          outputRoot,
+          ...profileRuntime,
+        });
+        return { summary: result.summary, outputDir: result.outputDir };
+      } finally {
+        if (previousVisual == null) delete process.env.ARTISYS_QA_VISUAL;
+        else process.env.ARTISYS_QA_VISUAL = previousVisual;
+      }
+    },
+  });
+
+  const started = await control.start();
+  console.log(`ArtiSys QA Remote Control: ${started.baseURL}`);
+  if (host === '0.0.0.0' || host === '::') {
+    for (const url of lanUrls(started.port)) console.log(`LAN: ${url}`);
+  }
+  console.log(`TOKEN=${started.token}`);
+  console.log('Press Ctrl+C to stop. GitHub Actions remains available independently.');
+
+  await new Promise(resolve => {
+    const stop = () => resolve();
+    process.once('SIGINT', stop);
+    process.once('SIGTERM', stop);
+  });
+  await control.close();
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -106,6 +194,8 @@ try {
     });
     console.log(JSON.stringify(result.summary, null, 2));
     console.log(`ARTISYS_QA_OUTPUT=${result.outputDir}`);
+  } else if (args.command === 'remote') {
+    await runRemoteServer({ args, manifest, rootDir });
   } else if (args.command === 'demo') {
     const { name: environmentName, environment } = resolveEnvironment(manifest, args.environment);
     const demo = resolveDemo(manifest, args.demo, rootDir);
