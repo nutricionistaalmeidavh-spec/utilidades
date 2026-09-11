@@ -7,6 +7,7 @@ import { ensureDir, sanitizeName } from './helpers.js';
 export const DEFAULT_AGENT_PORT = 4173;
 export const DEFAULT_UPDATE_INTERVAL_MINUTES = 1;
 export const DEFAULT_CONSOLE_PORT = 4160;
+export const DEFAULT_CLOUD_TOKEN_ENV = 'ARTISYS_QA_CLOUD_AGENT_TOKEN';
 
 export function defaultAgentRoot(env = process.env) {
   const base = env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
@@ -36,6 +37,13 @@ export function createDefaultAgentState() {
       port: DEFAULT_CONSOLE_PORT,
       token: null,
     },
+    cloud: {
+      enabled: false,
+      endpoint: null,
+      tokenEnv: DEFAULT_CLOUD_TOKEN_ENV,
+      uploadArtifacts: true,
+      timeoutMs: 10000,
+    },
   };
 }
 
@@ -49,6 +57,7 @@ export async function loadAgentState(root = defaultAgentRoot()) {
       ...parsed,
       projects: Array.isArray(parsed.projects) ? parsed.projects : [],
       console: { ...defaults.console, ...(parsed.console && typeof parsed.console === 'object' ? parsed.console : {}) },
+      cloud: { ...defaults.cloud, ...(parsed.cloud && typeof parsed.cloud === 'object' ? parsed.cloud : {}) },
     };
     if (!Number.isFinite(Number(state.updateIntervalMinutes)) || Number(state.updateIntervalMinutes) > DEFAULT_UPDATE_INTERVAL_MINUTES) {
       state.updateIntervalMinutes = DEFAULT_UPDATE_INTERVAL_MINUTES;
@@ -91,6 +100,44 @@ export async function setAgentConsoleLan(enabled, { root = defaultAgentRoot() } 
   state.console.host = state.console.lanEnabled ? '0.0.0.0' : '127.0.0.1';
   await saveAgentState(state, root);
   return { ...state.console };
+}
+
+export async function ensureAgentCloudConfiguration(root = defaultAgentRoot()) {
+  const state = await loadAgentState(root);
+  const current = state.cloud && typeof state.cloud === 'object' ? state.cloud : {};
+  const timeoutMs = Number(current.timeoutMs);
+  state.cloud = {
+    enabled: current.enabled === true,
+    endpoint: current.endpoint ? String(current.endpoint).replace(/\/$/, '') : null,
+    tokenEnv: typeof current.tokenEnv === 'string' && current.tokenEnv ? current.tokenEnv : DEFAULT_CLOUD_TOKEN_ENV,
+    uploadArtifacts: current.uploadArtifacts !== false,
+    timeoutMs: Number.isFinite(timeoutMs) && timeoutMs >= 1000 && timeoutMs <= 120000 ? timeoutMs : 10000,
+  };
+  await saveAgentState(state, root);
+  return state;
+}
+
+export async function configureAgentCloud({ enabled, endpoint, tokenEnv, uploadArtifacts, timeoutMs } = {}, { root = defaultAgentRoot() } = {}) {
+  const state = await ensureAgentCloudConfiguration(root);
+  if (endpoint != null) {
+    const url = new URL(String(endpoint));
+    if (url.protocol !== 'https:') throw new Error('cloud endpoint must use https');
+    state.cloud.endpoint = url.toString().replace(/\/$/, '');
+  }
+  if (tokenEnv != null) {
+    const value = String(tokenEnv);
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) throw new Error('cloud tokenEnv is invalid');
+    state.cloud.tokenEnv = value;
+  }
+  if (enabled != null) state.cloud.enabled = Boolean(enabled);
+  if (uploadArtifacts != null) state.cloud.uploadArtifacts = Boolean(uploadArtifacts);
+  if (timeoutMs != null) {
+    const value = Number(timeoutMs);
+    if (!Number.isFinite(value) || value < 1000 || value > 120000) throw new Error('cloud timeoutMs must be between 1000 and 120000');
+    state.cloud.timeoutMs = value;
+  }
+  await saveAgentState(state, root);
+  return { ...state.cloud };
 }
 
 function normalizePort(value) {
