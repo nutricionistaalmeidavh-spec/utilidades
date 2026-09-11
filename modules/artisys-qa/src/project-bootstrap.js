@@ -11,7 +11,7 @@ const execFileAsync = promisify(execFile);
 export const PROJECT_REGISTRY_PATH = 'modules/artisys-qa/bridge/projects.json';
 const PROJECT_REGISTRY_REMOTE_REF = 'refs/remotes/origin/artisys-project-registry';
 const MANAGED_PROJECT_REMOTE_REF = 'refs/remotes/origin/artisys-managed';
-const ALLOWED_SETUP = new Set(['none', 'npm-ci', 'dotnet-restore', 'pip-requirements']);
+const ALLOWED_SETUP = new Set(['none', 'npm-ci', 'npm-install', 'dotnet-restore', 'pip-requirements']);
 const ALLOWED_REPOSITORY = /^https:\/\/github\.com\/nutricionistaalmeidavh-spec\/([A-Za-z0-9._-]+?)(?:\.git)?$/i;
 
 export function managedProjectsRoot(root = defaultAgentRoot()) {
@@ -96,8 +96,13 @@ async function ensureRepository(project, destination) {
 
 async function runSetup(project, destination) {
   if (project.setup === 'none') return;
+  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   if (project.setup === 'npm-ci') {
-    await runCommand(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['ci'], { cwd: destination });
+    await runCommand(npm, ['ci'], { cwd: destination });
+    return;
+  }
+  if (project.setup === 'npm-install') {
+    await runCommand(npm, ['install', '--no-audit', '--no-fund'], { cwd: destination });
     return;
   }
   if (project.setup === 'dotnet-restore') {

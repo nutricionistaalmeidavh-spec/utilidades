@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "minimumNode": "22",
-  "notes": "Windows updater EINVAL fix plus managed project auto-clone, update and QA registration from the private control registry."
+  "notes": "Adds safe npm-install managed-project bootstrap for repositories without a lockfile, preserving the fixed setup whitelist and Windows cmd shim handling."
 }
