@@ -85,6 +85,14 @@ export async function ensureAgentConsoleConfiguration(root = defaultAgentRoot())
   return state;
 }
 
+export async function setAgentConsoleLan(enabled, { root = defaultAgentRoot() } = {}) {
+  const state = await ensureAgentConsoleConfiguration(root);
+  state.console.lanEnabled = Boolean(enabled);
+  state.console.host = state.console.lanEnabled ? '0.0.0.0' : '127.0.0.1';
+  await saveAgentState(state, root);
+  return { ...state.console };
+}
+
 function normalizePort(value) {
   const port = Number(value ?? DEFAULT_AGENT_PORT);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new RangeError('port must be between 1024 and 65535');
