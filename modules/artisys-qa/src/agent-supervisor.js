@@ -42,6 +42,16 @@ function projectSignature(project) {
   });
 }
 
+function consoleSignature(state) {
+  return JSON.stringify({
+    enabled: state.console?.enabled !== false,
+    lanEnabled: state.console?.lanEnabled === true,
+    host: state.console?.host || '127.0.0.1',
+    port: Number(state.console?.port || 4160),
+    token: state.console?.token || null,
+  });
+}
+
 function environmentSecrets(env = process.env) {
   const secretName = /(TOKEN|SECRET|PASSWORD|PASS|API[_-]?KEY|CREDENTIAL|AUTH)/i;
   return [...new Set(Object.entries(env)
@@ -93,6 +103,7 @@ export async function startAgentSupervisor({
   let bridgeControl = null;
   let consoleControl = null;
   let consoleInfo = null;
+  let activeConsoleSignature = null;
   let telemetry = null;
   let version = 'unknown';
   try {
@@ -185,6 +196,36 @@ export async function startAgentSupervisor({
     };
   }
 
+  async function refreshConsole(state) {
+    if (!telemetry) return;
+    const nextSignature = consoleSignature(state);
+    if (activeConsoleSignature === nextSignature) return;
+    if (consoleControl) {
+      await consoleControl.close().catch(error => logger.error(`[console] ${error.message}`));
+      consoleControl = null;
+      consoleInfo = null;
+    }
+    activeConsoleSignature = nextSignature;
+    if (state.console?.enabled === false) return;
+    try {
+      consoleControl = consoleFactory({
+        host: state.console?.host || '127.0.0.1',
+        port: Number(state.console?.port || 4160),
+        token: state.console?.token,
+        telemetry,
+        agentState: consoleAgentState,
+        artifactRoot: path.join(root, 'artifacts'),
+        lanEnabled: state.console?.lanEnabled === true,
+        agentInfo,
+      });
+      consoleInfo = await consoleControl.start();
+    } catch (error) {
+      consoleControl = null;
+      consoleInfo = null;
+      logger.error(`[console] ${error.message}`);
+    }
+  }
+
   async function reconcile() {
     const state = await loadAgentState(root);
     desired.clear();
@@ -195,6 +236,7 @@ export async function startAgentSupervisor({
       if (!next || entry.signature !== projectSignature(next)) stopProject(id);
     }
     for (const project of desired.values()) startProject(project);
+    await refreshConsole(state);
 
     await writeAgentHealth({
       status: 'running',
@@ -217,6 +259,7 @@ export async function startAgentSupervisor({
         lanEnabled: state.console.lanEnabled === true,
         host: state.console.host || '127.0.0.1',
         port: Number(state.console.port || 4160),
+        running: Boolean(consoleInfo),
       } : null,
       projects: state.projects.map(project => ({
         id: project.id,
@@ -279,11 +322,14 @@ export async function startAgentSupervisor({
     desired.clear();
     for (const id of [...children.keys()]) stopProject(id);
     if (consoleControl) await consoleControl.close().catch(error => logger.error(`[console] ${error.message}`));
+    consoleControl = null;
+    consoleInfo = null;
+    activeConsoleSignature = null;
     await writeAgentHealth({ status: 'stopped', pid: process.pid, version, updatedAt: new Date().toISOString() }, root).catch(() => {});
   }
 
   const bridgeState = await ensureBridgeConfiguration(root);
-  const configuredState = await ensureAgentConsoleConfiguration(root);
+  await ensureAgentConsoleConfiguration(root);
   const secrets = environmentSecrets();
   telemetry = telemetryFactory({
     root,
@@ -299,27 +345,6 @@ export async function startAgentSupervisor({
   updateTimer = setInterval(() => { void updateCycle().catch(error => logger.error(error)); }, intervalMs);
   initialUpdateTimer = setTimeout(() => { void updateCycle().catch(error => logger.error(error)); }, Math.max(1000, initialUpdateDelayMs));
   heartbeatTimer = setInterval(() => { void heartbeatCycle(); }, Math.max(10, Number(heartbeatIntervalMs) || 2000));
-
-  if (configuredState.console.enabled !== false) {
-    try {
-      consoleControl = consoleFactory({
-        host: configuredState.console.host,
-        port: Number(configuredState.console.port || 4160),
-        token: configuredState.console.token,
-        telemetry,
-        agentState: consoleAgentState,
-        artifactRoot: path.join(root, 'artifacts'),
-        lanEnabled: configuredState.console.lanEnabled === true,
-        agentInfo,
-      });
-      consoleInfo = await consoleControl.start();
-    } catch (error) {
-      consoleControl = null;
-      consoleInfo = null;
-      logger.error(`[console] ${error.message}`);
-    }
-  }
-
   bridgeControl = bridgeStarter({ root, logger, telemetry });
 
   const shutdown = () => { void stop().finally(() => exit(0)); };
