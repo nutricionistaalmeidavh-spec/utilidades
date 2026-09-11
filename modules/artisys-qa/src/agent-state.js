@@ -6,6 +6,7 @@ import { ensureDir, sanitizeName } from './helpers.js';
 
 export const DEFAULT_AGENT_PORT = 4173;
 export const DEFAULT_UPDATE_INTERVAL_MINUTES = 1;
+export const DEFAULT_CONSOLE_PORT = 4160;
 
 export function defaultAgentRoot(env = process.env) {
   const base = env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
@@ -28,6 +29,17 @@ export function createDefaultAgentState() {
     projects: [],
     lastUpdateCheckAt: null,
     lastUpdateResult: null,
+    console: {
+      enabled: true,
+      lanEnabled: false,
+      host: '127.0.0.1',
+      port: DEFAULT_CONSOLE_PORT,
+      token: null,
+    },
+    cloud: {
+      enabled: false,
+      endpoint: null,
+    },
   };
 }
 
@@ -35,9 +47,14 @@ export async function loadAgentState(root = defaultAgentRoot()) {
   const file = agentStateFile(root);
   try {
     const parsed = JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
-    const state = { ...createDefaultAgentState(), ...parsed, projects: Array.isArray(parsed.projects) ? parsed.projects : [] };
-    // Migrate the legacy hourly cadence so existing installations become responsive
-    // without requiring another manual configuration step.
+    const defaults = createDefaultAgentState();
+    const state = {
+      ...defaults,
+      ...parsed,
+      projects: Array.isArray(parsed.projects) ? parsed.projects : [],
+      console: { ...defaults.console, ...(parsed.console && typeof parsed.console === 'object' ? parsed.console : {}) },
+      cloud: { ...defaults.cloud, ...(parsed.cloud && typeof parsed.cloud === 'object' ? parsed.cloud : {}) },
+    };
     if (!Number.isFinite(Number(state.updateIntervalMinutes)) || Number(state.updateIntervalMinutes) > DEFAULT_UPDATE_INTERVAL_MINUTES) {
       state.updateIntervalMinutes = DEFAULT_UPDATE_INTERVAL_MINUTES;
     }
@@ -56,6 +73,49 @@ export async function saveAgentState(state, root = defaultAgentRoot()) {
   await fs.writeFile(temporary, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
   await fs.rename(temporary, file);
   return file;
+}
+
+export async function ensureAgentConsoleConfiguration(root = defaultAgentRoot()) {
+  const state = await loadAgentState(root);
+  const current = state.console && typeof state.console === 'object' ? state.console : {};
+  const port = Number(current.port);
+  state.console = {
+    enabled: current.enabled !== false,
+    lanEnabled: current.lanEnabled === true,
+    host: current.lanEnabled === true ? '0.0.0.0' : '127.0.0.1',
+    port: Number.isInteger(port) && port >= 1024 && port <= 65535 ? port : DEFAULT_CONSOLE_PORT,
+    token: typeof current.token === 'string' && current.token.length >= 16 ? current.token : randomBytes(24).toString('hex'),
+  };
+  await saveAgentState(state, root);
+  return state;
+}
+
+export async function setAgentConsoleLan(enabled, { root = defaultAgentRoot() } = {}) {
+  const state = await ensureAgentConsoleConfiguration(root);
+  state.console.lanEnabled = Boolean(enabled);
+  state.console.host = state.console.lanEnabled ? '0.0.0.0' : '127.0.0.1';
+  await saveAgentState(state, root);
+  return { ...state.console };
+}
+
+export async function configureAgentCloud({ enabled, endpoint } = {}, { root = defaultAgentRoot() } = {}) {
+  const state = await loadAgentState(root);
+  const current = state.cloud && typeof state.cloud === 'object' ? state.cloud : {};
+  let normalizedEndpoint = current.endpoint || null;
+  if (endpoint != null) {
+    const url = new URL(String(endpoint));
+    if (url.protocol !== 'https:' && !['127.0.0.1', 'localhost'].includes(url.hostname)) {
+      throw new Error('Cloud observability endpoint must use HTTPS');
+    }
+    normalizedEndpoint = url.toString().replace(/\/$/, '');
+  }
+  state.cloud = {
+    enabled: enabled == null ? current.enabled === true : Boolean(enabled),
+    endpoint: normalizedEndpoint,
+  };
+  if (state.cloud.enabled && !state.cloud.endpoint) throw new Error('Cloud observability endpoint is required when enabling cloud mode');
+  await saveAgentState(state, root);
+  return { ...state.cloud };
 }
 
 function normalizePort(value) {

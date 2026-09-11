@@ -11,6 +11,7 @@ import { listQaProfiles } from './profiles.js';
 import { readQaHistory } from './reporting.js';
 import { runDemoFlow } from './demo.js';
 import { createQaRemoteControl } from './remote-control.js';
+import { formatQaProgressEvent } from './progress-protocol.js';
 
 function parseArgs(argv) {
   const [command = 'run', ...rest] = argv;
@@ -30,6 +31,10 @@ function parseArgs(argv) {
 
 function usage() {
   console.log(`ArtiSys QA\n\nCommands:\n  validate --config qa/artisys-qa.config.json\n  list --config qa/artisys-qa.config.json\n  run --config qa/artisys-qa.config.json [--flow name] [--profile default] [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual] [--update-visual-baselines]\n  quick --config qa/artisys-qa.config.json [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts]\n  full --config qa/artisys-qa.config.json [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--visual]\n  release --config qa/artisys-qa.config.json [--environment name] [--viewport desktop|tablet|mobile] [--output qa-artifacts] [--override-release-gate --override-reason reason]\n  remote --config qa/artisys-qa.config.json [--host 127.0.0.1|0.0.0.0] [--port 4173] [--token secret] [--profile default] [--output qa-artifacts]\n  demo --config qa/artisys-qa.config.json [--demo quick-30s] [--profile default] [--preset reels-9x16] [--environment name] [--output qa-artifacts]\n  demo-profile prepare|reset|status --config qa/artisys-qa.config.json [--profile default] [--environment name]`);
+}
+
+function progressLog(event) {
+  try { console.log(formatQaProgressEvent(event)); } catch {}
 }
 
 async function resolveProfileRuntime(manifest, rootDir, requestedProfile) {
@@ -79,6 +84,7 @@ async function runNamedProfile({ profileName, args, manifest, rootDir }) {
     ...profileRuntime,
     releaseOverride: args['override-release-gate'] === true,
     releaseOverrideReason: args['override-reason'] === true ? null : args['override-reason'],
+    onProgress: progressLog,
   });
   console.log(JSON.stringify({ profile: result.profile.name, gate: result.gate, counts: result.report.counts }, null, 2));
   console.log(`ARTISYS_QA_REPORT=${result.jsonFile}`);
@@ -218,6 +224,7 @@ try {
     const { name: flowName, file: flowFile } = resolveFlow(manifest, args.flow, rootDir);
     const viewport = resolveViewport(manifest, args.viewport);
     const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
+    progressLog({ type: 'flow-start', flow: flowName, current: 1, total: 1 });
     const result = await runQaFlow({
       manifest,
       rootDir,
@@ -229,6 +236,7 @@ try {
       outputRoot: args.output ? path.resolve(args.output) : path.resolve('qa-artifacts'),
       ...profileRuntime,
     });
+    progressLog({ type: 'flow-end', flow: flowName, status: 'passed', current: 1, total: 1 });
     console.log(JSON.stringify(result.summary, null, 2));
     console.log(`ARTISYS_QA_OUTPUT=${result.outputDir}`);
   } else if (['quick', 'full', 'release'].includes(args.command)) {
@@ -239,6 +247,7 @@ try {
     const { name: environmentName, environment } = resolveEnvironment(manifest, args.environment);
     const demo = resolveDemo(manifest, args.demo, rootDir);
     const profileRuntime = await resolveProfileRuntime(manifest, rootDir, args.profile);
+    progressLog({ type: 'flow-start', flow: `demo:${demo.name}`, current: 1, total: 1 });
     const result = await runDemoFlow({
       manifest,
       rootDir,
@@ -252,6 +261,7 @@ try {
       outputRoot: args.output ? path.resolve(args.output) : path.resolve('qa-artifacts'),
       ...profileRuntime,
     });
+    progressLog({ type: 'flow-end', flow: `demo:${demo.name}`, status: 'passed', current: 1, total: 1 });
     console.log(JSON.stringify(result.summary, null, 2));
     console.log(`ARTISYS_QA_OUTPUT=${result.outputDir}`);
   } else {

@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.3.2",
+  "version": "2.4.1",
   "minimumNode": "22",
-  "notes": "Fast control plane: existing agents migrate from hourly update checks to one-minute checks and bridge polling is reduced to twenty seconds for near-immediate QA dispatch."
+  "notes": "Adds optional Cloudflare observability mirroring using D1 binding DB and R2 binding R2, while keeping local telemetry, LAN console, Drive archive, bridge and A/B updater independent."
 }

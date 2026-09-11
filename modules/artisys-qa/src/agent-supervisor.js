@@ -2,9 +2,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { loadAgentState, defaultAgentRoot } from './agent-state.js';
+import { loadAgentState, defaultAgentRoot, ensureAgentConsoleConfiguration } from './agent-state.js';
 import { checkForStableUpdate, AGENT_RESTART_EXIT_CODE } from './agent-updater.js';
-import { startBridgePolling } from './bridge-worker.js';
+import { startBridgePolling, ensureBridgeConfiguration } from './bridge-worker.js';
+import { createTelemetryStore } from './telemetry-store.js';
+import { createAgentConsole } from './agent-console.js';
+import { createCloudTelemetryMirror, createTelemetryFanout } from './cloud-observability.js';
+import { redactSecrets } from './redaction.js';
 
 const MODULE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CLI_FILE = path.join(MODULE_DIR, 'src', 'cli.mjs');
@@ -39,6 +43,23 @@ function projectSignature(project) {
   });
 }
 
+function consoleSignature(state) {
+  return JSON.stringify({
+    enabled: state.console?.enabled !== false,
+    lanEnabled: state.console?.lanEnabled === true,
+    host: state.console?.host || '127.0.0.1',
+    port: Number(state.console?.port || 4160),
+    token: state.console?.token || null,
+  });
+}
+
+function environmentSecrets(env = process.env) {
+  const secretName = /(TOKEN|SECRET|PASSWORD|PASS|API[_-]?KEY|CREDENTIAL|AUTH)/i;
+  return [...new Set(Object.entries(env)
+    .filter(([key, value]) => secretName.test(key) && typeof value === 'string' && value.length >= 4)
+    .map(([, value]) => value))];
+}
+
 export async function writeAgentHealth(health, root = defaultAgentRoot()) {
   await fs.mkdir(root, { recursive: true });
   const file = agentHealthFile(root);
@@ -63,6 +84,12 @@ export async function startAgentSupervisor({
   checkUpdate = checkForStableUpdate,
   reconcileIntervalMs = 10_000,
   initialUpdateDelayMs = 15_000,
+  heartbeatIntervalMs = 2_000,
+  stallThresholdMs = 60_000,
+  telemetryFactory = options => createTelemetryStore(options),
+  consoleFactory = options => createAgentConsole(options),
+  cloudFactory = options => createCloudTelemetryMirror(options),
+  bridgeStarter = options => startBridgePolling(options),
   exit = code => process.exit(code),
   logger = console,
 } = {}) {
@@ -74,7 +101,14 @@ export async function startAgentSupervisor({
   let reconcileTimer = null;
   let updateTimer = null;
   let initialUpdateTimer = null;
+  let heartbeatTimer = null;
   let bridgeControl = null;
+  let consoleControl = null;
+  let consoleInfo = null;
+  let activeConsoleSignature = null;
+  let telemetry = null;
+  let localTelemetry = null;
+  let cloudMirror = null;
   let version = 'unknown';
   try {
     const pkg = JSON.parse((await fs.readFile(path.join(MODULE_DIR, 'package.json'), 'utf8')).replace(/^\uFEFF/, ''));
@@ -137,6 +171,72 @@ export async function startAgentSupervisor({
     child.once('exit', () => finish());
   }
 
+  async function consoleAgentState() {
+    const state = await loadAgentState(root);
+    return {
+      ...state,
+      cloud: state.cloud ? { ...state.cloud, tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN) } : null,
+      projects: state.projects.map(project => ({ ...project, running: children.has(project.id) })),
+    };
+  }
+
+  async function agentInfo() {
+    const state = await loadAgentState(root);
+    return {
+      status: stopping ? 'stopping' : 'running',
+      pid: process.pid,
+      version,
+      machineId: state.bridge?.machineId || null,
+      autoUpdate: state.autoUpdate,
+      bridge: state.bridge ? {
+        enabled: state.bridge.enabled !== false,
+        pollIntervalSeconds: state.bridge.pollIntervalSeconds || 20,
+      } : null,
+      drive: state.bridge?.drive ? {
+        enabled: state.bridge.drive.enabled === true,
+        remote: state.bridge.drive.remote || null,
+        rootFolderId: state.bridge.drive.rootFolderId || null,
+      } : null,
+      cloud: state.cloud ? {
+        enabled: state.cloud.enabled === true,
+        endpoint: state.cloud.endpoint || null,
+        tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN),
+        runtime: cloudMirror?.status?.() || null,
+      } : null,
+      console: consoleInfo ? { host: consoleInfo.host, port: consoleInfo.port } : null,
+    };
+  }
+
+  async function refreshConsole(state) {
+    if (!telemetry) return;
+    const nextSignature = consoleSignature(state);
+    if (activeConsoleSignature === nextSignature) return;
+    if (consoleControl) {
+      await consoleControl.close().catch(error => logger.error(`[console] ${error.message}`));
+      consoleControl = null;
+      consoleInfo = null;
+    }
+    activeConsoleSignature = nextSignature;
+    if (state.console?.enabled === false) return;
+    try {
+      consoleControl = consoleFactory({
+        host: state.console?.host || '127.0.0.1',
+        port: Number(state.console?.port || 4160),
+        token: state.console?.token,
+        telemetry,
+        agentState: consoleAgentState,
+        artifactRoot: path.join(root, 'artifacts'),
+        lanEnabled: state.console?.lanEnabled === true,
+        agentInfo,
+      });
+      consoleInfo = await consoleControl.start();
+    } catch (error) {
+      consoleControl = null;
+      consoleInfo = null;
+      logger.error(`[console] ${error.message}`);
+    }
+  }
+
   async function reconcile() {
     const state = await loadAgentState(root);
     desired.clear();
@@ -147,6 +247,7 @@ export async function startAgentSupervisor({
       if (!next || entry.signature !== projectSignature(next)) stopProject(id);
     }
     for (const project of desired.values()) startProject(project);
+    await refreshConsole(state);
 
     await writeAgentHealth({
       status: 'running',
@@ -157,12 +258,25 @@ export async function startAgentSupervisor({
       bridge: state.bridge ? {
         enabled: state.bridge.enabled !== false,
         machineId: state.bridge.machineId || null,
-        pollIntervalSeconds: state.bridge.pollIntervalSeconds || 60,
+        pollIntervalSeconds: state.bridge.pollIntervalSeconds || 20,
         drive: state.bridge.drive ? {
           enabled: state.bridge.drive.enabled === true,
           remote: state.bridge.drive.remote || null,
           rootFolderId: state.bridge.drive.rootFolderId || null,
         } : null,
+      } : null,
+      cloud: state.cloud ? {
+        enabled: state.cloud.enabled === true,
+        endpoint: state.cloud.endpoint || null,
+        tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN),
+        runtime: cloudMirror?.status?.() || null,
+      } : null,
+      console: state.console ? {
+        enabled: state.console.enabled !== false,
+        lanEnabled: state.console.lanEnabled === true,
+        host: state.console.host || '127.0.0.1',
+        port: Number(state.console.port || 4160),
+        running: Boolean(consoleInfo),
       } : null,
       projects: state.projects.map(project => ({
         id: project.id,
@@ -191,29 +305,89 @@ export async function startAgentSupervisor({
     }
   }
 
+  async function heartbeatCycle() {
+    if (!telemetry || stopping) return;
+    try {
+      const snapshot = await telemetry.getSnapshot();
+      const current = snapshot?.currentJob;
+      if (current?.updatedAt && Number(stallThresholdMs) > 0) {
+        const age = Date.now() - Date.parse(current.updatedAt);
+        if (Number.isFinite(age) && age > Number(stallThresholdMs)) {
+          await telemetry.transition({
+            jobId: current.jobId,
+            projectId: current.projectId,
+            stage: 'STALLED',
+            detail: `Sem atividade de QA por ${Math.round(age / 1000)}s`,
+          }).catch(() => {});
+        }
+      }
+      await telemetry.heartbeat().catch(() => {});
+    } catch (error) {
+      logger.error(`[telemetry] ${error.message}`);
+    }
+  }
+
   async function stop() {
     if (stopping) return;
     stopping = true;
     if (reconcileTimer) clearInterval(reconcileTimer);
     if (updateTimer) clearInterval(updateTimer);
     if (initialUpdateTimer) clearTimeout(initialUpdateTimer);
+    if (heartbeatTimer) clearInterval(heartbeatTimer);
     bridgeControl?.stop();
     for (const id of [...restartTimers.keys()]) clearRestart(id);
     desired.clear();
     for (const id of [...children.keys()]) stopProject(id);
+    if (consoleControl) await consoleControl.close().catch(error => logger.error(`[console] ${error.message}`));
+    consoleControl = null;
+    consoleInfo = null;
+    activeConsoleSignature = null;
     await writeAgentHealth({ status: 'stopped', pid: process.pid, version, updatedAt: new Date().toISOString() }, root).catch(() => {});
   }
+
+  const bridgeState = await ensureBridgeConfiguration(root);
+  const configuredState = await ensureAgentConsoleConfiguration(root);
+  const secrets = environmentSecrets();
+  localTelemetry = telemetryFactory({
+    root,
+    machineId: bridgeState.bridge.machineId,
+    redact: value => redactSecrets(value, secrets),
+  });
+
+  if (configuredState.cloud?.enabled === true && configuredState.cloud.endpoint) {
+    const token = process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN;
+    if (token) {
+      try {
+        cloudMirror = cloudFactory({
+          endpoint: configuredState.cloud.endpoint,
+          token,
+          machineId: bridgeState.bridge.machineId,
+          machineName: bridgeState.bridge.machineId,
+          version,
+        });
+      } catch (error) {
+        logger.error(`[cloud] ${error.message}`);
+      }
+    } else {
+      logger.error('[cloud] ARTISYS_QA_CLOUD_AGENT_TOKEN is not configured; cloud mirroring remains disabled');
+    }
+  }
+
+  telemetry = createTelemetryFanout(localTelemetry, cloudMirror ? [cloudMirror] : [], { logger });
+  await telemetry.recoverInterruptedJob().catch(error => logger.error(`[telemetry] recovery: ${error.message}`));
+  await telemetry.heartbeat({ stage: 'IDLE', detail: 'Agente iniciado' }).catch(() => {});
 
   const state = await reconcile();
   const intervalMs = Math.max(1, Number(state.updateIntervalMinutes || 1)) * 60_000;
   reconcileTimer = setInterval(() => { void reconcile().catch(error => logger.error(error)); }, reconcileIntervalMs);
   updateTimer = setInterval(() => { void updateCycle().catch(error => logger.error(error)); }, intervalMs);
   initialUpdateTimer = setTimeout(() => { void updateCycle().catch(error => logger.error(error)); }, Math.max(1000, initialUpdateDelayMs));
-  bridgeControl = startBridgePolling({ root, logger });
+  heartbeatTimer = setInterval(() => { void heartbeatCycle(); }, Math.max(10, Number(heartbeatIntervalMs) || 2000));
+  bridgeControl = bridgeStarter({ root, logger, telemetry });
 
   const shutdown = () => { void stop().finally(() => exit(0)); };
   process.once('SIGINT', shutdown);
   process.once('SIGTERM', shutdown);
 
-  return { stop, reconcile, updateCycle, children, bridgeControl };
+  return { stop, reconcile, updateCycle, heartbeatCycle, children, bridgeControl, telemetry, localTelemetry, cloudMirror, consoleControl };
 }

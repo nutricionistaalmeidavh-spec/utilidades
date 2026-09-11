@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "utilidades",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-11",
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "artisysqa",
+      "database_id": "ad323bd1-fa46-434b-8285-b5eb94a8f716"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "artisysqa"
+    }
+  ]
+}

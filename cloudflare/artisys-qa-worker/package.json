@@ -1,0 +1,14 @@
+{
+  "name": "artisys-qa-cloud-worker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --config wrangler.jsonc",
+    "deploy": "wrangler deploy --config wrangler.jsonc",
+    "migrate": "wrangler d1 migrations apply artisysqa --remote --config wrangler.jsonc"
+  },
+  "devDependencies": {
+    "wrangler": "^4.68.0"
+  }
+}

@@ -39,7 +39,11 @@ export async function runQaFlow({
   outputRoot = 'qa-artifacts',
   demoProfile = null,
   demoAdapter = null,
+  onProgress = null,
 }) {
+  const notify = async event => {
+    try { await onProgress?.(event); } catch {}
+  };
   const id = runId({ systemId: manifest.systemId, flowName, viewportName: viewport.name });
   const outputDir = path.resolve(outputRoot, id);
   const screenshotsDir = await ensureDir(path.join(outputDir, 'screenshots'));
@@ -62,6 +66,7 @@ export async function runQaFlow({
   let videoFile = null;
   let preparedProfile = null;
 
+  await notify({ type: 'flow-runtime-start', flow: flowName, total: flow.steps.length });
   try {
     if (demoProfile) {
       if (!demoAdapter) throw new Error('Demo profile requires a demo adapter');
@@ -121,7 +126,9 @@ export async function runQaFlow({
     const runtimeContext = profileRuntimeContext({ manifest, rootDir, environmentName, environment, demoProfile, preparedProfile });
     for (let index = 0; index < flow.steps.length; index++) {
       const step = flow.steps[index];
+      const stepName = step.name || step.action;
       const stepStart = Date.now();
+      await notify({ type: 'step-start', flow: flowName, step: stepName, current: index + 1, total: flow.steps.length });
       try {
         const label = await executeStep({
           page,
@@ -137,8 +144,10 @@ export async function runQaFlow({
           await page.screenshot({ path: path.join(screenshotsDir, `${label}-after.png`), fullPage: false });
         }
         stepsLog.push({ index, action: step.action, name: step.name || null, status: 'passed', durationMs: Date.now() - stepStart });
+        await notify({ type: 'step-end', flow: flowName, step: stepName, status: 'passed', current: index + 1, total: flow.steps.length });
       } catch (error) {
         stepsLog.push({ index, action: step.action, name: step.name || null, status: 'failed', durationMs: Date.now() - stepStart, error: error.message });
+        await notify({ type: 'step-end', flow: flowName, step: stepName, status: 'failed', current: index + 1, total: flow.steps.length, error: error.message });
         throw error;
       }
     }
@@ -199,6 +208,7 @@ export async function runQaFlow({
   const safeTelemetry = redactSecrets(telemetry, profileSecretValues);
   await writeJson(path.join(outputDir, 'telemetry.json'), safeTelemetry);
   await writeJson(path.join(outputDir, 'run-summary.json'), summary);
+  await notify({ type: 'flow-runtime-end', flow: flowName, status, total: flow.steps.length, completed: stepsLog.length });
   if (status !== 'passed') {
     const error = new Error(`QA flow failed: ${manifest.systemId}/${flowName}`);
     error.summary = summary;
