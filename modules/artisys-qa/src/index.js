@@ -55,7 +55,7 @@ export { compareVersions, isNewerVersion, inactiveSlotName, readStableChannel, r
 export { agentHealthFile, buildProjectRemoteCommand, writeAgentHealth, readAgentHealth, startAgentSupervisor } from './agent-supervisor.js';
 export { ALLOWED_BRIDGE_ACTIONS, BRIDGE_JOB_ROOT, processedJobsFile, sanitizeJobOptions, validateBridgeJob, loadProcessedJobs, markBridgeJobProcessed, listPendingBridgeJobs } from './bridge-jobs.js';
 export { DEFAULT_DRIVE_ROOT_FOLDER_ID, ensureBridgeConfiguration, configureBridgeDrive, executeBridgeJob, bridgePollOnce, startBridgePolling } from './bridge-worker.js';
-export { buildDriveRunPath, assertRcloneRemote, uploadRunArtifacts } from './drive-uploader.js';
+export { buildDriveProjectPath, buildDriveRunPath, assertRcloneRemote, ensureDriveProjectFolder, uploadRunArtifacts } from './drive-uploader.js';
 export { runDemoFlow, buildDemoSummary } from './demo.js';
 export { executeStep } from './steps.js';
 export { normalizeDemoVideo, buildNormalizeArgs } from './video.js';
