@@ -34,8 +34,24 @@ export function isNewerVersion(candidate, current) {
   return compareVersions(candidate, current) > 0;
 }
 
+function quoteWindowsCmdArg(value) {
+  const text = String(value);
+  if (!/[\s&()^|<>\"]/.test(text)) return text;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+export function normalizeWindowsCommand(command, args = [], platform = process.platform, env = process.env) {
+  if (platform !== 'win32' || !/\.(?:cmd|bat)$/i.test(String(command))) {
+    return { command, args };
+  }
+  const comspec = env.ComSpec || env.COMSPEC || 'cmd.exe';
+  const commandLine = [command, ...args].map(quoteWindowsCmdArg).join(' ');
+  return { command: comspec, args: ['/d', '/s', '/c', commandLine] };
+}
+
 export async function runCommand(command, args, { cwd, env = process.env, timeout = 10 * 60_000 } = {}) {
-  const result = await execFileAsync(command, args, {
+  const normalized = normalizeWindowsCommand(command, args, process.platform, env);
+  const result = await execFileAsync(normalized.command, normalized.args, {
     cwd,
     env,
     timeout,
@@ -96,11 +112,13 @@ export async function checkForStableUpdate({ root = defaultAgentRoot(), run = ru
     await run('git', ['-C', activeDir, 'fetch', '--quiet', 'origin', stableRef], { timeout: 2 * 60_000 });
     const remoteRef = 'FETCH_HEAD';
     const channel = await readStableChannel(activeDir, remoteRef, { run });
-    state.lastUpdateCheckAt = now();
+    const checkedAt = now();
 
     if (!isNewerVersion(channel.version, currentVersion)) {
-      state.lastUpdateResult = { status: 'current', currentVersion, stableVersion: channel.version };
-      await saveAgentState(state, root);
+      const latest = await loadAgentState(root);
+      latest.lastUpdateCheckAt = checkedAt;
+      latest.lastUpdateResult = { status: 'current', currentVersion, stableVersion: channel.version };
+      await saveAgentState(latest, root);
       return { updated: false, reason: 'current', currentVersion, stableVersion: channel.version };
     }
 
@@ -116,10 +134,12 @@ export async function checkForStableUpdate({ root = defaultAgentRoot(), run = ru
       throw new Error(`Stable channel version ${channel.version} does not match candidate package version ${candidateVersion}`);
     }
 
+    const latest = await loadAgentState(root);
     const nextState = {
-      ...state,
+      ...latest,
       previousSlot: activeSlot,
       activeSlot: nextSlot,
+      lastUpdateCheckAt: checkedAt,
       lastUpdateResult: {
         status: 'activated',
         fromVersion: currentVersion,
@@ -131,8 +151,9 @@ export async function checkForStableUpdate({ root = defaultAgentRoot(), run = ru
     await saveAgentState(nextState, root);
     return { updated: true, fromVersion: currentVersion, toVersion: channel.version, candidateSha, activeSlot: nextSlot };
   } catch (error) {
+    const latest = await loadAgentState(root).catch(() => state);
     const failureState = {
-      ...state,
+      ...latest,
       activeSlot,
       lastUpdateCheckAt: now(),
       lastUpdateResult: { status: 'failed', error: error?.message || String(error), currentVersion },

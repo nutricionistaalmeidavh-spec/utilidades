@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "minimumNode": "22",
-  "notes": "Secure outbound QA bridge through the private Git repository, replay protection, whitelisted jobs, and Google Drive artifact uploads isolated by project."
+  "notes": "Windows updater EINVAL fix plus managed project auto-clone, update and QA registration from the private control registry."
 }
