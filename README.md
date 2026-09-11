@@ -11,14 +11,14 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 ## Estado atual
 
 - **60 projetos upstream curados**: 49 aprovados como Git submodules + 11 referências incorporadas e pinadas por commit.
-- **19 módulos ArtiSys** registrados.
-- **16 kits executáveis**: 11 `stable` e 5 `implemented`.
+- **28 módulos ArtiSys** registrados.
+- **25 kits executáveis**: 11 `stable` e 14 `implemented`.
 - **3 foundations** ainda precisam ser promovidas.
 - Nenhum projeto incorporado exige infraestrutura always-on mantida pelo usuário por padrão.
 
 ## Kits stable
 
-- `artisys-qa` 1.2.0 — Playwright/Chromium, screenshots, traces, vídeos e demos.
+- `artisys-qa` 1.3.0 — Playwright/Chromium, screenshots, traces, vídeos, demos e regressão visual opt-in.
 - `artisys-pdf` 1.0.0 — pdfme + PDF.js + highlights/anotações.
 - `artisys-workflows` 1.0.0 — grafos, validação/execução e adapters XYFlow/LogicFlow/Rete.
 - `artisys-capture` 1.0.0 — captura câmera/arquivo, QR/barcode e helpers OpenCV.
@@ -30,13 +30,25 @@ Aceitamos somente `embedded`, `ci`, `local-on-demand` ou `dev-tool`. Não entram
 - `artisys-upload` 1.0.0 — políticas, validação, fila e adapters Uppy/react-dropzone.
 - `artisys-annotations` 1.0.0 — anotações portáveis em imagens/PDF e adapters de UI.
 
-## Outros módulos
+## Outros módulos executáveis
 
 - `artisys-serialport` — implemented — Node SerialPort, dispositivos seriais e hardware Desktop.
 - `artisys-printing` — implemented — ReceiptLine + node-thermal-printer.
 - `artisys-security` — implemented — Gitleaks + Trivy + Semgrep.
 - `artisys-documents` — implemented — PaddleOCR + OpenCV.
 - `artisys-api-contracts` — implemented — OpenAPI Generator + Pact JS.
+- `artisys-video-engine` — implemented — jobs/timeline de vídeo + adapters GStreamer/MLT/libopenshot.
+- `artisys-doc-convert` — implemented — conversão documental Gotenberg sob demanda.
+- `artisys-local-backend` — implemented — PocketBase local com loopback seguro.
+- `artisys-remote-support` — implemented — sessões de suporte remoto RustDesk isoladas.
+- `artisys-release` — implemented — gates QA/segurança/API/assinatura + SHA-256.
+- `artisys-desktop-shell` — implemented — deep links, settings, logs e update hooks.
+- `artisys-ocr` — implemented — OCR unificado PaddleOCR/Tesseract/Tesseract.js.
+- `artisys-product-qa` — implemented — agregador QA + security + API contracts.
+- `artisys-licensing` — implemented — licenças offline Ed25519, device binding, expiração e features.
+
+## Foundations
+
 - `artisys-ai-quality` — foundation — Promptfoo.
 - `artisys-privacy` — foundation — Presidio local/CI.
 - `artisys-bim` — foundation — IfcOpenShell local sob demanda.

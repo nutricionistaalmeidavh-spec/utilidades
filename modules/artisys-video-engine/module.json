@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-video-engine",
+  "name": "ArtiSys Video Engine",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand",
+  "upstreams": ["gstreamer", "mlt", "libopenshot"],
+  "boundary": "Portable video-job contract; GStreamer/MLT/libopenshot runtimes remain opt-in adapters.",
+  "provides": ["video-job-validation", "timeline-plan", "engine-adapter-execution"],
+  "packageName": "@artisys/video-engine",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["video-job-validation", "timeline-plan", "engine-adapter-execution"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Does not bundle multimedia runtimes.", "Consumer chooses storage, codecs and engine adapter."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

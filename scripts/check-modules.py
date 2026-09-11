@@ -12,25 +12,42 @@ READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
     'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder',
-    'artisys-upload', 'artisys-annotations', 'artisys-serialport', 'artisys-printing'
+    'artisys-upload', 'artisys-annotations', 'artisys-serialport', 'artisys-printing',
+    'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
+    'artisys-remote-support', 'artisys-release', 'artisys-desktop-shell',
+    'artisys-ocr', 'artisys-product-qa', 'artisys-licensing'
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
     'artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows',
     'artisys-capture', 'artisys-dashboard', 'artisys-planning', 'artisys-media',
     'artisys-office', 'artisys-ui-builder', 'artisys-upload', 'artisys-annotations',
-    'artisys-serialport', 'artisys-printing'
+    'artisys-serialport', 'artisys-printing', 'artisys-video-engine',
+    'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
+    'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
+    'artisys-product-qa', 'artisys-licensing'
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
     'artisys-media', 'artisys-office', 'artisys-ui-builder',
-    'artisys-upload', 'artisys-annotations'
+    'artisys-upload', 'artisys-annotations', 'artisys-video-engine',
+    'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
+    'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
+    'artisys-product-qa', 'artisys-licensing'
 )
 
 
 def run(args, cwd=ROOT, env=None):
     print('+ ' + ' '.join(map(str, args)), flush=True)
     subprocess.run(args, cwd=cwd, env=env, check=True)
+
+
+def known_upstreams():
+    upstreams = {p['id'] for p in json.loads((ROOT / 'catalog/projects.json').read_text())['projects']}
+    incorporated = ROOT / 'catalog/incorporated-repos-2026-09-10.json'
+    if incorporated.is_file():
+        upstreams |= {p['id'] for p in json.loads(incorporated.read_text())['repositories']}
+    return upstreams
 
 
 def main():
@@ -42,7 +59,7 @@ def main():
     catalog = json.loads((ROOT / 'catalog/modules.json').read_text())['modules']
     if len({m['id'] for m in catalog}) != len(catalog):
         raise ValueError('Duplicate module id')
-    upstreams = {p['id'] for p in json.loads((ROOT / 'catalog/projects.json').read_text())['projects']}
+    upstreams = known_upstreams()
     for entry in catalog:
         path = ROOT / 'modules' / entry['id']
         manifest = json.loads((path / 'module.json').read_text())
@@ -59,7 +76,7 @@ def main():
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
-    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing'):
+    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', *NEW_PRODUCT_MODULES[8:]):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)
