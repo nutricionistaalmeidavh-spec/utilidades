@@ -1,7 +1,10 @@
 [CmdletBinding()]
 param(
   [string]$RemoteName = 'artisys-qa-drive',
-  [string]$RootFolderId = '1mb4R9Robq18JSXMxZiboOitoIjtYL70O'
+  [string]$RootFolderId = '1mb4R9Robq18JSXMxZiboOitoIjtYL70O',
+  [string]$ClientId = $env:ARTISYS_GOOGLE_CLIENT_ID,
+  [string]$ClientSecret = $env:ARTISYS_GOOGLE_CLIENT_SECRET,
+  [switch]$AllowSharedRcloneClient
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,8 +31,20 @@ if (-not $rclone) {
   if (-not $rclone) { throw 'rclone was installed but is not visible yet. Open a new PowerShell and run this script again.' }
 }
 
+if ((-not $ClientId -or -not $ClientSecret) -and -not $AllowSharedRcloneClient) {
+  throw @'
+Google OAuth Desktop credentials are required for durable Drive uploads.
+Set ARTISYS_GOOGLE_CLIENT_ID and ARTISYS_GOOGLE_CLIENT_SECRET, or pass -ClientId and -ClientSecret.
+The rclone shared Google client is intentionally not used by default because it is being retired during 2026.
+'@
+}
+
 Write-Step "Configuring Google Drive remote '$RemoteName'. A browser window may open for Google authorization."
-& $rclone.Source config create $RemoteName drive scope drive root_folder_id $RootFolderId
+$configArgs = @('config', 'create', $RemoteName, 'drive', 'scope', 'drive', 'root_folder_id', $RootFolderId)
+if ($ClientId -and $ClientSecret) {
+  $configArgs += @('client_id', $ClientId, 'client_secret', $ClientSecret)
+}
+& $rclone.Source @configArgs
 if ($LASTEXITCODE -ne 0) {
   throw "rclone Google Drive configuration failed with exit code ${LASTEXITCODE}."
 }
