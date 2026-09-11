@@ -3,6 +3,8 @@ import path from 'node:path';
 import { defaultAgentRoot, loadAgentState, registerAgentProject, unregisterAgentProject, setAgentAutoUpdate } from './agent-state.js';
 import { readAgentHealth, startAgentSupervisor } from './agent-supervisor.js';
 import { checkForStableUpdate } from './agent-updater.js';
+import { bridgePollOnce, configureBridgeDrive, ensureBridgeConfiguration, DEFAULT_DRIVE_ROOT_FOLDER_ID } from './bridge-worker.js';
+import { assertRcloneRemote } from './drive-uploader.js';
 
 function parseArgs(argv) {
   const [command = 'status', ...rest] = argv;
@@ -21,7 +23,7 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA Agent\n\nCommands:\n  artisys-qa-agent register --config C:\\projeto\\qa\\artisys-qa.config.json [--name Sistema] [--port 4173]\n  artisys-qa-agent unregister --project sistema\n  artisys-qa-agent list\n  artisys-qa-agent token --project sistema\n  artisys-qa-agent status\n  artisys-qa-agent autoupdate on|off\n  artisys-qa-agent check-update\n  artisys-qa-agent run`);
+  console.log(`ArtiSys QA Agent\n\nCommands:\n  artisys-qa-agent register --config C:\\projeto\\qa\\artisys-qa.config.json [--name Sistema] [--port 4173]\n  artisys-qa-agent unregister --project sistema\n  artisys-qa-agent list\n  artisys-qa-agent token --project sistema\n  artisys-qa-agent status\n  artisys-qa-agent bridge status|poll\n  artisys-qa-agent drive status\n  artisys-qa-agent drive enable [--remote artisys-qa-drive] [--root-folder-id ${DEFAULT_DRIVE_ROOT_FOLDER_ID}]\n  artisys-qa-agent drive disable\n  artisys-qa-agent autoupdate on|off\n  artisys-qa-agent check-update\n  artisys-qa-agent run`);
 }
 
 function safeProject(project) {
@@ -99,7 +101,7 @@ try {
     if (!project) throw new Error(`Unknown agent project: ${projectId}`);
     console.log(JSON.stringify({ ...safeProject(project), token: project.token }, null, 2));
   } else if (args.command === 'status') {
-    const state = await loadAgentState(root);
+    const state = await ensureBridgeConfiguration(root);
     const health = await readAgentHealth(root);
     console.log(JSON.stringify({
       root,
@@ -108,9 +110,46 @@ try {
       previousSlot: state.previousSlot,
       lastUpdateCheckAt: state.lastUpdateCheckAt,
       lastUpdateResult: state.lastUpdateResult,
+      bridge: state.bridge,
       projects: state.projects.map(safeProject),
       health,
     }, null, 2));
+  } else if (args.command === 'bridge') {
+    const operation = String(args.positional[0] || 'status').toLowerCase();
+    const state = await ensureBridgeConfiguration(root);
+    if (operation === 'status') {
+      console.log(JSON.stringify(state.bridge, null, 2));
+    } else if (operation === 'poll') {
+      console.log(JSON.stringify(await bridgePollOnce({ root }), null, 2));
+    } else {
+      throw new Error('bridge requires status or poll');
+    }
+  } else if (args.command === 'drive') {
+    const operation = String(args.positional[0] || 'status').toLowerCase();
+    const state = await ensureBridgeConfiguration(root);
+    if (operation === 'status') {
+      let available = false;
+      let error = null;
+      try {
+        await assertRcloneRemote(state.bridge.drive.remote);
+        available = true;
+      } catch (driveError) {
+        error = driveError.message;
+      }
+      console.log(JSON.stringify({ ...state.bridge.drive, available, error }, null, 2));
+    } else if (operation === 'enable') {
+      const drive = await configureBridgeDrive({
+        enabled: true,
+        remote: args.remote && args.remote !== true ? String(args.remote) : state.bridge.drive.remote,
+        rootFolderId: args['root-folder-id'] && args['root-folder-id'] !== true ? String(args['root-folder-id']) : state.bridge.drive.rootFolderId,
+      }, root);
+      await assertRcloneRemote(drive.remote);
+      console.log(JSON.stringify(drive, null, 2));
+    } else if (operation === 'disable') {
+      console.log(JSON.stringify(await configureBridgeDrive({ enabled: false }, root), null, 2));
+    } else {
+      throw new Error('drive requires status, enable or disable');
+    }
   } else if (args.command === 'autoupdate') {
     const value = String(args.positional[0] || '').toLowerCase();
     if (!['on', 'off'].includes(value)) throw new Error('autoupdate requires on or off');
