@@ -32,13 +32,27 @@ test('agent state registers projects and preserves generated token', async () =>
     const project = await registerAgentProject({ config, name: 'PDV Nexus', port: 4173 }, { root });
     assert.equal(project.id, 'pdv-nexus');
     assert.match(project.token, /^[a-f0-9]{48}$/);
+    const updated = await registerAgentProject({ config, name: 'PDV Nexus', port: 4174 }, { root });
+    assert.equal(updated.token, project.token);
     const state = await loadAgentState(root);
     assert.equal(state.projects.length, 1);
+    assert.equal(state.projects[0].port, 4174);
     assert.equal(state.projects[0].token, project.token);
     await setAgentAutoUpdate(false, { root });
     assert.equal((await loadAgentState(root)).autoUpdate, false);
     await unregisterAgentProject('pdv-nexus', { root });
     assert.equal((await loadAgentState(root)).projects.length, 0);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
+test('agent state tolerates UTF-8 BOM from older PowerShell installs', async () => {
+  const root = await tempRoot();
+  try {
+    await fs.writeFile(path.join(root, 'agent-state.json'), `\uFEFF${JSON.stringify(createDefaultAgentState())}`, 'utf8');
+    const state = await loadAgentState(root);
+    assert.equal(state.activeSlot, 'slot-a');
   } finally {
     await fs.rm(root, { recursive: true, force: true });
   }
@@ -94,7 +108,9 @@ test('stable updater validates inactive slot before switching active pointer', a
       if (args.includes('rev-parse')) return { stdout: `${sha}\n`, stderr: '' };
       if (args[0] === 'clone') {
         const slot = args.at(-1);
-        await fs.mkdir(slot, { recursive: true });
+        const moduleDir = path.join(slot, 'modules', 'artisys-qa');
+        await fs.mkdir(moduleDir, { recursive: true });
+        await fs.writeFile(path.join(moduleDir, 'package.json'), JSON.stringify({ version: '2.1.0' }));
       }
       return { stdout: '', stderr: '' };
     };
@@ -107,6 +123,34 @@ test('stable updater validates inactive slot before switching active pointer', a
     assert.equal(after.lastUpdateResult.status, 'activated');
     assert.ok(calls.some(call => call.includes('test')));
     assert.ok(calls.some(call => call.includes('check')));
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
+test('stable updater rejects a candidate whose package version does not match the channel', async () => {
+  const root = await tempRoot();
+  try {
+    const active = path.join(root, 'slots', 'slot-a', 'modules', 'artisys-qa');
+    await fs.mkdir(active, { recursive: true });
+    await fs.writeFile(path.join(active, 'package.json'), JSON.stringify({ version: '2.0.0' }));
+    await saveAgentState(createDefaultAgentState(), root);
+    const run = async (_command, args) => {
+      if (args.includes('show')) return { stdout: JSON.stringify({ channel: 'stable', version: '2.1.0' }), stderr: '' };
+      if (args.includes('rev-parse')) return { stdout: `${'c'.repeat(40)}\n`, stderr: '' };
+      if (args[0] === 'clone') {
+        const slot = args.at(-1);
+        const moduleDir = path.join(slot, 'modules', 'artisys-qa');
+        await fs.mkdir(moduleDir, { recursive: true });
+        await fs.writeFile(path.join(moduleDir, 'package.json'), JSON.stringify({ version: '9.9.9' }));
+      }
+      return { stdout: '', stderr: '' };
+    };
+    const result = await checkForStableUpdate({ root, run });
+    assert.equal(result.updated, false);
+    assert.equal(result.reason, 'failed');
+    assert.match(result.error.message, /does not match candidate package version/);
+    assert.equal((await loadAgentState(root)).activeSlot, 'slot-a');
   } finally {
     await fs.rm(root, { recursive: true, force: true });
   }
