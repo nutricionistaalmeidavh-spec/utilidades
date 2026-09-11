@@ -33,7 +33,7 @@ export function createDefaultAgentState() {
 export async function loadAgentState(root = defaultAgentRoot()) {
   const file = agentStateFile(root);
   try {
-    const parsed = JSON.parse(await fs.readFile(file, 'utf8'));
+    const parsed = JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
     return { ...createDefaultAgentState(), ...parsed, projects: Array.isArray(parsed.projects) ? parsed.projects : [] };
   } catch (error) {
     if (error?.code !== 'ENOENT') throw error;
@@ -75,9 +75,11 @@ export function normalizeProjectRegistration({ config, name, id, host = '0.0.0.0
 }
 
 export async function registerAgentProject(input, { root = defaultAgentRoot(), access = fs.access } = {}) {
-  const project = normalizeProjectRegistration(input);
-  await access(project.config);
   const state = await loadAgentState(root);
+  const requestedId = sanitizeName(input?.id || input?.name || path.basename(path.dirname(input?.config || 'project')) || 'project');
+  const existing = state.projects.find(item => item.id === requestedId);
+  const project = normalizeProjectRegistration({ ...input, token: input?.token || existing?.token });
+  await access(project.config);
   const duplicatePort = state.projects.find(item => item.id !== project.id && item.port === project.port && item.enabled !== false);
   if (duplicatePort) throw new Error(`port ${project.port} is already used by project ${duplicatePort.id}`);
   const index = state.projects.findIndex(item => item.id === project.id);
