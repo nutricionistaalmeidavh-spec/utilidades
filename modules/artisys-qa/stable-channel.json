@@ -2,5 +2,5 @@
   "channel": "stable",
   "version": "2.4.0",
   "minimumNode": "22",
-  "notes": "Agent observability console: durable live telemetry, flow/step progress, heartbeat/stall detection, authenticated read-only LAN dashboard on port 4160, and live artifact previews without changing the existing bridge or Drive archive behavior."
+  "notes": "Agent observability console: durable live telemetry, flow/step progress, heartbeat/stall detection, authenticated read-only LAN dashboard on port 4160, live artifact previews, plus optional Cloudflare D1/R2 remote mirroring using DB and R2 bindings. Cloud failures never change local QA results or Drive archive behavior."
 }
