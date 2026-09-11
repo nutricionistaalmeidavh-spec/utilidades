@@ -126,6 +126,7 @@ export function createCloudTelemetryMirror({
       projectId,
       type: String(artifact.type || 'file'),
       name: String(artifact.name || path.basename(localPath)),
+      relativePath: String(artifact.relativePath || artifact.name || path.basename(localPath)),
       createdAt: String(artifact.createdAt || new Date().toISOString()),
     });
     const stream = Readable.toWeb(createReadStream(localPath));
