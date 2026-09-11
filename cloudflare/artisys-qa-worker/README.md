@@ -16,8 +16,8 @@ Nunca comite os valores dos secrets.
 
 ## Estrutura
 
-- `src/worker.js` -> entrypoint recomendado; dashboard remoto + API
-- `src/index.js` -> implementação da API D1/R2
+- `src/worker.js` -> entrypoint recomendado; dashboard remoto
+- `src/api.js` -> implementação autenticada da API D1/R2
 - `migrations/0001_init.sql` -> schema do D1
 - `wrangler.jsonc.template` -> template de configuração; copie para `wrangler.jsonc` somente depois de preencher o nome real do Worker e o `database_id` real do D1
 
@@ -83,6 +83,16 @@ POST /api/v1/jobs/:jobId/share
 ## Links temporários para revisão externa
 
 O dashboard pode gerar um link de leitura temporário de um job. O link expira em no máximo 1 hora e dá acesso somente ao job e aos artefatos daquele job. Isso permite compartilhar uma execução específica sem revelar `ARTISYS_QA_READ_TOKEN`.
+
+## Configuração do agente Windows
+
+Depois do Worker estar publicado e os secrets existirem, configure o endpoint e o token local sem colocá-lo no histórico do terminal:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\modules\artisys-qa\scripts\setup-cloud.ps1 -Url https://SEU-WORKER.workers.dev
+```
+
+O script solicita o token de forma oculta, grava `ARTISYS_QA_CLOUD_AGENT_TOKEN` no ambiente do usuário Windows, habilita o endpoint e tenta reiniciar a tarefa `ArtiSys QA Agent`.
 
 ## Política de falha
 
