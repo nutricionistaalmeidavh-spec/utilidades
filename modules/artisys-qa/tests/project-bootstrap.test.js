@@ -34,6 +34,13 @@ test('managed project checkout root stays inside the agent root', () => {
 });
 
 test('managed project setup is a fixed whitelist, never an arbitrary shell command', () => {
+  const withoutLock = normalizeManagedProject({
+    id: 'pdv-artisys',
+    repository: 'https://github.com/nutricionistaalmeidavh-spec/PDV-ARTISYS.git',
+    setup: 'npm-install',
+  });
+  assert.equal(withoutLock.setup, 'npm-install');
+
   assert.throws(() => normalizeManagedProject({
     id: 'unsafe',
     repository: 'https://github.com/nutricionistaalmeidavh-spec/repo.git',
