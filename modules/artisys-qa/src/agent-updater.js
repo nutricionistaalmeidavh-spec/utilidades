@@ -34,8 +34,24 @@ export function isNewerVersion(candidate, current) {
   return compareVersions(candidate, current) > 0;
 }
 
+function quoteWindowsCmdArg(value) {
+  const text = String(value);
+  if (!/[\s&()^|<>\"]/.test(text)) return text;
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+export function normalizeWindowsCommand(command, args = [], platform = process.platform, env = process.env) {
+  if (platform !== 'win32' || !/\.(?:cmd|bat)$/i.test(String(command))) {
+    return { command, args };
+  }
+  const comspec = env.ComSpec || env.COMSPEC || 'cmd.exe';
+  const commandLine = [command, ...args].map(quoteWindowsCmdArg).join(' ');
+  return { command: comspec, args: ['/d', '/s', '/c', commandLine] };
+}
+
 export async function runCommand(command, args, { cwd, env = process.env, timeout = 10 * 60_000 } = {}) {
-  const result = await execFileAsync(command, args, {
+  const normalized = normalizeWindowsCommand(command, args, process.platform, env);
+  const result = await execFileAsync(normalized.command, normalized.args, {
     cwd,
     env,
     timeout,
