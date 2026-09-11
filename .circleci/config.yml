@@ -1,0 +1,129 @@
+version: 2.1
+
+executors:
+  node_linux:
+    docker:
+      - image: cimg/node:22.14.0
+    resource_class: small
+    working_directory: ~/project
+
+commands:
+  install_playwright_chromium:
+    steps:
+      - run:
+          name: Install Chromium and system dependencies
+          command: npx --prefix modules/artisys-qa playwright install --with-deps chromium
+
+jobs:
+  qa:
+    executor: node_linux
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - artisys-qa-v1-{{ checksum "modules/artisys-qa/package-lock.json" }}
+            - artisys-qa-v1-
+      - run:
+          name: Install QA dependencies
+          command: npm ci --prefix modules/artisys-qa
+      - save_cache:
+          key: artisys-qa-v1-{{ checksum "modules/artisys-qa/package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run:
+          name: Unit and manifest checks
+          command: |
+            npm test --prefix modules/artisys-qa
+            npm run check --prefix modules/artisys-qa
+      - run:
+          name: Verify package contents
+          working_directory: modules/artisys-qa
+          command: npm pack --dry-run
+      - install_playwright_chromium
+      - run:
+          name: Browser reference test
+          command: npm run test:example --prefix modules/artisys-qa
+      - store_test_results:
+          path: modules/artisys-qa/test-results
+      - store_artifacts:
+          path: modules/artisys-qa/test-results
+          destination: artisys-qa/test-results
+      - store_artifacts:
+          path: modules/artisys-qa/playwright-report
+          destination: artisys-qa/playwright-report
+
+  module_contracts:
+    executor: node_linux
+    environment:
+      PACT_DO_NOT_TRACK: "true"
+    steps:
+      - checkout
+      - run:
+          name: Install Linux tooling
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y python3-venv python3-pip openjdk-17-jre-headless
+      - run:
+          name: Verify upload and annotations contracts
+          command: |
+            npm test --prefix modules/artisys-upload
+            npm test --prefix modules/artisys-annotations
+      - run:
+          name: Verify release validator contracts
+          command: npm test --prefix modules/artisys-release-validator
+      - run:
+          name: Verify hardware module units
+          command: |
+            node --test modules/artisys-serialport/tests/*.test.js
+            node --test modules/artisys-printing/tests/*.test.js
+            npm run check --prefix modules/artisys-serialport
+            npm run check --prefix modules/artisys-printing
+      - run:
+          name: Install hardware module dependencies
+          command: |
+            npm install --prefix modules/artisys-serialport
+            npm install --prefix modules/artisys-printing
+      - run:
+          name: Smoke test hardware boundaries
+          command: |
+            node -e "const s=require('./modules/artisys-serialport'); const m=s.createSerialPortManager(); if(typeof m.list!=='function') process.exit(1);"
+            node -e "const p=require('./modules/artisys-printing'); const d=p.createReceiptDocument({title:'ArtiSys smoke'}); const svg=p.renderReceiptSvg(d); if(!String(svg).includes('<svg')) process.exit(1);"
+      - run:
+          name: Install shared module dependencies
+          command: |
+            npm ci --ignore-scripts --prefix modules/artisys-qa
+            npm ci --ignore-scripts --prefix modules/artisys-api-contracts
+            python3 -m venv .venv
+            .venv/bin/python -m pip install --upgrade pip
+            .venv/bin/python -m pip install './modules/artisys-documents[preprocess]'
+      - install_playwright_chromium
+      - run:
+          name: Provision pinned OpenAPI generator
+          command: |
+            curl --fail --location --output "$HOME/openapi-generator.jar" https://repo.maven.apache.org/maven2/org/openapitools/openapi-generator-cli/7.16.0/openapi-generator-cli-7.16.0.jar
+            echo "6999b18cece5b58f5d5b246fef5a43bdf61239491c4f0ed6513214e0f6e8464b  $HOME/openapi-generator.jar" | sha256sum --check
+      - run:
+          name: Verify modules and external tool boundaries
+          command: |
+            OPENAPI_GENERATOR_JAR="$HOME/openapi-generator.jar" \
+              .venv/bin/python scripts/check-modules.py --browser --pact --generator
+
+  release_validator_linux:
+    executor: node_linux
+    steps:
+      - checkout
+      - run:
+          name: Verify release validator
+          working_directory: modules/artisys-release-validator
+          command: |
+            npm test
+            npm run check
+            npm run example
+            npm pack --dry-run
+
+workflows:
+  utilidades_ci:
+    jobs:
+      - qa
+      - module_contracts
+      - release_validator_linux
