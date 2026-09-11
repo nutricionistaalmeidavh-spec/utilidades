@@ -33,9 +33,9 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 | `artisys-ocr` 0.1.0 | implemented | contrato OCR unificado Paddle/Tesseract/browser |
 | `artisys-product-qa` 0.1.0 | implemented | agregador QA + security + API contracts |
 | `artisys-licensing` 0.1.0 | implemented | licenças offline Ed25519, expiração, device binding e features |
-| `artisys-ai-quality` 0.1.0 | foundation | Promptfoo |
-| `artisys-privacy` 0.1.0 | foundation | Presidio local/CI |
-| `artisys-bim` 0.1.0 | foundation | IfcOpenShell local sob demanda |
+| `artisys-ai-quality` 0.2.0 | implemented | avaliação/regressão de IA e config Promptfoo |
+| `artisys-privacy` 0.2.0 | implemented | PII/anonymization com Presidio e redaction por spans |
+| `artisys-bim` 0.2.0 | implemented | boundary IFC/IfcOpenShell, propriedades e quantidades |
 
 ## Integração
 
