@@ -10,15 +10,22 @@ export async function runDesktopSmoke({ executable, args = [], cwd, env, startup
   child.stdout?.on('data', chunk => logs.push(chunk.toString()));
   child.stderr?.on('data', chunk => logs.push(chunk.toString()));
   let exit = null;
+  let spawnError = null;
+  child.once('error', error => { spawnError = error; });
   child.once('exit', (code, signal) => { exit = { code, signal }; });
+
   await wait(startupGraceMs);
+  if (spawnError) {
+    throw new Error(`Desktop process failed to start: ${spawnError.message}`, { cause: spawnError });
+  }
   if (exit) {
     throw new Error(`Desktop process exited during startup (code=${exit.code}, signal=${exit.signal || 'none'})`);
   }
+
   if (typeof persistenceCheck === 'function') await persistenceCheck({ child, logs });
   child.kill();
   const deadline = Date.now() + shutdownTimeoutMs;
-  while (!exit && Date.now() < deadline) await wait(50);
-  if (!exit) child.kill('SIGKILL');
+  while (!exit && !spawnError && Date.now() < deadline) await wait(50);
+  if (!exit && !spawnError) child.kill('SIGKILL');
   return { status: 'passed', durationMs: Date.now() - startedAt, exit, logs: logs.join('') };
 }
