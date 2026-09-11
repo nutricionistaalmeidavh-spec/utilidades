@@ -7,6 +7,7 @@ import { checkForStableUpdate, AGENT_RESTART_EXIT_CODE } from './agent-updater.j
 import { startBridgePolling, ensureBridgeConfiguration } from './bridge-worker.js';
 import { createTelemetryStore } from './telemetry-store.js';
 import { createAgentConsole } from './agent-console.js';
+import { createCloudTelemetryMirror, createTelemetryFanout } from './cloud-observability.js';
 import { redactSecrets } from './redaction.js';
 
 const MODULE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -87,6 +88,7 @@ export async function startAgentSupervisor({
   stallThresholdMs = 60_000,
   telemetryFactory = options => createTelemetryStore(options),
   consoleFactory = options => createAgentConsole(options),
+  cloudFactory = options => createCloudTelemetryMirror(options),
   bridgeStarter = options => startBridgePolling(options),
   exit = code => process.exit(code),
   logger = console,
@@ -105,6 +107,8 @@ export async function startAgentSupervisor({
   let consoleInfo = null;
   let activeConsoleSignature = null;
   let telemetry = null;
+  let localTelemetry = null;
+  let cloudMirror = null;
   let version = 'unknown';
   try {
     const pkg = JSON.parse((await fs.readFile(path.join(MODULE_DIR, 'package.json'), 'utf8')).replace(/^\uFEFF/, ''));
@@ -171,6 +175,7 @@ export async function startAgentSupervisor({
     const state = await loadAgentState(root);
     return {
       ...state,
+      cloud: state.cloud ? { ...state.cloud, tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN) } : null,
       projects: state.projects.map(project => ({ ...project, running: children.has(project.id) })),
     };
   }
@@ -191,6 +196,12 @@ export async function startAgentSupervisor({
         enabled: state.bridge.drive.enabled === true,
         remote: state.bridge.drive.remote || null,
         rootFolderId: state.bridge.drive.rootFolderId || null,
+      } : null,
+      cloud: state.cloud ? {
+        enabled: state.cloud.enabled === true,
+        endpoint: state.cloud.endpoint || null,
+        tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN),
+        runtime: cloudMirror?.status?.() || null,
       } : null,
       console: consoleInfo ? { host: consoleInfo.host, port: consoleInfo.port } : null,
     };
@@ -253,6 +264,12 @@ export async function startAgentSupervisor({
           remote: state.bridge.drive.remote || null,
           rootFolderId: state.bridge.drive.rootFolderId || null,
         } : null,
+      } : null,
+      cloud: state.cloud ? {
+        enabled: state.cloud.enabled === true,
+        endpoint: state.cloud.endpoint || null,
+        tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN),
+        runtime: cloudMirror?.status?.() || null,
       } : null,
       console: state.console ? {
         enabled: state.console.enabled !== false,
@@ -329,13 +346,34 @@ export async function startAgentSupervisor({
   }
 
   const bridgeState = await ensureBridgeConfiguration(root);
-  await ensureAgentConsoleConfiguration(root);
+  const configuredState = await ensureAgentConsoleConfiguration(root);
   const secrets = environmentSecrets();
-  telemetry = telemetryFactory({
+  localTelemetry = telemetryFactory({
     root,
     machineId: bridgeState.bridge.machineId,
     redact: value => redactSecrets(value, secrets),
   });
+
+  if (configuredState.cloud?.enabled === true && configuredState.cloud.endpoint) {
+    const token = process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN;
+    if (token) {
+      try {
+        cloudMirror = cloudFactory({
+          endpoint: configuredState.cloud.endpoint,
+          token,
+          machineId: bridgeState.bridge.machineId,
+          machineName: bridgeState.bridge.machineId,
+          version,
+        });
+      } catch (error) {
+        logger.error(`[cloud] ${error.message}`);
+      }
+    } else {
+      logger.error('[cloud] ARTISYS_QA_CLOUD_AGENT_TOKEN is not configured; cloud mirroring remains disabled');
+    }
+  }
+
+  telemetry = createTelemetryFanout(localTelemetry, cloudMirror ? [cloudMirror] : [], { logger });
   await telemetry.recoverInterruptedJob().catch(error => logger.error(`[telemetry] recovery: ${error.message}`));
   await telemetry.heartbeat({ stage: 'IDLE', detail: 'Agente iniciado' }).catch(() => {});
 
@@ -351,5 +389,5 @@ export async function startAgentSupervisor({
   process.once('SIGINT', shutdown);
   process.once('SIGTERM', shutdown);
 
-  return { stop, reconcile, updateCycle, heartbeatCycle, children, bridgeControl, telemetry, consoleControl };
+  return { stop, reconcile, updateCycle, heartbeatCycle, children, bridgeControl, telemetry, localTelemetry, cloudMirror, consoleControl };
 }
