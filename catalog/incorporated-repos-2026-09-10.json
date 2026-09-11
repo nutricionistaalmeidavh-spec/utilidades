@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "incorporatedAt": "2026-09-10",
+  "mode": "curated-source-reference",
+  "policy": "Optional by default. No product gains a mandatory runtime, daemon, paid service or copyleft code linkage merely because a repository is cataloged here.",
+  "repositories": [
+    {"id":"gstreamer","repo":"GStreamer/gstreamer","branch":"main","pinnedCommit":"6212f916b286e3e64303bcfa9d14fbbfac51a036","capability":"multimedia-pipeline","runtimeClass":"local-on-demand","integration":"engine/reference"},
+    {"id":"mlt","repo":"mltframework/mlt","branch":"master","pinnedCommit":"0f8244a125872544fb34b88125ee18a88b4d0b85","capability":"video-editing-engine","runtimeClass":"local-on-demand","integration":"engine with LGPL boundary"},
+    {"id":"shotcut","repo":"mltframework/shotcut","branch":"master","pinnedCommit":"4727281d1fba5142bf4d0120948d27acaace1c3e","capability":"desktop-video-editor","runtimeClass":"dev-tool","integration":"source/reference"},
+    {"id":"libopenshot","repo":"OpenShot/libopenshot","branch":"develop","pinnedCommit":"374b66a234e14e64498e1c469c9a25e5efd940f3","capability":"video-editing-engine","runtimeClass":"local-on-demand","integration":"engine with license boundary"},
+    {"id":"gotenberg","repo":"gotenberg/gotenberg","branch":"main","pinnedCommit":"fb7536a526cf86d8904242fd2d098587889cc520","capability":"document-to-pdf-conversion","runtimeClass":"local-on-demand","integration":"optional isolated service; never always-on by default"},
+    {"id":"tesseract","repo":"tesseract-ocr/tesseract","branch":"main","pinnedCommit":"32cf2095c70ee95d236396cfd618945dd40d8a6d","capability":"local-ocr","runtimeClass":"local-on-demand","integration":"engine/CLI adapter"},
+    {"id":"tesseract-js","repo":"naptha/tesseract.js","branch":"master","pinnedCommit":"a1ca80d9e31c34512d0ded75ff8821ddcf3f2f91","capability":"browser-javascript-ocr","runtimeClass":"embedded","integration":"web adapter"},
+    {"id":"powertoys","repo":"microsoft/PowerToys","branch":"main","pinnedCommit":"da4c274367a173c938d46a3a0b94e59f32ab3905","capability":"desktop-utilities-reference","runtimeClass":"dev-tool","integration":"source/reference; extract patterns selectively"},
+    {"id":"rustdesk","repo":"rustdesk/rustdesk","branch":"master","pinnedCommit":"67e0a1f5827160f8eacb311d283a7fa7083b9132","capability":"remote-desktop","runtimeClass":"local-on-demand","integration":"isolated/reference; no mandatory server"},
+    {"id":"opensourcepos","repo":"opensourcepos/opensourcepos","branch":"master","pinnedCommit":"b610ae28acfad48728d38c09e1e1e311a2a309d8","capability":"point-of-sale-reference","runtimeClass":"dev-tool","integration":"product/reference for PDV flows"},
+    {"id":"pocketbase","repo":"pocketbase/pocketbase","branch":"master","pinnedCommit":"5684ee24f1e88f71a2ede73d20cf547fbd509e16","capability":"embedded-local-backend","runtimeClass":"local-on-demand","integration":"optional local backend adapter"}
+  ]
+}
