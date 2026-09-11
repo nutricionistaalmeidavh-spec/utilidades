@@ -131,7 +131,9 @@ export function createTelemetryStore({ root, machineId, redact = value => value,
     const stage = String(input.stage || '');
     if (!JOB_STAGES.has(stage) || stage === 'IDLE') throw new Error(`Unknown telemetry stage: ${stage}`);
     const snapshot = await getSnapshot();
-    const previous = snapshot.currentJob?.jobId === jobId ? snapshot.currentJob : null;
+    const previous = snapshot.currentJob?.jobId === jobId
+      ? snapshot.currentJob
+      : (snapshot.lastJob?.jobId === jobId && ['PENDING_UPLOAD','STALLED'].includes(snapshot.lastJob.stage) ? snapshot.lastJob : null);
     const previousStage = previous?.stage || 'IDLE';
     const allowed = TRANSITIONS.get(previousStage);
     if (!allowed?.has(stage)) throw new Error(`Invalid telemetry transition: ${previousStage} -> ${stage}`);
