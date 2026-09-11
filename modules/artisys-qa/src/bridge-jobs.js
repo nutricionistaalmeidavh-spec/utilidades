@@ -9,6 +9,7 @@ const execFileAsync = promisify(execFile);
 export const BRIDGE_JOB_ROOT = 'modules/artisys-qa/bridge/jobs/pending';
 export const ALLOWED_BRIDGE_ACTIONS = Object.freeze(['quick', 'full', 'release', 'prints', 'video']);
 const ALLOWED_OPTION_KEYS = new Set(['environment', 'viewport', 'visual', 'flow', 'demo', 'preset']);
+const BRIDGE_REMOTE_REF = 'refs/remotes/origin/artisys-bridge-poll';
 
 export function processedJobsFile(root = defaultAgentRoot()) {
   return path.join(root, 'bridge-processed.json');
@@ -88,10 +89,11 @@ async function git(repoDir, args) {
 
 export async function listPendingBridgeJobs({ repoDir, ref = 'main', jobRoot = BRIDGE_JOB_ROOT } = {}) {
   if (!repoDir) throw new Error('repoDir is required');
-  await git(repoDir, ['fetch', '--quiet', 'origin', ref]);
+  const sourceRef = `refs/heads/${ref}`;
+  await git(repoDir, ['fetch', '--quiet', '--no-write-fetch-head', 'origin', `+${sourceRef}:${BRIDGE_REMOTE_REF}`]);
   let listing = '';
   try {
-    listing = await git(repoDir, ['ls-tree', '-r', '--name-only', 'FETCH_HEAD', jobRoot]);
+    listing = await git(repoDir, ['ls-tree', '-r', '--name-only', BRIDGE_REMOTE_REF, jobRoot]);
   } catch {
     return [];
   }
@@ -99,7 +101,7 @@ export async function listPendingBridgeJobs({ repoDir, ref = 'main', jobRoot = B
   const jobs = [];
   for (const file of files) {
     try {
-      const raw = await git(repoDir, ['show', `FETCH_HEAD:${file}`]);
+      const raw = await git(repoDir, ['show', `${BRIDGE_REMOTE_REF}:${file}`]);
       jobs.push({ file, job: JSON.parse(raw.replace(/^\uFEFF/, '')) });
     } catch (error) {
       jobs.push({ file, error });
