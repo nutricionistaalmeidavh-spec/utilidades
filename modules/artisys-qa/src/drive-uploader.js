@@ -14,9 +14,13 @@ function slug(value) {
     .slice(0, 80) || 'project';
 }
 
+export function buildDriveProjectPath(project) {
+  return slug(project?.id);
+}
+
 export function buildDriveRunPath(project, job, now = new Date()) {
   const day = now.toISOString().slice(0, 10);
-  return `${slug(project.id)}/${day}/${slug(job.id)}`;
+  return `${buildDriveProjectPath(project)}/${day}/${slug(job.id)}`;
 }
 
 export async function assertRcloneRemote(remote, { exec = execFileAsync } = {}) {
@@ -29,12 +33,27 @@ export async function assertRcloneRemote(remote, { exec = execFileAsync } = {}) 
   return true;
 }
 
+export async function ensureDriveProjectFolder(project, drive, { exec = execFileAsync } = {}) {
+  if (!drive?.enabled) return { created: false, reason: 'drive-disabled' };
+  const remote = drive.remote || 'artisys-qa-drive';
+  await assertRcloneRemote(remote, { exec });
+  const projectPath = buildDriveProjectPath(project);
+  await exec('rclone', ['mkdir', `${remote}:${projectPath}`], { windowsHide: true, maxBuffer: 2 * 1024 * 1024 });
+  return {
+    created: true,
+    remote,
+    projectPath,
+    target: `${remote}:${projectPath}`,
+    rootFolderId: drive.rootFolderId || null,
+  };
+}
+
 export async function uploadRunArtifacts({ project, job, sourceDir, drive, manifest = {} }, { exec = execFileAsync } = {}) {
   if (!drive?.enabled) return { uploaded: false, reason: 'drive-disabled' };
   if (!sourceDir) throw new Error('sourceDir is required for Drive upload');
   await fs.access(sourceDir);
   const remote = drive.remote || 'artisys-qa-drive';
-  await assertRcloneRemote(remote, { exec });
+  await ensureDriveProjectFolder(project, drive, { exec });
 
   const runPath = buildDriveRunPath(project, job);
   const target = `${remote}:${runPath}`;
