@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, writeFile, readFile, access } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
@@ -54,7 +55,7 @@ test('report writer stores JSON as source of truth and escapes HTML', async () =
 });
 
 test('CLI executes declarative phases, writes reports and exits 0 only when approved', async () => {
-  const root = path.resolve(new URL('..', import.meta.url).pathname);
+  const root = fileURLToPath(new URL('..', import.meta.url));
   const dir = await mkdtemp(path.join(os.tmpdir(), 'artisys-validator-cli-'));
   const artifact = path.join(dir, 'demo.exe');
   const reportDir = path.join(dir, 'reports');
