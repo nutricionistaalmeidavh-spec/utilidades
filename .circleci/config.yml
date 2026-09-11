@@ -41,16 +41,16 @@ jobs:
           command: npm pack --dry-run
       - install_playwright_chromium
       - run:
-          name: Browser reference test
+          name: Browser reference test with video evidence
           command: npm run test:example --prefix modules/artisys-qa
       - store_test_results:
-          path: modules/artisys-qa/test-results
+          path: modules/artisys-qa/qa-results
       - store_artifacts:
-          path: modules/artisys-qa/test-results
-          destination: artisys-qa/test-results
+          path: modules/artisys-qa/qa-results
+          destination: artisys-qa/qa-results
       - store_artifacts:
-          path: modules/artisys-qa/playwright-report
-          destination: artisys-qa/playwright-report
+          path: modules/artisys-qa/qa-report
+          destination: artisys-qa/qa-report
 
   module_contracts:
     executor: node_linux
