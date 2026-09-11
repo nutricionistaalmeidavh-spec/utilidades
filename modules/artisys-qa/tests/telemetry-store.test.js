@@ -62,3 +62,16 @@ test('heartbeat can expose agent-level bootstrap stage without a job', async () 
   assert.equal(snapshot.agent.stage, 'SYNCING_PROJECT');
   assert.equal(snapshot.agent.projectId, 'pdv-artisys');
 });
+
+test('pending upload can resume after becoming terminal', async () => {
+  const root = await tempRoot();
+  const telemetry = createTelemetryStore({ root, machineId: 'victor-pc' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'QUEUED' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'STARTING_QA' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'RUNNING_QA' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'UPLOADING_ARTIFACTS' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'PENDING_UPLOAD' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'UPLOADING_ARTIFACTS' });
+  await telemetry.transition({ jobId: 'job-2', projectId: 'pdv', stage: 'PASSED' });
+  assert.equal((await telemetry.readJob('job-2')).stage, 'PASSED');
+});
