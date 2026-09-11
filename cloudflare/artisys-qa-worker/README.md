@@ -122,6 +122,10 @@ Depois que esta versão estiver na `main` e o agente atualizar para 2.4.1, falta
 
 Se a integração GitHub do Worker ainda não estiver apontando para `cloudflare/artisys-qa-worker`, ajuste uma vez o Root directory no painel conforme acima. Depois disso, commits em `main` podem continuar o deploy normal.
 
+## Verificação
+
+GitHub Actions não é requisito deste módulo. Se a conta não alocar um runner, os jobs podem terminar sem executar nenhuma etapa. A ativação estável continua protegida pelo updater A/B do Windows, que valida o candidato localmente antes de trocar o slot ativo e faz rollback automático se a validação falhar.
+
 ## Política de falha
 
 Cloudflare é somente espelho de observabilidade. Falha de rede, D1, R2 ou Worker nunca altera o resultado do QA local, o release gate, o upload para Drive, a bridge nem o updater A/B.
