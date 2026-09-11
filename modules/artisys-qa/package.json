@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -24,6 +24,7 @@
     "./bridge-jobs": "./src/bridge-jobs.js",
     "./bridge-worker": "./src/bridge-worker.js",
     "./drive-uploader": "./src/drive-uploader.js",
+    "./project-bootstrap": "./src/project-bootstrap.js",
     "./demo": "./src/demo.js",
     "./video": "./src/video.js",
     "./helpers": "./src/helpers.js",
