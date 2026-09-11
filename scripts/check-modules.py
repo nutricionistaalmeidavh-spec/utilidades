@@ -15,7 +15,8 @@ READY = (
     'artisys-upload', 'artisys-annotations', 'artisys-serialport', 'artisys-printing',
     'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
     'artisys-remote-support', 'artisys-release', 'artisys-desktop-shell',
-    'artisys-ocr', 'artisys-product-qa', 'artisys-licensing'
+    'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
+    'artisys-ai-quality', 'artisys-privacy', 'artisys-bim'
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -25,7 +26,8 @@ JS_MODULES = (
     'artisys-serialport', 'artisys-printing', 'artisys-video-engine',
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
-    'artisys-product-qa', 'artisys-licensing'
+    'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
+    'artisys-privacy', 'artisys-bim'
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -33,7 +35,8 @@ NEW_PRODUCT_MODULES = (
     'artisys-upload', 'artisys-annotations', 'artisys-video-engine',
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
-    'artisys-product-qa', 'artisys-licensing'
+    'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
+    'artisys-privacy', 'artisys-bim'
 )
 
 
