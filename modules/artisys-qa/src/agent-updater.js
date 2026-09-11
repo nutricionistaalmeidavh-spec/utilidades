@@ -46,14 +46,14 @@ export async function runCommand(command, args, { cwd, env = process.env, timeou
 }
 
 async function readJson(file) {
-  return JSON.parse(await fs.readFile(file, 'utf8'));
+  return JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
 }
 
 export async function readStableChannel(repoDir, remoteRef = 'FETCH_HEAD', { run = runCommand } = {}) {
   const { stdout } = await run('git', ['-C', repoDir, 'show', `${remoteRef}:modules/artisys-qa/stable-channel.json`]);
-  const channel = JSON.parse(stdout);
+  const channel = JSON.parse(String(stdout).replace(/^\uFEFF/, ''));
   if (channel.channel !== 'stable') throw new Error('stable-channel.json must declare channel=stable');
-  if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(channel.version || '')) throw new Error('stable channel requires a semantic version');
+  if (!/^\d+\.\d+\.\d+$/.test(channel.version || '')) throw new Error('stable channel requires a release semantic version (x.y.z)');
   return channel;
 }
 
@@ -111,22 +111,33 @@ export async function checkForStableUpdate({ root = defaultAgentRoot(), run = ru
     const nextSlot = inactiveSlotName(activeSlot);
     const nextDir = path.join(root, 'slots', nextSlot);
     await prepareInactiveSlot({ repository: state.repository, candidateSha, slotDir: nextDir, run });
+    const candidateVersion = await readInstalledVersion(nextDir);
+    if (candidateVersion !== channel.version) {
+      throw new Error(`Stable channel version ${channel.version} does not match candidate package version ${candidateVersion}`);
+    }
 
-    state.previousSlot = activeSlot;
-    state.activeSlot = nextSlot;
-    state.lastUpdateResult = {
-      status: 'activated',
-      fromVersion: currentVersion,
-      toVersion: channel.version,
-      candidateSha,
-      activatedAt: now(),
+    const nextState = {
+      ...state,
+      previousSlot: activeSlot,
+      activeSlot: nextSlot,
+      lastUpdateResult: {
+        status: 'activated',
+        fromVersion: currentVersion,
+        toVersion: channel.version,
+        candidateSha,
+        activatedAt: now(),
+      },
     };
-    await saveAgentState(state, root);
+    await saveAgentState(nextState, root);
     return { updated: true, fromVersion: currentVersion, toVersion: channel.version, candidateSha, activeSlot: nextSlot };
   } catch (error) {
-    state.lastUpdateCheckAt = now();
-    state.lastUpdateResult = { status: 'failed', error: error?.message || String(error), currentVersion };
-    await saveAgentState(state, root).catch(() => {});
+    const failureState = {
+      ...state,
+      activeSlot,
+      lastUpdateCheckAt: now(),
+      lastUpdateResult: { status: 'failed', error: error?.message || String(error), currentVersion },
+    };
+    await saveAgentState(failureState, root).catch(() => {});
     return { updated: false, reason: 'failed', error };
   }
 }
