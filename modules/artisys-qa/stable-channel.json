@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.3.2",
+  "version": "2.4.0",
   "minimumNode": "22",
-  "notes": "Fast control plane: existing agents migrate from hourly update checks to one-minute checks and bridge polling is reduced to twenty seconds for near-immediate QA dispatch."
+  "notes": "Agent observability console: durable live telemetry, flow/step progress, heartbeat/stall detection, authenticated read-only LAN dashboard on port 4160, and live artifact previews without changing the existing bridge or Drive archive behavior."
 }
