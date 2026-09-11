@@ -7,6 +7,10 @@ import { loadAgentState, saveAgentState, defaultAgentRoot } from './agent-state.
 const execFileAsync = promisify(execFile);
 export const AGENT_RESTART_EXIT_CODE = 75;
 
+function npmCommand() {
+  return process.platform === 'win32' ? 'npm.cmd' : 'npm';
+}
+
 export function compareVersions(a, b) {
   const parse = value => String(value || '')
     .replace(/^v/i, '')
@@ -45,12 +49,8 @@ async function readJson(file) {
   return JSON.parse(await fs.readFile(file, 'utf8'));
 }
 
-async function git(cwd, args, options = {}) {
-  return runCommand('git', ['-C', cwd, ...args], options);
-}
-
-export async function readStableChannel(repoDir, remoteRef = 'origin/main') {
-  const { stdout } = await git(repoDir, ['show', `${remoteRef}:modules/artisys-qa/stable-channel.json`]);
+export async function readStableChannel(repoDir, remoteRef = 'origin/main', { run = runCommand } = {}) {
+  const { stdout } = await run('git', ['-C', repoDir, 'show', `${remoteRef}:modules/artisys-qa/stable-channel.json`]);
   const channel = JSON.parse(stdout);
   if (channel.channel !== 'stable') throw new Error('stable-channel.json must declare channel=stable');
   if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(channel.version || '')) throw new Error('stable channel requires a semantic version');
@@ -68,9 +68,10 @@ export function inactiveSlotName(activeSlot) {
 
 export async function validateCandidate(slotDir, { run = runCommand } = {}) {
   const moduleDir = path.join(slotDir, 'modules', 'artisys-qa');
-  await run('npm', ['ci'], { cwd: moduleDir });
-  await run('npm', ['test'], { cwd: moduleDir });
-  await run('npm', ['run', 'check'], { cwd: moduleDir });
+  const npm = npmCommand();
+  await run(npm, ['ci'], { cwd: moduleDir });
+  await run(npm, ['test'], { cwd: moduleDir });
+  await run(npm, ['run', 'check'], { cwd: moduleDir });
   return true;
 }
 
@@ -94,7 +95,7 @@ export async function checkForStableUpdate({ root = defaultAgentRoot(), run = ru
   try {
     await run('git', ['-C', activeDir, 'fetch', '--quiet', 'origin', stableRef], { timeout: 2 * 60_000 });
     const remoteRef = `origin/${stableRef}`;
-    const channel = await readStableChannel(activeDir, remoteRef);
+    const channel = await readStableChannel(activeDir, remoteRef, { run });
     state.lastUpdateCheckAt = now();
 
     if (!isNewerVersion(channel.version, currentVersion)) {
