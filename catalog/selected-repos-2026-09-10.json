@@ -1,7 +1,11 @@
 {
   "schemaVersion": 1,
   "approvedAt": "2026-09-10",
-  "alreadyPresent": ["xyflow", "bpmn-js"],
+  "updatedAt": "2026-09-10",
+  "alreadyPresent": [
+    "xyflow",
+    "bpmn-js"
+  ],
   "approvedForCatalog": [
     "frappe-gantt",
     "fullcalendar",
@@ -14,5 +18,63 @@
     "html5-qrcode",
     "annotorious"
   ],
+  "savedForReview": [
+    {
+      "listNumber": 1,
+      "repo": "GStreamer/gstreamer",
+      "capability": "multimedia-pipeline"
+    },
+    {
+      "listNumber": 2,
+      "repo": "mltframework/mlt",
+      "capability": "video-editing-engine"
+    },
+    {
+      "listNumber": 3,
+      "repo": "mltframework/shotcut",
+      "capability": "desktop-video-editor"
+    },
+    {
+      "listNumber": 5,
+      "repo": "OpenShot/libopenshot",
+      "capability": "video-editing-engine"
+    },
+    {
+      "listNumber": 71,
+      "repo": "gotenberg/gotenberg",
+      "capability": "document-to-pdf-conversion"
+    },
+    {
+      "listNumber": 73,
+      "repo": "tesseract-ocr/tesseract",
+      "capability": "local-ocr"
+    },
+    {
+      "listNumber": 74,
+      "repo": "naptha/tesseract.js",
+      "capability": "browser-javascript-ocr"
+    },
+    {
+      "listNumber": 88,
+      "repo": "microsoft/PowerToys",
+      "capability": "desktop-utilities-reference"
+    },
+    {
+      "listNumber": 91,
+      "repo": "rustdesk/rustdesk",
+      "capability": "remote-desktop"
+    },
+    {
+      "listNumber": 98,
+      "repo": "opensourcepos/opensourcepos",
+      "capability": "point-of-sale-reference"
+    },
+    {
+      "listNumber": 100,
+      "repo": "pocketbase/pocketbase",
+      "capability": "embedded-local-backend"
+    }
+  ],
+  "reviewRule": "Saved selections are not automatically approved as submodules. Each repository must pass license, maintenance, runtime-class and integration-boundary review before entering catalog/projects.json or .gitmodules.",
   "policy": "docs/SELECTION_POLICY.md"
 }
