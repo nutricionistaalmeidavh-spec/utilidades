@@ -25,6 +25,7 @@
     "./telemetry-store": "./src/telemetry-store.js",
     "./artifact-index": "./src/artifact-index.js",
     "./progress-protocol": "./src/progress-protocol.js",
+    "./cloud-mirror": "./src/cloud-mirror.js",
     "./bridge-jobs": "./src/bridge-jobs.js",
     "./bridge-worker": "./src/bridge-worker.js",
     "./drive-uploader": "./src/drive-uploader.js",
