@@ -48,6 +48,7 @@
   "files": [
     "src",
     "scripts",
+    "cloud",
     "stable-channel.json",
     "bridge",
     "flows",
