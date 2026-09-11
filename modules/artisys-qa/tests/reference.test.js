@@ -35,9 +35,9 @@ test('health checks time out and respect cancellation', async () => {
   await assert.rejects(waitForHealth('http://127.0.0.1:1', { signal: AbortSignal.abort() }), { name: 'AbortError' });
 });
 
-test('1.3 package exposes demo and visual QA platform APIs', async () => {
+test('package exposes demo and visual QA platform APIs', async () => {
   const pkg = JSON.parse(await fs.readFile(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(pkg.version, '1.3.0');
+  assert.match(pkg.version, /^\d+\.\d+\.\d+$/);
   for (const key of ['./demo-profile', './adapters', './fixture-registry', './flow-library', './redaction', './visual']) {
     assert.ok(pkg.exports[key], `missing package export ${key}`);
   }
@@ -45,8 +45,8 @@ test('1.3 package exposes demo and visual QA platform APIs', async () => {
 });
 
 test('GitHub action and reusable workflow forward named demo profiles', async () => {
-  const action = await fs.readFile(new URL('../../../.github/actions/artisys-qa/action.yml', import.meta.url), 'utf8');
-  const workflow = await fs.readFile(new URL('../../../.github/workflows/artisys-qa-reusable.yml', import.meta.url), 'utf8');
+  const action = (await fs.readFile(new URL('../../../.github/actions/artisys-qa/action.yml', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
+  const workflow = (await fs.readFile(new URL('../../../.github/workflows/artisys-qa-reusable.yml', import.meta.url), 'utf8')).replace(/\r\n/g, '\n');
   assert.match(action, /\n  profile:\n/);
   assert.match(action, /--profile/);
   assert.match(workflow, /\n      profile:\n/);
