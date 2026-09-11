@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "minimumNode": "22",
-  "notes": "Adds safe npm-install managed-project bootstrap for repositories without a lockfile, preserving the fixed setup whitelist and Windows cmd shim handling."
+  "notes": "Fast control plane: existing agents migrate from hourly update checks to one-minute checks and bridge polling is reduced to twenty seconds for near-immediate QA dispatch."
 }
