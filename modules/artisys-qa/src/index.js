@@ -61,6 +61,7 @@ export { runDemoFlow, buildDemoSummary } from './demo.js';
 export { executeStep } from './steps.js';
 export { normalizeDemoVideo, buildNormalizeArgs } from './video.js';
 export { attachPageTelemetry } from './telemetry.js';
+export { ACTIVE_JOB_STAGES, TERMINAL_JOB_STAGES, JOB_STAGES, createTelemetryStore } from './telemetry-store.js';
 export { sanitizeName, resolveSecret, stepLabel } from './helpers.js';
 export { isVisualValidationRequested, shouldUpdateVisualBaselines, sanitizeVisualName, validateVisualSnapshot, VisualValidationError } from './visual.js';
 export { createQaRemoteControl } from './remote-control.js';
