@@ -21,7 +21,7 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA Agent\n\nCommands:\n  artisys-qa-agent register --config C:\\projeto\\qa\\artisys-qa.config.json [--name Sistema] [--port 4173]\n  artisys-qa-agent unregister --project sistema\n  artisys-qa-agent list\n  artisys-qa-agent status\n  artisys-qa-agent autoupdate on|off\n  artisys-qa-agent check-update\n  artisys-qa-agent run`);
+  console.log(`ArtiSys QA Agent\n\nCommands:\n  artisys-qa-agent register --config C:\\projeto\\qa\\artisys-qa.config.json [--name Sistema] [--port 4173]\n  artisys-qa-agent unregister --project sistema\n  artisys-qa-agent list\n  artisys-qa-agent token --project sistema\n  artisys-qa-agent status\n  artisys-qa-agent autoupdate on|off\n  artisys-qa-agent check-update\n  artisys-qa-agent run`);
 }
 
 function safeProject(project) {
@@ -41,7 +41,24 @@ async function nextPort(root) {
   const used = new Set(state.projects.map(project => Number(project.port)));
   let port = 4173;
   while (used.has(port) && port < 65535) port += 1;
+  if (port > 65535) throw new Error('No free agent port available');
   return port;
+}
+
+function requestedProject(args) {
+  return args.project && args.project !== true ? String(args.project) : args.positional[0];
+}
+
+async function restartRunningAgent(root) {
+  const health = await readAgentHealth(root).catch(() => null);
+  const pid = Number(health?.pid);
+  if (!Number.isInteger(pid) || pid <= 0 || pid === process.pid) return false;
+  try {
+    process.kill(pid, 'SIGTERM');
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -67,13 +84,20 @@ try {
     console.log(JSON.stringify({ ...safeProject(project), token: project.token }, null, 2));
     console.log('Project registered. The running agent will pick it up automatically.');
   } else if (args.command === 'unregister') {
-    const project = args.project && args.project !== true ? String(args.project) : args.positional[0];
+    const project = requestedProject(args);
     if (!project) throw new Error('unregister requires --project <id>');
     const id = await unregisterAgentProject(project, { root });
     console.log(`unregistered ${id}`);
   } else if (args.command === 'list') {
     const state = await loadAgentState(root);
     console.log(JSON.stringify(state.projects.map(safeProject), null, 2));
+  } else if (args.command === 'token') {
+    const projectId = requestedProject(args);
+    if (!projectId) throw new Error('token requires --project <id>');
+    const state = await loadAgentState(root);
+    const project = state.projects.find(item => item.id === projectId || item.name === projectId);
+    if (!project) throw new Error(`Unknown agent project: ${projectId}`);
+    console.log(JSON.stringify({ ...safeProject(project), token: project.token }, null, 2));
   } else if (args.command === 'status') {
     const state = await loadAgentState(root);
     const health = await readAgentHealth(root);
@@ -94,7 +118,8 @@ try {
     console.log(`autoUpdate=${enabled}`);
   } else if (args.command === 'check-update') {
     const result = await checkForStableUpdate({ root });
-    console.log(JSON.stringify({ ...result, error: result.error?.message || null }, null, 2));
+    const restarted = result.updated ? await restartRunningAgent(root) : false;
+    console.log(JSON.stringify({ ...result, restarted, error: result.error?.message || null }, null, 2));
     process.exit(result.reason === 'failed' ? 1 : 0);
   } else if (args.command === 'run') {
     await startAgentSupervisor({ root });
