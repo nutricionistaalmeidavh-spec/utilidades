@@ -8,6 +8,7 @@ import { resolveBusinessPack } from '../src/business-packs.js';
 import { aggregateQaReport, writeQaReport, readQaHistory } from '../src/reporting.js';
 import { evaluateReleaseGate } from '../src/release-gate.js';
 import { retryTransient } from '../src/network.js';
+import { runDesktopSmoke } from '../src/desktop.js';
 
 test('profiles expose quick/full/release and allow manifest overrides', () => {
   const manifest = {
@@ -59,4 +60,11 @@ test('retryTransient retries recoverable failures', async () => {
   }, { attempts: 3, delayMs: 1 });
   assert.equal(value, 'ok');
   assert.equal(calls, 3);
+});
+
+test('desktop smoke reports missing executables as a controlled failure', async () => {
+  await assert.rejects(
+    runDesktopSmoke({ executable: path.join(os.tmpdir(), `missing-artisys-${Date.now()}.exe`), startupGraceMs: 10 }),
+    /failed to start/i,
+  );
 });
