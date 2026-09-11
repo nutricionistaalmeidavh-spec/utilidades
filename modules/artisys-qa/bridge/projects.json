@@ -1,4 +1,14 @@
 {
   "schemaVersion": 1,
-  "projects": []
+  "projects": [
+    {
+      "id": "pdv-artisys",
+      "name": "PDV ARTISYS",
+      "repository": "https://github.com/nutricionistaalmeidavh-spec/PDV-ARTISYS.git",
+      "ref": "main",
+      "configPath": "qa/artisys-qa.config.json",
+      "setup": "npm-install",
+      "enabled": true
+    }
+  ]
 }
