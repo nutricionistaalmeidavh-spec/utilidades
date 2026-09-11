@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import os from 'node:os';
 import path from 'node:path';
-import { defaultAgentRoot, loadAgentState, registerAgentProject, unregisterAgentProject, setAgentAutoUpdate, ensureAgentConsoleConfiguration, setAgentConsoleLan } from './agent-state.js';
+import { defaultAgentRoot, loadAgentState, registerAgentProject, unregisterAgentProject, setAgentAutoUpdate, ensureAgentConsoleConfiguration, setAgentConsoleLan, configureAgentCloud } from './agent-state.js';
 import { readAgentHealth, startAgentSupervisor } from './agent-supervisor.js';
 import { checkForStableUpdate } from './agent-updater.js';
 import { bridgePollOnce, configureBridgeDrive, ensureBridgeConfiguration, DEFAULT_DRIVE_ROOT_FOLDER_ID } from './bridge-worker.js';
@@ -24,7 +24,7 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  console.log(`ArtiSys QA Agent\n\nCommands:\n  artisys-qa-agent register --config C:\\projeto\\qa\\artisys-qa.config.json [--name Sistema] [--port 4173]\n  artisys-qa-agent unregister --project sistema\n  artisys-qa-agent list\n  artisys-qa-agent token --project sistema\n  artisys-qa-agent status\n  artisys-qa-agent bridge status|poll\n  artisys-qa-agent drive status\n  artisys-qa-agent drive enable [--remote artisys-qa-drive] [--root-folder-id ${DEFAULT_DRIVE_ROOT_FOLDER_ID}]\n  artisys-qa-agent drive disable\n  artisys-qa-agent console status\n  artisys-qa-agent console token\n  artisys-qa-agent console lan on|off\n  artisys-qa-agent autoupdate on|off\n  artisys-qa-agent check-update\n  artisys-qa-agent run`);
+  console.log(`ArtiSys QA Agent\n\nCommands:\n  artisys-qa-agent register --config C:\\projeto\\qa\\artisys-qa.config.json [--name Sistema] [--port 4173]\n  artisys-qa-agent unregister --project sistema\n  artisys-qa-agent list\n  artisys-qa-agent token --project sistema\n  artisys-qa-agent status\n  artisys-qa-agent bridge status|poll\n  artisys-qa-agent drive status\n  artisys-qa-agent drive enable [--remote artisys-qa-drive] [--root-folder-id ${DEFAULT_DRIVE_ROOT_FOLDER_ID}]\n  artisys-qa-agent drive disable\n  artisys-qa-agent console status\n  artisys-qa-agent console token\n  artisys-qa-agent console lan on|off\n  artisys-qa-agent cloud status\n  artisys-qa-agent cloud enable --url https://SEU-WORKER.workers.dev\n  artisys-qa-agent cloud disable\n  artisys-qa-agent autoupdate on|off\n  artisys-qa-agent check-update\n  artisys-qa-agent run\n\nCloud agent auth is read from ARTISYS_QA_CLOUD_AGENT_TOKEN and is never printed by status commands.`);
 }
 
 function safeProject(project) {
@@ -59,6 +59,15 @@ function safeConsole(consoleState) {
     host: consoleState.host,
     port: consoleState.port,
     urls: consoleUrls(consoleState),
+  };
+}
+
+function safeCloud(cloudState, health = null) {
+  return {
+    enabled: cloudState?.enabled === true,
+    endpoint: cloudState?.endpoint || null,
+    tokenConfigured: Boolean(process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN),
+    runtime: health?.cloud?.runtime || null,
   };
 }
 
@@ -131,6 +140,7 @@ try {
   } else if (args.command === 'status') {
     const state = await ensureBridgeConfiguration(root);
     const consoleState = (await ensureAgentConsoleConfiguration(root)).console;
+    const fresh = await loadAgentState(root);
     const health = await readAgentHealth(root);
     console.log(JSON.stringify({
       root,
@@ -141,7 +151,8 @@ try {
       lastUpdateResult: state.lastUpdateResult,
       bridge: state.bridge,
       console: safeConsole(consoleState),
-      projects: state.projects.map(safeProject),
+      cloud: safeCloud(fresh.cloud, health),
+      projects: fresh.projects.map(safeProject),
       health,
     }, null, 2));
   } else if (args.command === 'bridge') {
@@ -199,6 +210,26 @@ try {
       console.log('The running agent will apply the new console binding automatically within a few seconds.');
     } else {
       throw new Error('console requires status, token, or lan on|off');
+    }
+  } else if (args.command === 'cloud') {
+    const operation = String(args.positional[0] || 'status').toLowerCase();
+    const state = await loadAgentState(root);
+    const health = await readAgentHealth(root).catch(() => null);
+    if (operation === 'status') {
+      console.log(JSON.stringify(safeCloud(state.cloud, health), null, 2));
+    } else if (operation === 'enable') {
+      if (!args.url || args.url === true) throw new Error('cloud enable requires --url https://worker.example.workers.dev');
+      const configured = await configureAgentCloud({ enabled: true, endpoint: String(args.url) }, { root });
+      console.log(JSON.stringify(safeCloud(configured), null, 2));
+      if (!process.env.ARTISYS_QA_CLOUD_AGENT_TOKEN) {
+        console.log('Warning: ARTISYS_QA_CLOUD_AGENT_TOKEN is not configured yet. Cloud mirroring will remain inactive until the agent process can read it.');
+      }
+      console.log('Restart the agent after setting the token so cloud mirroring is initialized.');
+    } else if (operation === 'disable') {
+      const configured = await configureAgentCloud({ enabled: false }, { root });
+      console.log(JSON.stringify(safeCloud(configured), null, 2));
+    } else {
+      throw new Error('cloud requires status, enable --url <https-url>, or disable');
     }
   } else if (args.command === 'autoupdate') {
     const value = String(args.positional[0] || '').toLowerCase();
