@@ -9,6 +9,7 @@ import { listPendingBridgeJobs, loadProcessedJobs, markBridgeJobProcessed, valid
 import { uploadRunArtifacts } from './drive-uploader.js';
 import { syncManagedProjects } from './project-bootstrap.js';
 import { scanQaArtifacts } from './artifact-index.js';
+import { createQaProgressParser } from './progress-protocol.js';
 
 const MODULE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_DIR = path.resolve(MODULE_DIR, '..', '..');
@@ -114,8 +115,11 @@ function commandForJob(project, job, outputDir) {
   return { command: process.execPath, args };
 }
 
-function runProcess(command, args, { cwd, onActivity } = {}) {
+function runProcess(command, args, { cwd, onActivity, onProgressEvent } = {}) {
   return new Promise((resolve, reject) => {
+    const parser = createQaProgressParser(event => {
+      try { onProgressEvent?.(event); } catch {}
+    });
     const child = spawn(command, args, {
       cwd,
       env: process.env,
@@ -126,15 +130,21 @@ function runProcess(command, args, { cwd, onActivity } = {}) {
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', chunk => {
-      stdout += String(chunk);
+      const text = String(chunk);
+      stdout += text;
+      parser.push(text);
       try { onActivity?.(); } catch {}
     });
     child.stderr.on('data', chunk => {
       stderr += String(chunk);
       try { onActivity?.(); } catch {}
     });
-    child.once('error', reject);
+    child.once('error', error => {
+      parser.flush();
+      reject(error);
+    });
     child.once('exit', code => {
+      parser.flush();
       if (code === 0) resolve({ code, stdout, stderr });
       else {
         const error = new Error(`QA job failed with exit code ${code}`);
@@ -182,6 +192,28 @@ function createArtifactWatcher({ root, outputDir, job, project, telemetry, inter
   };
 }
 
+async function applyChildProgress(telemetry, job, project, event) {
+  if (!event || typeof event !== 'object') return;
+  const base = { jobId: job.id, projectId: project.id, stage: 'RUNNING_QA' };
+  if (event.type === 'profile-start') {
+    await emit(telemetry, { ...base, detail: `Perfil ${event.profile || job.action} iniciado`, progress: { current: 0, total: Number(event.total || 0) } });
+  } else if (event.type === 'flow-start') {
+    await emit(telemetry, { ...base, flow: event.flow || null, detail: `Fluxo ${event.flow || ''} iniciado`, progress: { current: Number(event.current || 0), total: Number(event.total || 0) } });
+  } else if (event.type === 'step-start') {
+    await emit(telemetry, { ...base, flow: event.flow || null, test: event.step || event.name || null, detail: `Etapa ${event.step || event.name || ''}`, progress: { current: Number(event.current || 0), total: Number(event.total || 0) } });
+  } else if (event.type === 'step-end') {
+    await emit(telemetry, { ...base, flow: event.flow || null, test: event.step || event.name || null, detail: `${event.step || event.name || 'Etapa'}: ${event.status || 'concluída'}`, progress: { current: Number(event.current || 0), total: Number(event.total || 0) } });
+  } else if (event.type === 'flow-end') {
+    await emit(telemetry, { ...base, flow: event.flow || null, detail: `Fluxo ${event.flow || ''}: ${event.status || 'concluído'}`, progress: { current: Number(event.current || 0), total: Number(event.total || 0) } });
+  } else if (event.type === 'desktop-start' || event.type === 'desktop-end') {
+    await emit(telemetry, { ...base, test: event.check || 'desktop-smoke', detail: `${event.check || 'desktop-smoke'} ${event.status || 'em execução'}` });
+  } else if (event.type === 'report-start') {
+    await beat(telemetry, { stage: 'GENERATING_REPORT', detail: 'Gerando relatório final', projectId: project.id });
+  } else if (event.type === 'profile-end') {
+    await emit(telemetry, { ...base, detail: `Perfil concluído; gate ${event.gateAllowed === false ? 'bloqueado' : 'aprovado'}` });
+  }
+}
+
 export async function executeBridgeJob({
   job,
   project,
@@ -206,10 +238,15 @@ export async function executeBridgeJob({
     lastBeatAt = now;
     void beat(telemetry, { stage: 'RUNNING_QA', detail: 'Processo de QA ativo', projectId: project.id });
   };
+  const progress = event => { void applyChildProgress(telemetry, job, project, event); };
   await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'RUNNING_QA', detail: `Executando ${job.action}` });
 
   try {
-    const result = await runProcessImpl(command, args, { cwd: path.dirname(project.config), onActivity: activity });
+    const result = await runProcessImpl(command, args, { cwd: path.dirname(project.config), onActivity: activity, onProgressEvent: progress });
+    const snapshot = await telemetry?.getSnapshot?.().catch(() => null);
+    if (snapshot?.lastJob?.jobId === job.id && snapshot.lastJob.stage === 'STALLED') {
+      await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'RUNNING_QA', detail: 'Processo respondeu após stall' });
+    }
     await watcher.scan();
     await emit(telemetry, { jobId: job.id, projectId: project.id, stage: 'GENERATING_REPORT', detail: 'Consolidando evidências e relatório' });
     await watcher.scan();
