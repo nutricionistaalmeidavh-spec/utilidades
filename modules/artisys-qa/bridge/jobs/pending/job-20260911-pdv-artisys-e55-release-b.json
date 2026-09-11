@@ -1,0 +1,13 @@
+{
+  "id": "job-20260911-pdv-artisys-e55-release",
+  "nonce": "f977eb3ed0c2fd60ace5e643f0a330d2",
+  "machineId": "Victor-eed9418ed174",
+  "projectId": "pdv-artisys",
+  "action": "release",
+  "requestedAt": "2026-09-11T19:45:00.000Z",
+  "expiresAt": "2026-09-11T20:15:00.000Z",
+  "options": {
+    "environment": "ci",
+    "viewport": "desktop"
+  }
+}
