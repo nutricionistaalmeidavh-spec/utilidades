@@ -29,10 +29,36 @@ test('persists current stage, bounded events, redaction and artifacts', async ()
   assert.deepEqual(snapshot.currentJob.progress, { current: 1, total: 3 });
   assert.equal(snapshot.currentJob.detail, 'Flow smoke');
   assert.equal(snapshot.artifacts.length, 1);
+  const persistedJob = await telemetry.readJob('job-1');
+  assert.equal(persistedJob.artifacts.length, 1);
+  assert.equal(persistedJob.artifacts[0].name, 'shot.png');
   const events = await telemetry.readEvents({ jobId: 'job-1', limit: 10 });
   assert.equal(events.length, 2);
   const raw = await fs.readFile(path.join(root, 'telemetry', 'events.ndjson'), 'utf8');
   assert.equal(raw.includes('secret-value'), false);
+});
+
+test('serializes concurrent heartbeat, stage and artifact mutations', async () => {
+  const root = await tempRoot();
+  const telemetry = createTelemetryStore({ root, machineId: 'victor-pc' });
+  await telemetry.transition({ jobId: 'job-race', projectId: 'pdv', stage: 'QUEUED' });
+  await telemetry.transition({ jobId: 'job-race', projectId: 'pdv', stage: 'STARTING_QA' });
+  await telemetry.transition({ jobId: 'job-race', projectId: 'pdv', stage: 'RUNNING_QA' });
+  const artifactRoot = path.join(root, 'artifacts', 'pdv');
+  await fs.mkdir(artifactRoot, { recursive: true });
+  const one = path.join(artifactRoot, 'one.png');
+  const two = path.join(artifactRoot, 'two.png');
+  await Promise.all([fs.writeFile(one, '1'), fs.writeFile(two, '2')]);
+  await Promise.all([
+    telemetry.heartbeat({ stage: 'RUNNING_QA', detail: 'alive', projectId: 'pdv' }),
+    telemetry.recordArtifact({ jobId: 'job-race', projectId: 'pdv', type: 'screenshot', localPath: one }),
+    telemetry.recordArtifact({ jobId: 'job-race', projectId: 'pdv', type: 'screenshot', localPath: two }),
+    telemetry.transition({ jobId: 'job-race', projectId: 'pdv', stage: 'RUNNING_QA', detail: 'step 2' }),
+  ]);
+  const snapshot = await telemetry.getSnapshot();
+  assert.equal(snapshot.currentJob.detail, 'step 2');
+  assert.equal(snapshot.artifacts.filter(item => item.jobId === 'job-race').length, 2);
+  assert.equal((await telemetry.readJob('job-race')).artifacts.length, 2);
 });
 
 test('rejects invalid transitions and artifact traversal', async () => {
