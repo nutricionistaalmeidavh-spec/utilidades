@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -23,6 +23,7 @@
     "./agent-supervisor": "./src/agent-supervisor.js",
     "./agent-console": "./src/agent-console.js",
     "./telemetry-store": "./src/telemetry-store.js",
+    "./cloud-observability": "./src/cloud-observability.js",
     "./artifact-index": "./src/artifact-index.js",
     "./progress-protocol": "./src/progress-protocol.js",
     "./bridge-jobs": "./src/bridge-jobs.js",
