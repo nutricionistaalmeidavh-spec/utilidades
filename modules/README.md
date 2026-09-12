@@ -8,7 +8,7 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 
 | Módulo | Estado | Função |
 |---|---|---|
-| `artisys-qa` 1.3.0 | stable | Playwright/Chromium, evidências, demos e validação visual opt-in |
+| `artisys-qa` 2.4.1 | stable | Playwright/Chromium, agente local, evidências, demos e validação visual opt-in |
 | `artisys-pdf` 1.0.0 | stable | geração, visualização e anotações PDF |
 | `artisys-workflows` 1.0.0 | stable | grafos, dependências e adapters visuais |
 | `artisys-capture` 1.0.0 | stable | câmera/arquivo, QR/barcode e OpenCV |
@@ -38,6 +38,14 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 | `artisys-ai-quality` 0.2.0 | implemented | avaliação/regressão de IA e config Promptfoo |
 | `artisys-privacy` 0.2.0 | implemented | PII/anonymization com Presidio e redaction por spans |
 | `artisys-bim` 0.2.0 | implemented | boundary IFC/IfcOpenShell, propriedades e quantidades |
+| `artisys-backup` 0.1.0 | implemented | manifesto de backup, SHA-256 e verificação de integridade |
+| `artisys-importer` 0.1.0 | implemented | mapeamento, preview e validação de importações |
+| `artisys-auth-rbac` 0.1.0 | implemented | papéis, permissões e guards independentes de provedor |
+| `artisys-storage` 0.1.0 | implemented | contrato de storage, memória e isolamento por namespace |
+| `artisys-audit-log` 0.1.0 | implemented | trilha append-only de ator, ação, entidade e metadados |
+| `artisys-sync` 0.1.0 | implemented | fila offline, retry e resolução de conflitos |
+| `artisys-pwa-runtime` 0.1.0 | implemented | cache versionado, precache, fallback e atualização PWA |
+| `artisys-webview-bridge` 0.1.0 | implemented | envelope e validação WebView ↔ native |
 
 ## Integração
 
