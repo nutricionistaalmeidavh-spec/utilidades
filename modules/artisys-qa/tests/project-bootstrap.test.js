@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import path from 'node:path';
 import { managedProjectsRoot, normalizeManagedProject } from '../src/project-bootstrap.js';
 
@@ -46,4 +47,14 @@ test('managed project setup is a fixed whitelist, never an arbitrary shell comma
     repository: 'https://github.com/nutricionistaalmeidavh-spec/repo.git',
     setup: 'powershell -Command whoami',
   }), /unsupported managed project setup/);
+});
+
+test('managed checkout initializes repository submodules before package setup', () => {
+  const source = fs.readFileSync(new URL('../src/project-bootstrap.js', import.meta.url), 'utf8');
+  const syncIndex = source.indexOf("['submodule', 'sync', '--recursive']");
+  const updateIndex = source.indexOf("['submodule', 'update', '--init', '--recursive']");
+  const setupIndex = source.indexOf('await runSetup(definition, destination)');
+  assert.ok(syncIndex >= 0, 'submodule sync must be present');
+  assert.ok(updateIndex > syncIndex, 'submodule update must run after sync');
+  assert.ok(setupIndex > updateIndex, 'package setup must run after submodules are ready');
 });
