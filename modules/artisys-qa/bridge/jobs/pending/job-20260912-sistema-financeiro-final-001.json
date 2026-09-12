@@ -1,0 +1,15 @@
+{
+  "id": "job-20260912-sistema-financeiro-final-001",
+  "nonce": "a317c5ce421f21841f3ee856b937bfcb",
+  "machineId": "*",
+  "projectId": "sistema-financeiro",
+  "action": "prints",
+  "requestedAt": "2026-09-12T22:12:19Z",
+  "expiresAt": "2026-09-12T22:37:19Z",
+  "options": {
+    "environment": "final",
+    "viewport": "desktop",
+    "flow": "final-screens",
+    "visual": true
+  }
+}
