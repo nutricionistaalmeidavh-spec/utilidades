@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import{createInventory,applyMovement,reserveStock,releaseStock,availableQuantity}from'../src/index.mjs';
+test('tracks movements and reservations',()=>{let s=createInventory([{sku:'A',onHand:10}]);s=applyMovement(s,{sku:'A',delta:2});s=reserveStock(s,'A',5);assert.equal(availableQuantity(s.A),7);s=releaseStock(s,'A',2);assert.equal(s.A.reserved,3)});

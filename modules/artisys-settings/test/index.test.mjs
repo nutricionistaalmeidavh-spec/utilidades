@@ -1,0 +1,2 @@
+import test from'node:test';import assert from'node:assert/strict';import{createMemorySettings,namespaceSettings}from'../src/index.mjs';
+test('supports defaults and namespaces',()=>{const s=createMemorySettings({}, {theme:'system'});assert.equal(s.get('theme'),'system');const n=namespaceSettings(s,'tenant');n.set('theme','dark');assert.equal(n.get('theme'),'dark');assert.equal(s.get('theme'),'system')});
