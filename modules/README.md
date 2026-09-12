@@ -46,6 +46,15 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 | `artisys-sync` 0.1.0 | implemented | fila offline, retry e resolução de conflitos |
 | `artisys-pwa-runtime` 0.1.0 | implemented | cache versionado, precache, fallback e atualização PWA |
 | `artisys-webview-bridge` 0.1.0 | implemented | envelope e validação WebView ↔ native |
+| `artisys-inventory` 0.1.0 | implemented | movimentos, reservas e saldo disponível de estoque |
+| `artisys-os` 0.1.0 | implemented | ordem de serviço genérica com transições configuráveis e histórico |
+| `artisys-catalog` 0.1.0 | implemented | catálogo de produtos/serviços, variantes, busca e ativação |
+| `artisys-pricing` 0.1.0 | implemented | preço por quantidade, faixas, desconto e cálculo de linha |
+| `artisys-settings` 0.1.0 | implemented | configurações, defaults e namespaces independentes de persistência |
+| `artisys-multitenancy` 0.1.0 | implemented | contexto de tenant, scoping e guard de isolamento |
+| `artisys-feature-flags` 0.1.0 | implemented | flags locais por default, tenant e usuário |
+| `artisys-checklists` 0.1.0 | implemented | checklist, evidência, progresso e conclusão |
+| `artisys-reporting` 0.1.0 | implemented | filtros, agrupamento, agregações e CSV |
 
 ## Integração
 
