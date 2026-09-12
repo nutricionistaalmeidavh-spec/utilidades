@@ -16,7 +16,7 @@ READY = (
     'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
     'artisys-remote-support', 'artisys-release', 'artisys-release-validator',
     'artisys-desktop-shell', 'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
-    'artisys-ai-quality', 'artisys-privacy', 'artisys-bim'
+    'artisys-ai-quality', 'artisys-privacy', 'artisys-bim', 'artisys-eventbus'
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -27,7 +27,7 @@ JS_MODULES = (
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-release-validator', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
-    'artisys-privacy', 'artisys-bim'
+    'artisys-privacy', 'artisys-bim', 'artisys-eventbus'
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -36,7 +36,7 @@ NEW_PRODUCT_MODULES = (
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
-    'artisys-privacy', 'artisys-bim', 'artisys-release-validator'
+    'artisys-privacy', 'artisys-bim', 'artisys-release-validator', 'artisys-eventbus'
 )
 
 
