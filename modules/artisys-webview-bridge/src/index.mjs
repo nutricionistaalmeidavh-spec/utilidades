@@ -1,0 +1,4 @@
+export function createBridgeMessage(type,payload=null,options={}) { if(!type||typeof type!=='string') throw new TypeError('type is required'); return {version:1,id:options.id??null,type,payload}; }
+export function encodeBridgeMessage(message){return JSON.stringify(message);}
+export function parseBridgeMessage(raw,options={}) { try { const value=typeof raw==='string'?JSON.parse(raw):raw; if(value?.version!==1||typeof value?.type!=='string') return {ok:false,error:'invalid-message'}; if(options.allowedTypes&&!options.allowedTypes.includes(value.type)) return {ok:false,error:'type-not-allowed'}; return {ok:true,message:value}; } catch { return {ok:false,error:'invalid-json'}; } }
+export function postToNative(target,message){ if(typeof target?.postMessage!=='function') throw new TypeError('target.postMessage is required'); target.postMessage(encodeBridgeMessage(message)); }

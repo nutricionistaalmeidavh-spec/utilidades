@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {MemorySyncQueue,resolveLastWriteWins} from '../src/index.mjs';
+test('queues, retries and acknowledges',()=>{const q=new MemorySyncQueue();const x=q.enqueue({type:'save'},{id:'1',createdAt:'2026-09-12T00:00:00Z'});q.fail(x.id,'offline');assert.equal(q.pending()[0].attempts,1);q.ack(x.id);assert.equal(q.pending().length,0);assert.equal(resolveLastWriteWins({updatedAt:'2026-01-01'},{updatedAt:'2026-02-01'}).updatedAt,'2026-02-01');});

@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createPolicy,can,requirePermission} from '../src/index.mjs';
+test('evaluates role permissions',()=>{const p=createPolicy({admin:['*'],cashier:['sale:create']});assert.equal(can(p,'cashier','sale:create'),true);assert.equal(can(p,'cashier','users:delete'),false);assert.throws(()=>requirePermission(p,'cashier','users:delete'),{code:'FORBIDDEN'});});

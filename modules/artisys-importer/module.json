@@ -1,0 +1,6 @@
+{
+  "schemaVersion":1,"id":"artisys-importer","name":"ArtiSys Importer","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],
+  "boundary":"Provider-neutral row mapping, preview and validation for CSV/XLSX/import pipelines. Parsing libraries and product persistence remain optional consumer adapters.",
+  "provides":["row-mapping","import-preview","schema-validation"],"costPolicy":{"coreLicenseFee":0,"selfHosted":true,"requiredPaidServices":[]},
+  "implementedCapabilities":["field-mapping","functional-transformers","required-field-validation","preview-before-commit"],"requirements":{"node":">=22","runtimeDependencies":"none"}
+}
