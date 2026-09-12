@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-eventbus",
+  "name": "ArtiSys EventBus",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [],
+  "boundary": "Domain event delivery, durable outbox dispatch and idempotent effect execution. Business rules remain in the consuming product.",
+  "provides": [
+    "domain-event-contract",
+    "sync-async-event-bus",
+    "wildcard-subscriptions",
+    "outbox-dispatcher",
+    "idempotent-effects",
+    "memory-adapters",
+    "sqlite-adapters"
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  },
+  "implementedCapabilities": [
+    "canonical-domain-event-validation",
+    "sync-and-async-delivery",
+    "subscriber-failure-isolation",
+    "wildcard-delivery",
+    "durable-outbox-contract",
+    "memory-outbox",
+    "memory-effect-store",
+    "sqlite-outbox-adapter",
+    "sqlite-effect-store-adapter",
+    "idempotent-effect-runner"
+  ],
+  "plannedCapabilities": [],
+  "limitations": [
+    "In-process EventBus; cross-process transport is intentionally outside the core module",
+    "SQLite adapter expects the consumer to provide a compatible connection and run the exported schema/migration"
+  ],
+  "requirements": {
+    "node": ">=18",
+    "runtimeDependencies": "none",
+    "sqlite": "optional consumer-provided adapter connection"
+  }
+}
