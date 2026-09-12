@@ -86,6 +86,8 @@ def main():
                 raise ValueError(f'{entry["id"]}: missing implementation metadata')
             if not (path / 'LICENSE').is_file():
                 raise ValueError(f'{entry["id"]}: missing local code license')
+            if not (path / 'README.md').is_file():
+                raise ValueError(f'{entry["id"]}: missing module README')
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
@@ -93,6 +95,8 @@ def main():
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)
+    run(['node', 'scripts/reuse-smoke.mjs'])
+    for module in JS_MODULES:
         run([npm, 'pack', '--dry-run'], ROOT / 'modules' / module)
     run([sys.executable, '-m', 'unittest', 'discover', '-s', 'modules/artisys-security/tests', '-v'])
     env = os.environ.copy()
@@ -104,7 +108,7 @@ def main():
         run([npm, 'run', 'test:pact'], ROOT / 'modules' / 'artisys-api-contracts')
     if args.generator:
         run([npm, 'run', 'test:generator'], ROOT / 'modules' / 'artisys-api-contracts')
-    print('Requested module checks passed. Consumer product acceptance is separate.')
+    print('Requested module checks passed. Packages are reusable-ready; consumer product acceptance remains separate.')
 
 
 if __name__ == '__main__':
