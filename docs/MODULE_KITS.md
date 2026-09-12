@@ -1,10 +1,10 @@
 # Kits executáveis ArtiSys
 
-Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente.
+Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente. O core obrigatório deve permanecer R$0/self-hosted; provedores externos são adapters opcionais.
 
 | Módulo | Versão | Execução | Capacidade principal |
 |---|---:|---|---|
-| QA | 1.3.0 | local/Actions | E2E, Chromium, evidências, demos e visual opt-in |
+| QA | 2.4.1 | local/CircleCI | E2E, Chromium, agente local, evidências, demos e visual opt-in |
 | PDF | 1.0.0 | embedded/local | geração, visualização e highlights |
 | Workflows | 1.0.0 | embedded | grafos, validação e execução |
 | Capture | 1.0.0 | embedded | QR/barcode + OpenCV |
@@ -17,24 +17,50 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | Annotations | 1.0.0 | embedded | regiões em imagem/PDF e adapters de anotação |
 | SerialPort | 0.1.0 | embedded | dispositivos seriais em Desktop |
 | Printing | 0.1.0 | embedded | recibos e impressão térmica |
-| Security | 0.2.0 | local/Actions | Gitleaks, Trivy e Semgrep |
-| API Contracts | 0.2.0 | local/Actions | OpenAPI + Pact |
-| Documents | 0.2.0 | local/Actions | OCR + pré-processamento |
+| Security | 0.2.0 | local/CI | Gitleaks, Trivy e Semgrep |
+| API Contracts | 0.2.0 | local/CI | OpenAPI + Pact |
+| Documents | 0.2.0 | local/CI | OCR + pré-processamento |
 | Video Engine | 0.1.0 | local sob demanda | contrato de vídeo, timeline e adapters de engine |
 | Doc Convert | 0.1.0 | local sob demanda | conversão documental isolada via Gotenberg |
 | Local Backend | 0.1.0 | local sob demanda | PocketBase local com loopback seguro |
 | Remote Support | 0.1.0 | local sob demanda | sessão explícita de suporte RustDesk |
-| Release | 0.1.0 | local/Actions | gates, SHA-256 e bloqueio de release |
-| Release Validator | 0.1.0 | local/Actions | instalação, boot, stress, upgrade/uninstall e relatórios |
+| Release | 0.1.0 | local/CI | gates, SHA-256 e bloqueio de release |
+| Release Validator | 0.1.0 | local/CI | instalação, boot, stress, upgrade/uninstall e relatórios |
 | Desktop Shell | 0.1.0 | embedded/local | deep links, settings, logs e update hooks |
 | OCR | 0.1.0 | embedded/local | seleção PaddleOCR/Tesseract/Tesseract.js |
-| Product QA | 0.1.0 | local/Actions | agregação QA + security + API contracts |
+| Product QA | 0.1.0 | local/CI | agregação QA + security + API contracts |
 | Licensing | 0.1.0 | embedded/local | assinatura Ed25519 e validação offline |
-| AI Quality | 0.2.0 | local/Actions | suites de avaliação, config Promptfoo e resumo de resultados |
-| Privacy | 0.2.0 | local/Actions | PII, anonymization e redaction por spans |
+| AI Quality | 0.2.0 | local/CI | suites de avaliação, config Promptfoo e resumo de resultados |
+| Privacy | 0.2.0 | local/CI | PII, anonymization e redaction por spans |
 | BIM | 0.2.0 | local sob demanda | boundary IFC/IfcOpenShell, propriedades e quantidades |
+| EventBus | 0.2.0 | embedded/worker | eventos Node/browser, outbox memória/SQLite/D1, BroadcastChannel, SSE e efeitos idempotentes |
+| Backup | 0.1.0 | embedded/local | manifesto, SHA-256 e verificação de integridade |
+| Importer | 0.1.0 | embedded | mapeamento, preview e validação de importações |
+| Auth RBAC | 0.1.0 | embedded | papéis, permissões e guards independentes de provedor |
+| Storage | 0.1.0 | embedded | contrato de storage, memória e namespaces |
+| Audit Log | 0.1.0 | embedded | trilha append-only de ações e entidades |
+| Sync | 0.1.0 | embedded | fila offline, retry e conflitos |
+| PWA Runtime | 0.1.0 | embedded | cache versionado, fallback offline e atualização |
+| WebView Bridge | 0.1.0 | embedded | envelope e validação WebView ↔ native |
+| Inventory | 0.1.0 | embedded | movimentos, reservas e saldo disponível |
+| OS | 0.1.0 | embedded | ordens de serviço com transições configuráveis |
+| Catalog | 0.1.0 | embedded | produtos/serviços, variantes, busca e ativação |
+| Pricing | 0.1.0 | embedded | preço por quantidade, faixas e descontos |
+| Settings | 0.1.0 | embedded | configurações, defaults e namespaces |
+| Multitenancy | 0.1.0 | embedded | contexto de tenant, scoping e isolamento |
+| Feature Flags | 0.1.0 | embedded | flags por default, tenant e usuário |
+| Checklists | 0.1.0 | embedded | itens, evidências, progresso e conclusão |
+| Reporting | 0.1.0 | embedded | filtros, agrupamento, agregações e CSV |
 
 `implemented` ou `stable` significa código executável e verificado no kit; homologação em produto consumidor é separada.
+
+## Lotes transversais
+
+**Lote A — infraestrutura:** Backup, Importer, Auth RBAC, Storage, Audit Log, Sync, PWA Runtime e WebView Bridge.
+
+**Lote B — operações reutilizáveis:** Inventory, OS, Catalog, Pricing, Settings, Multitenancy, Feature Flags, Checklists e Reporting.
+
+Os módulos dos dois lotes têm zero dependências runtime obrigatórias. Persistência real, autenticação externa, serviços cloud, fiscal, pagamentos e regras verticais permanecem nos consumidores ou em adapters opcionais.
 
 ## Release e validação de artefato
 
