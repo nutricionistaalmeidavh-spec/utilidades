@@ -16,7 +16,9 @@ READY = (
     'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
     'artisys-remote-support', 'artisys-release', 'artisys-release-validator',
     'artisys-desktop-shell', 'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
-    'artisys-ai-quality', 'artisys-privacy', 'artisys-bim', 'artisys-eventbus'
+    'artisys-ai-quality', 'artisys-privacy', 'artisys-bim', 'artisys-eventbus',
+    'artisys-backup', 'artisys-importer', 'artisys-auth-rbac', 'artisys-storage',
+    'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge'
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -27,7 +29,9 @@ JS_MODULES = (
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-release-validator', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
-    'artisys-privacy', 'artisys-bim', 'artisys-eventbus'
+    'artisys-privacy', 'artisys-bim', 'artisys-eventbus',
+    'artisys-backup', 'artisys-importer', 'artisys-auth-rbac', 'artisys-storage',
+    'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge'
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
