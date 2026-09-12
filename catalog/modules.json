@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "updatedAt": "2026-09-12",
   "modules": [
-    {"id":"artisys-qa","version":"2.3.0","status":"stable","consumptionMode":"shared","upstreams":["playwright","rclone"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},
+    {"id":"artisys-qa","version":"2.4.1","status":"stable","consumptionMode":"shared","upstreams":["playwright","rclone"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},
     {"id":"artisys-pdf","version":"1.0.0","status":"stable","consumptionMode":"shared","upstreams":["pdfme","pdfjs","react-pdf-highlighter"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","PDV-ARTISYS"]},
     {"id":"artisys-workflows","version":"1.0.0","status":"stable","consumptionMode":"shared","upstreams":["xyflow","logicflow","rete"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub","PDV-ARTISYS"]},
     {"id":"artisys-capture","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["html5-qrcode","opencv"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
@@ -31,6 +31,14 @@
     {"id":"artisys-ai-quality","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["promptfoo"],"recommendedConsumers":["Hackathon","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub"]},
     {"id":"artisys-privacy","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["presidio"],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},
     {"id":"artisys-bim","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["ifcopenshell"],"recommendedConsumers":["CompatibilizaBIM","cbim"]},
-    {"id":"artisys-eventbus","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-worker","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OficinaAgricola","drefluxo","OBRANAMAOCOMERCIAL","ConsulroriaAmamenta-o","desktop-products","web-products"]}
+    {"id":"artisys-eventbus","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-worker","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OficinaAgricola","drefluxo","OBRANAMAOCOMERCIAL","ConsulroriaAmamenta-o","desktop-products","web-products"]},
+    {"id":"artisys-backup","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","PDV-ARTISYS","OficinaAgricola","desktop-products"]},
+    {"id":"artisys-importer","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","PDV-ARTISYS","OficinaAgricola","Almoxarifado"]},
+    {"id":"artisys-auth-rbac","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},
+    {"id":"artisys-storage","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},
+    {"id":"artisys-audit-log","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","drefluxo"]},
+    {"id":"artisys-sync","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","desktop-products","web-products"]},
+    {"id":"artisys-pwa-runtime","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Almoxarifado","OficinaAgricola","ConsulroriaAmamenta-o","web-products"]},
+    {"id":"artisys-webview-bridge","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Hackathon","mobile-wrapper-products"]}
   ]
 }
