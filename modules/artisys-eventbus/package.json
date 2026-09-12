@@ -1,0 +1,26 @@
+{
+  "name": "@artisys/eventbus",
+  "version": "0.1.0",
+  "description": "EventBus de dominio local-first com outbox e efeitos idempotentes para sistemas ArtiSys.",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "src",
+    "examples",
+    "README.md",
+    "module.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "example": "node examples/basic-usage.js"
+  },
+  "dependencies": {},
+  "license": "MIT"
+}
