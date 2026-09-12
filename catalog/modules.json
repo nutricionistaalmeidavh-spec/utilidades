@@ -39,6 +39,15 @@
     {"id":"artisys-audit-log","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","drefluxo"]},
     {"id":"artisys-sync","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","desktop-products","web-products"]},
     {"id":"artisys-pwa-runtime","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Almoxarifado","OficinaAgricola","ConsulroriaAmamenta-o","web-products"]},
-    {"id":"artisys-webview-bridge","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Hackathon","mobile-wrapper-products"]}
+    {"id":"artisys-webview-bridge","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Hackathon","mobile-wrapper-products"]},
+    {"id":"artisys-inventory","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Almoxarifado","OBRANAMAOCOMERCIAL","PDV-ARTISYS","OficinaAgricola"]},
+    {"id":"artisys-os","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["OficinaAgricola","field-service-products"]},
+    {"id":"artisys-catalog","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OficinaAgricola","drefluxo","Almoxarifado"]},
+    {"id":"artisys-pricing","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","commercial-products"]},
+    {"id":"artisys-settings","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},
+    {"id":"artisys-multitenancy","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["ConsulroriaAmamenta-o","CLINICASMEDICAS","OBRANAMAOCOMERCIAL","saas-products"]},
+    {"id":"artisys-feature-flags","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},
+    {"id":"artisys-checklists","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["OBRANAMAOCOMERCIAL","OficinaAgricola","Almoxarifado"]},
+    {"id":"artisys-reporting","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["drefluxo","PDV-ARTISYS","OBRANAMAOCOMERCIAL","OficinaAgricola","Almoxarifado"]}
   ]
 }
