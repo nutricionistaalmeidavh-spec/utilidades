@@ -4,7 +4,7 @@
   "type": "module",
   "engines": {"node": ">=22"},
   "exports": {".": "./src/index.mjs"},
-  "files": ["src", "scripts", "examples", "README.md", "module.json", "LICENSE"],
+  "files": ["src", "scripts", "examples", "README.md", "SEARCH_CONSOLE.md", "module.json", "LICENSE"],
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "example": "node examples/basic.mjs",
