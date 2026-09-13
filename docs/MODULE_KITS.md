@@ -44,6 +44,7 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | Sync | 0.2.0 | embedded | fila offline persistente, retry e conflitos |
 | PWA Runtime | 0.1.0 | embedded | cache versionado, fallback offline e atualização |
 | WebView Bridge | 0.1.0 | embedded | envelope e validação WebView ↔ native |
+| SEO | 0.1.0 | embedded/CI | metadata, canonical, sitemap/robots, schema, auditoria e dashboard-base |
 | Inventory | 0.2.0 | embedded | movimentos, reservas, lotes/séries e saldo disponível |
 | OS | 0.1.0 | embedded | ordens de serviço com transições configuráveis |
 | Catalog | 0.1.0 | embedded | produtos/serviços, variantes, busca e ativação |
@@ -61,6 +62,8 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 **Lote A — infraestrutura:** Backup, Importer, Auth RBAC, Storage, Files, Audit Log, Sync, PWA Runtime e WebView Bridge.
 
 **Lote B — operações reutilizáveis:** Inventory, OS, Catalog, Pricing, Settings, Multitenancy, Feature Flags, Checklists e Reporting.
+
+**Web/visibilidade:** SEO concentra configuração técnica, sitemap/robots/schema, auditoria determinística e view-model de dashboard. Search Console, analytics, tracking e persistência são adapters opcionais e não fazem parte do core obrigatório.
 
 **Domínio financeiro:** Finance Domain concentra lógica determinística pura e explicável. Parsing de arquivos, OCR, persistência, HTTP, UI e serviços externos permanecem em módulos/adapters separados.
 

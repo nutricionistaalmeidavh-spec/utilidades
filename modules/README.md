@@ -57,6 +57,7 @@ A fonte de apresentação em pt-BR é `../catalog/module-display.pt-BR.json`.
 | Sincronização de Dados | `artisys-sync` 0.2.0 | Plataforma e Dados | implemented | Fila offline, novas tentativas e resolução de conflitos |
 | Aplicativo Web Instalável e Offline | `artisys-pwa-runtime` 0.1.0 | Aplicativos Web e Mobile | implemented | Cache, precache, fallback, instalação e atualização PWA |
 | Integração Web ↔ Aplicativo | `artisys-webview-bridge` 0.1.0 | Aplicativos Web e Mobile | implemented | Comunicação validada entre WebView e aplicativo nativo |
+| SEO, Indexação e Visibilidade Web | `artisys-seo` 0.1.0 | Aplicativos Web e Mobile | implemented | Metadata, canonical, robots, sitemap, schema, auditoria e dashboard-base de SEO |
 | Estoque e Movimentações | `artisys-inventory` 0.2.0 | Gestão e Operação | implemented | Entradas, saídas, reservas, lotes, séries e saldo disponível |
 | Ordens de Serviço | `artisys-os` 0.1.0 | Gestão e Operação | implemented | Abertura, estados, transições e histórico de OS |
 | Catálogo de Produtos e Serviços | `artisys-catalog` 0.1.0 | Gestão e Operação | implemented | Produtos, serviços, variantes, busca e ativação |
@@ -75,7 +76,7 @@ A fonte de apresentação em pt-BR é `../catalog/module-display.pt-BR.json`.
 - **Arquivos e Captura:** upload, explorer/workspaces locais, câmera, QR code, código de barras e entrada de arquivos.
 - **Desktop e Hardware:** impressão, serial, suporte remoto e infraestrutura desktop.
 - **Plataforma e Dados:** autenticação, storage, backup, sincronização, auditoria e recursos transversais.
-- **Aplicativos Web e Mobile:** PWA e comunicação WebView/nativo.
+- **Aplicativos Web e Mobile:** PWA, comunicação WebView/nativo, SEO técnico, indexação e visibilidade web.
 - **Gestão e Operação:** financeiro, estoque, OS, catálogo, preços, checklists e relatórios.
 - **Engenharia e BIM:** recursos técnicos específicos reutilizáveis para engenharia.
 

@@ -53,6 +53,7 @@
     {"id":"artisys-multitenancy","name":"Multiempresa e Isolamento de Dados","category":"Plataforma e Dados","description":"Separa empresas ou clientes e impede acesso indevido entre contextos diferentes."},
     {"id":"artisys-feature-flags","name":"Ativação Controlada de Funcionalidades","category":"Plataforma e Dados","description":"Liga ou desliga recursos por padrão, empresa ou usuário sem duplicar código."},
     {"id":"artisys-checklists","name":"Checklists e Inspeções","category":"Gestão e Operação","description":"Gerencia listas de verificação, evidências, progresso e conclusão."},
-    {"id":"artisys-reporting","name":"Relatórios e Indicadores","category":"Gestão e Operação","description":"Aplica filtros, agrupamentos e agregações e exporta resultados para CSV."}
+    {"id":"artisys-reporting","name":"Relatórios e Indicadores","category":"Gestão e Operação","description":"Aplica filtros, agrupamentos e agregações e exporta resultados para CSV."},
+    {"id":"artisys-seo","name":"SEO, Indexação e Visibilidade Web","category":"Aplicativos Web e Mobile","description":"Configura SEO técnico, gera sitemap/robots/schema, audita páginas e prepara indicadores de visibilidade orgânica."}
   ]
 }

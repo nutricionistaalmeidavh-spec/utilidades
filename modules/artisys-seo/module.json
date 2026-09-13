@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-seo",
+  "name": "ArtiSys SEO",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-ci",
+  "upstreams": [],
+  "boundary": "Portable SEO configuration, technical artifact generation, deterministic auditing, dashboard view-models and an optional Search Console read-only adapter. Product hosting and content stay in the consumer. Google OAuth credentials are injected or reused from local environment/rclone and are never hardcoded in the module.",
+  "provides": ["seo-config", "technical-seo", "seo-audit", "seo-dashboard-model", "search-console-readonly-adapter", "google-oauth-desktop-bootstrap", "google-refresh-token-provider", "search-console-overview"],
+  "packageName": "@artisys/seo",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["page-registry", "metadata-and-canonical", "robots-and-sitemap", "open-graph-and-twitter", "json-ld", "html-seo-audit", "config-seo-audit", "dashboard-view-model", "google-oauth-scope-helper", "google-oauth-desktop-bootstrap", "google-refresh-token-provider", "search-console-site-list", "search-analytics-query", "search-console-overview", "search-console-dashboard-feed", "local-search-console-check", "local-search-console-report"],
+  "plannedCapabilities": ["first-party-analytics", "conversion-tracking", "cloudflare-d1-adapter"],
+  "verification": {"unit": "npm test", "example": "npm run example", "check": "npm run check"},
+  "limitations": ["Search Console network requests only occur when its explicit adapter, report/check command or OAuth bootstrap is used.", "The OAuth bootstrap saves a Search Console token separately from the rclone Drive token.", "A deployed consumer must receive Client ID, Client Secret and refresh token through its own secret store; secrets are never committed by this module.", "First-party analytics, conversion tracking and D1 persistence remain separate future capabilities."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []},
+  "requirements": {"node": ">=22", "runtimeDependencies": "none"}
+}

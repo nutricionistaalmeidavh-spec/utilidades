@@ -13,8 +13,8 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 ## Estado atual
 
 - **61 projetos upstream curados**: 49 aprovados como Git submodules + 12 referências incorporadas e pinadas por commit.
-- **48 módulos ArtiSys** registrados.
-- **48 kits executáveis**: 11 `stable` e 37 `implemented`.
+- **52 módulos ArtiSys** registrados.
+- **52 kits executáveis**: 11 `stable` e 41 `implemented`.
 - **0 foundations** pendentes.
 - Nenhum projeto incorporado exige infraestrutura always-on mantida pelo usuário por padrão.
 
@@ -88,6 +88,7 @@ A fonte completa de nomes, categorias e descrições em pt-BR está em `catalog/
 
 - **Aplicativo Web Instalável e Offline** — `artisys-pwa-runtime`
 - **Integração Web ↔ Aplicativo** — `artisys-webview-bridge`
+- **SEO, Indexação e Visibilidade Web** — `artisys-seo`
 
 ### Gestão e Operação
 
