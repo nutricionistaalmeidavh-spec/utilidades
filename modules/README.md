@@ -27,6 +27,7 @@ A fonte de apresentação em pt-BR é `../catalog/module-display.pt-BR.json`.
 | Documentos e Planilhas Office | `artisys-office` 1.0.0 | Documentos e Mídia | stable | DOCX, planilhas e apresentações |
 | Construtor de Interfaces | `artisys-ui-builder` 1.0.0 | Interface e Produtividade | stable | Páginas e blocos de interface editáveis e portáveis |
 | Envio e Validação de Arquivos | `artisys-upload` 1.0.0 | Arquivos e Captura | stable | Upload, políticas, validação, filas e seleção de arquivos |
+| Organização e Exploração de Arquivos | `artisys-files` 0.1.0 | Arquivos e Captura | implemented | Workspace espelhado em pasta local, árvore, drag-and-drop, busca e watcher de arquivos |
 | Anotações em Imagens e PDFs | `artisys-annotations` 1.0.0 | Documentos e Mídia | stable | Marcações e anotações sobre imagens e PDFs |
 | Integração com Dispositivos Seriais | `artisys-serialport` 0.1.0 | Desktop e Hardware | implemented | Balanças, gavetas e equipamentos conectados por porta serial |
 | Impressão, Cupons e Etiquetas | `artisys-printing` 0.1.0 | Desktop e Hardware | implemented | Recibos, cupons, etiquetas e impressão térmica |
@@ -71,7 +72,7 @@ A fonte de apresentação em pt-BR é `../catalog/module-display.pt-BR.json`.
 - **Qualidade e Entrega:** testes, segurança, contratos, releases e validações.
 - **Documentos e Mídia:** PDFs, OCR, documentos, vídeo, áudio e anotações.
 - **Interface e Produtividade:** dashboards, planejamento, workflows e construtores de UI.
-- **Arquivos e Captura:** upload, câmera, QR code, código de barras e entrada de arquivos.
+- **Arquivos e Captura:** upload, explorer/workspaces locais, câmera, QR code, código de barras e entrada de arquivos.
 - **Desktop e Hardware:** impressão, serial, suporte remoto e infraestrutura desktop.
 - **Plataforma e Dados:** autenticação, storage, backup, sincronização, auditoria e recursos transversais.
 - **Aplicativos Web e Mobile:** PWA e comunicação WebView/nativo.

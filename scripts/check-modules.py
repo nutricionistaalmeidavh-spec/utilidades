@@ -12,7 +12,7 @@ READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
     'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder',
-    'artisys-upload', 'artisys-annotations', 'artisys-serialport', 'artisys-printing',
+    'artisys-upload', 'artisys-files', 'artisys-annotations', 'artisys-serialport', 'artisys-printing',
     'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
     'artisys-remote-support', 'artisys-release', 'artisys-release-validator',
     'artisys-desktop-shell', 'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
@@ -27,7 +27,7 @@ READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
     'artisys-qa', 'artisys-api-contracts', 'artisys-pdf', 'artisys-workflows',
     'artisys-capture', 'artisys-dashboard', 'artisys-planning', 'artisys-media',
-    'artisys-office', 'artisys-ui-builder', 'artisys-upload', 'artisys-annotations',
+    'artisys-office', 'artisys-ui-builder', 'artisys-upload', 'artisys-files', 'artisys-annotations',
     'artisys-serialport', 'artisys-printing', 'artisys-video-engine',
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-release-validator', 'artisys-desktop-shell', 'artisys-ocr',
@@ -46,7 +46,8 @@ NEW_PRODUCT_MODULES = (
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
     'artisys-release', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
-    'artisys-privacy', 'artisys-bim', 'artisys-release-validator', 'artisys-eventbus'
+    'artisys-privacy', 'artisys-bim', 'artisys-release-validator', 'artisys-eventbus',
+    'artisys-files'
 )
 
 

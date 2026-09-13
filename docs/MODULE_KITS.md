@@ -14,6 +14,7 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | Office | 1.0.0 | embedded/local | DOCX, Univer e PPT jobs |
 | UI Builder | 1.0.0 | embedded | GrapesJS, Puck e Craft |
 | Upload | 1.0.0 | embedded | política, validação, fila, Uppy e Dropzone |
+| Files | 0.1.0 | embedded/local | workspace em pasta real, árvore, drag-and-drop, busca e watcher |
 | Annotations | 1.0.0 | embedded | regiões em imagem/PDF e adapters de anotação |
 | SerialPort | 0.1.0 | embedded | dispositivos seriais em Desktop |
 | Printing | 0.1.0 | embedded | recibos e impressão térmica |
@@ -57,7 +58,7 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 
 ## Lotes transversais
 
-**Lote A — infraestrutura:** Backup, Importer, Auth RBAC, Storage, Audit Log, Sync, PWA Runtime e WebView Bridge.
+**Lote A — infraestrutura:** Backup, Importer, Auth RBAC, Storage, Files, Audit Log, Sync, PWA Runtime e WebView Bridge.
 
 **Lote B — operações reutilizáveis:** Inventory, OS, Catalog, Pricing, Settings, Multitenancy, Feature Flags, Checklists e Reporting.
 
@@ -78,7 +79,7 @@ npm ci --ignore-scripts --prefix modules/artisys-qa
 npm ci --ignore-scripts --prefix modules/artisys-api-contracts
 python3 -m venv .venv
 .venv/bin/python -m pip install './modules/artisys-documents[preprocess]'
-.venv/bin/python scripts/check-modules.py --browser --pact --generator
+python scripts/check-modules.py --browser --pact --generator
 ```
 
 Os módulos JS executam testes de contrato sem serviço externo obrigatório. Kits executáveis expõem `npm test`, `npm run check`, `npm run example` e `npm pack --dry-run` quando aplicável.
