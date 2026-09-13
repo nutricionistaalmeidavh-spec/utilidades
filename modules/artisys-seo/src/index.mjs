@@ -9,3 +9,4 @@ export {
   normalizeSearchConsoleSiteUrl,
   createSearchConsoleClient
 } from './search-console.mjs';
+export { buildGoogleAuthorizationUrl, buildGoogleTokenRequestBody } from './google-oauth.mjs';
