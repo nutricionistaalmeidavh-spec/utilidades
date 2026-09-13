@@ -1,16 +1,1 @@
-{
-  "name": "@artisys/files",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "scripts": {
-    "test": "node --test --import tsx test/*.test.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.2"
-  }
-}
+{"name":"@artisys/files","version":"0.1.0","type":"module","exports":"./src/index.mjs","files":["src","module.json","README.md","LICENSE"],"scripts":{"test":"node --test","check":"node --check src/index.mjs"},"engines":{"node":">=22"},"license":"MIT"}
