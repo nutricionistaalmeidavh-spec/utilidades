@@ -12,7 +12,7 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 
 ## Estado atual
 
-- **60 projetos upstream curados**: 49 aprovados como Git submodules + 11 referências incorporadas e pinadas por commit.
+- **61 projetos upstream curados**: 49 aprovados como Git submodules + 12 referências incorporadas e pinadas por commit.
 - **48 módulos ArtiSys** registrados.
 - **48 kits executáveis**: 11 `stable` e 37 `implemented`.
 - **0 foundations** pendentes.
@@ -43,7 +43,7 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 - `artisys-product-qa` 0.1.0 — agregador QA + security + API contracts.
 - `artisys-ai-quality` 0.2.0 — regressão/model comparison e configuração Promptfoo sem credenciais embutidas.
 - `artisys-privacy` 0.2.0 — PII/anonymization via boundary Presidio + redaction por spans.
-- `artisys-backup` 0.1.0 — manifesto de backup, SHA-256 e verificação de integridade.
+- `artisys-backup` 0.2.0 — manifesto de backup, SHA-256, retenção e verificação de integridade.
 - `artisys-audit-log` 0.1.0 — trilha append-only de ator, ação, entidade e metadados.
 
 ### Desktop, hardware e runtime local
@@ -67,9 +67,9 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 
 - `artisys-eventbus` 0.2.0 — eventos Node/browser, wildcard/once, outbox memória/SQLite/D1, BroadcastChannel, SSE e efeitos idempotentes.
 - `artisys-importer` 0.1.0 — mapeamento, preview e validação de importações.
-- `artisys-auth-rbac` 0.1.0 — papéis, permissões e guards independentes de provedor.
+- `artisys-auth-rbac` 0.2.0 — papéis, permissões, auth local e sessões independentes de provedor.
 - `artisys-storage` 0.2.1 — contrato de storage, memória, SQLite local durável, SQL para migrations e isolamento por namespace.
-- `artisys-sync` 0.1.0 — fila offline, retry e resolução de conflitos.
+- `artisys-sync` 0.2.0 — fila offline persistente, retry e resolução de conflitos.
 - `artisys-pwa-runtime` 0.1.0 — cache versionado, precache, fallback e atualização PWA.
 - `artisys-webview-bridge` 0.1.0 — envelope e validação WebView ↔ native.
 - `artisys-settings` 0.1.0 — configurações, defaults e namespaces independentes de persistência.
@@ -79,7 +79,7 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 ### Domínio reutilizável
 
 - `artisys-finance-domain` 0.1.0 — motor financeiro determinístico puro: fingerprints, regras, duplicidade, transferências entre contas, conciliação e feedback explicável.
-- `artisys-inventory` 0.1.0 — movimentos, reservas e saldo disponível de estoque.
+- `artisys-inventory` 0.2.0 — movimentos, reservas, lotes/séries e saldo disponível de estoque.
 - `artisys-os` 0.1.0 — ordem de serviço genérica com transições configuráveis e histórico.
 - `artisys-catalog` 0.1.0 — catálogo de produtos/serviços, variantes, busca e ativação.
 - `artisys-pricing` 0.1.0 — preço por quantidade, faixas, desconto e cálculo de linha.
@@ -106,6 +106,7 @@ Estas referências estão salvas em `catalog/incorporated-repos-2026-09-10.json`
 - **Desktop:** Microsoft PowerToys, RustDesk.
 - **PDV:** OpenSourcePOS.
 - **Backend local:** PocketBase.
+- **Arquivos/sincronização:** rclone (CLI local opcional, remotes autorizados pelo usuário).
 
 ## Arquitetura
 
