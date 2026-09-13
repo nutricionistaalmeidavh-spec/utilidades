@@ -18,6 +18,7 @@ const contracts = {
   'artisys-feature-flags': ['resolveFeatureFlag', 'isFeatureEnabled', 'mergeFeatureFlags'],
   'artisys-checklists': ['createChecklist', 'setChecklistItem', 'checklistProgress'],
   'artisys-reporting': ['filterRows', 'groupBy', 'aggregate', 'toCsv'],
+  'artisys-seo': ['defineSeoConfig', 'buildPageSeo', 'auditSeoDocument', 'buildSeoDashboardModel'],
 };
 
 for (const [moduleId, expectedExports] of Object.entries(contracts)) {
