@@ -1,0 +1,38 @@
+const clean=(value='')=>{const text=String(value).replaceAll('\\','/').replace(/^\/+|\/+$/g,'');if(text==='..'||text.startsWith('../')||text.includes('/../')){const error=new Error('Workspace path escapes root');error.code='PATH_TRAVERSAL';throw error;}return text;};
+const simple=(name)=>{const value=String(name??'');if(!value||value==='.'||value==='..'||value.includes('/')||value.includes('\\'))throw new TypeError('Name must be a single file or directory name');return value;};
+const parent=(path)=>{const parts=clean(path).split('/').filter(Boolean);parts.pop();return parts.join('/');};
+const base=(path)=>clean(path).split('/').filter(Boolean).at(-1)??'';
+const join=(...parts)=>clean(parts.filter(Boolean).join('/'));
+const fileKey=(root,path)=>join(root,'files',clean(path));
+const dirKey=(root,path)=>join(root,'dirs',clean(path));
+const relativeFrom=(key,prefix)=>key.slice(prefix.length).replace(/^\//,'');
+const clone=(value)=>value==null?value:structuredClone(value);
+
+export function createBrowserWorkspace(storage,{root='attachments'}={}){
+  if(!storage||typeof storage.put!=='function'||typeof storage.get!=='function'||typeof storage.list!=='function'||typeof storage.delete!=='function')throw new TypeError('Browser workspace storage must provide put/get/list/delete.');
+  const workspaceRoot=clean(root)||'attachments';
+  const filesPrefix=join(workspaceRoot,'files');
+  const dirsPrefix=join(workspaceRoot,'dirs');
+  const ensureParents=async(path)=>{const parts=parent(path).split('/').filter(Boolean);let current='';for(const part of parts){current=join(current,part);await storage.put(dirKey(workspaceRoot,current),{type:'directory',path:current,createdAt:new Date().toISOString()});}};
+  const readEntry=async path=>{const key=fileKey(workspaceRoot,path);const record=await storage.get(key);return record?{kind:'file',record}:null;};
+  async function tree(relativePath=''){
+    const target=clean(relativePath);const fileKeys=await storage.list(filesPrefix);const dirKeys=await storage.list(dirsPrefix);const dirs=new Set(dirKeys.map(key=>relativeFrom(key,dirsPrefix)).filter(Boolean));
+    for(const key of fileKeys){let cursor=parent(relativeFrom(key,filesPrefix));while(cursor){dirs.add(cursor);cursor=parent(cursor);}}
+    const node=(path)=>{const name=path?base(path):workspaceRoot;const children=[];const directDirs=[...dirs].filter(item=>parent(item)===path).sort();for(const item of directDirs)children.push(node(item));const directFiles=fileKeys.map(key=>relativeFrom(key,filesPrefix)).filter(item=>parent(item)===path).sort();for(const item of directFiles)children.push({name:base(item),path:item,type:'file'});return{name,path,type:'directory',children};};
+    if(target){const file=await readEntry(target);if(file)return{name:base(target),path:target,type:'file',size:file.record?.metadata?.size??undefined,modifiedAt:file.record?.metadata?.modifiedAt};if(!dirs.has(target))throw new Error('Workspace path not found.');}
+    return node(target);
+  }
+  const api={
+    root:workspaceRoot,
+    listTree:tree,
+    async createDirectory(relativePath){const path=clean(relativePath);if(!path)return;await ensureParents(path);await storage.put(dirKey(workspaceRoot,path),{type:'directory',path,createdAt:new Date().toISOString()});},
+    async writeFile(relativePath,data){const path=clean(relativePath);if(!path)throw new TypeError('File path is required.');await ensureParents(path);const size=typeof data==='string'?new TextEncoder().encode(data).byteLength:(data?.byteLength??data?.size??undefined);await storage.put(fileKey(workspaceRoot,path),clone(data),{metadata:{size,modifiedAt:new Date().toISOString()}});return path;},
+    async readFile(relativePath){const path=clean(relativePath);const found=await storage.get(fileKey(workspaceRoot,path));if(!found)throw new Error('File not found.');return clone(found.value);},
+    async remove(relativePath){const path=clean(relativePath);if(!path)throw new Error('Workspace root cannot be removed');const file=await storage.get(fileKey(workspaceRoot,path));if(file)return storage.delete(fileKey(workspaceRoot,path));const fileKeys=await storage.list(fileKey(workspaceRoot,path));for(const key of fileKeys)await storage.delete(key);const dirKeys=await storage.list(dirKey(workspaceRoot,path));for(const key of dirKeys)await storage.delete(key);await storage.delete(dirKey(workspaceRoot,path));return true;},
+    async copy(sourcePath,destinationPath){const source=clean(sourcePath),destination=clean(destinationPath);const file=await storage.get(fileKey(workspaceRoot,source));if(!file)throw new Error('Browser workspace copy currently requires a file source.');if(await storage.get(fileKey(workspaceRoot,destination)))throw new Error('Destination already exists.');await ensureParents(destination);await storage.put(fileKey(workspaceRoot,destination),clone(file.value),{metadata:clone(file.metadata??{})});return destination;},
+    async move(sourcePath,destinationPath){const destination=await api.copy(sourcePath,destinationPath);await api.remove(sourcePath);return destination;},
+    async rename(relativePath,newName){const source=clean(relativePath);return api.move(source,join(parent(source),simple(newName)));},
+    health:async()=>({ok:true,mode:'browser-storage-files',root:workspaceRoot})
+  };
+  return Object.freeze(api);
+}
