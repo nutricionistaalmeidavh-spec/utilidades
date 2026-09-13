@@ -9,6 +9,8 @@
     "test": "node --test tests/*.test.mjs",
     "example": "node examples/basic.mjs",
     "google:connect": "node scripts/connect-search-console.mjs",
+    "google:check": "node scripts/check-search-console.mjs",
+    "google:report": "node scripts/check-search-console.mjs --json",
     "check": "npm test && npm run example"
   },
   "license": "MIT"
