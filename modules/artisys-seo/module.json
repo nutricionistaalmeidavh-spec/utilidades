@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-seo",
+  "name": "ArtiSys SEO",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-ci",
+  "upstreams": [],
+  "boundary": "Portable SEO configuration, technical artifact generation, deterministic auditing and dashboard view-models. Hosting, persistence, credentials, Search Console and product content stay in the consumer.",
+  "provides": ["seo-config", "technical-seo", "seo-audit", "seo-dashboard-model"],
+  "packageName": "@artisys/seo",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["page-registry", "metadata-and-canonical", "robots-and-sitemap", "open-graph-and-twitter", "json-ld", "html-seo-audit", "config-seo-audit", "dashboard-view-model"],
+  "plannedCapabilities": ["search-console-adapter", "first-party-analytics", "conversion-tracking", "cloudflare-d1-adapter"],
+  "verification": {"unit": "npm test", "example": "npm run example", "check": "npm run check"},
+  "limitations": ["No network requests are made.", "Search Console, analytics, tracking, hosting and persistence are intentionally outside this phase."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []},
+  "requirements": {"node": ">=22", "runtimeDependencies": "none"}
+}
