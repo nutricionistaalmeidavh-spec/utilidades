@@ -6,7 +6,7 @@ Módulo reutilizável para configurar SEO técnico, auditar páginas, alimentar 
 
 `0.1.0` — `implemented`. O core é R$ 0, self-hosted/open source e não possui dependências de runtime.
 
-O módulo inclui um adapter opcional de leitura do Google Search Console. Ele **não armazena Client ID, Client Secret, refresh token ou access token**: o consumidor fornece `getAccessToken()`. Assim o mesmo projeto/OAuth Client usado para Google Drive pode solicitar também o escopo do Search Console e reutilizar a mesma autorização.
+O módulo inclui um adapter opcional de leitura do Google Search Console. O core não embute Client ID nem Client Secret. O fluxo local de bootstrap OAuth pode reutilizar automaticamente as credenciais do remote `artisys-qa-drive` do rclone ou as variáveis `ARTISYS_GOOGLE_CLIENT_ID` / `ARTISYS_GOOGLE_CLIENT_SECRET`.
 
 Analytics first-party, Cloudflare D1/Workers, tracking de conversões e alteração automática de conteúdo continuam fora desta fase.
 
@@ -25,7 +25,9 @@ import {
   SEARCH_CONSOLE_READONLY_SCOPE,
   withSearchConsoleReadonlyScope,
   normalizeSearchConsoleSiteUrl,
-  createSearchConsoleClient
+  createSearchConsoleClient,
+  buildGoogleAuthorizationUrl,
+  buildGoogleTokenRequestBody
 } from '@artisys/seo';
 ```
 
@@ -67,15 +69,27 @@ Escopo de leitura usado pelo adapter:
 https://www.googleapis.com/auth/webmasters.readonly
 ```
 
-Para reaproveitar scopes já usados pelo Google Drive:
+O Drive continua com o token atual do rclone. O Search Console recebe um refresh token próprio usando o mesmo OAuth Client, evitando alterar o remote de Drive.
 
-```js
-const scopes = withSearchConsoleReadonlyScope([
-  'https://www.googleapis.com/auth/drive.file'
-]);
+Para gerar a autorização no computador:
+
+```bash
+npm run google:connect --prefix modules/artisys-seo
 ```
 
-O consumidor continua responsável pelo fluxo OAuth e refresh token. O módulo recebe somente um provider de access token:
+O comando:
+
+1. procura `ARTISYS_GOOGLE_CLIENT_ID` / `ARTISYS_GOOGLE_CLIENT_SECRET`;
+2. se não encontrar, tenta ler `client_id` / `client_secret` do remote `artisys-qa-drive` do rclone;
+3. sobe um callback temporário em `127.0.0.1` com porta livre;
+4. gera e abre o link OAuth com `webmasters.readonly`, `access_type=offline` e `prompt=consent`;
+5. valida o `state` retornado pelo Google;
+6. troca o código por tokens;
+7. salva o token do Search Console em `%LOCALAPPDATA%\ArtiSys\SEO\google-search-console-token.json` no Windows.
+
+O URL OAuth é propositalmente gerado em runtime, porque contém `state` e porta local temporários. Por isso não deve ser persistido nem reutilizado depois.
+
+Uso do adapter:
 
 ```js
 const searchConsole = createSearchConsoleClient({
@@ -113,11 +127,10 @@ npm run check --prefix modules/artisys-seo
 
 ## Limites
 
-- nenhuma credencial Google no core;
-- nenhum Client Secret no pacote;
-- refresh de token fica no consumidor;
-- requests de rede somente quando o adapter Search Console é chamado explicitamente;
+- nenhuma credencial Google hardcoded no core;
+- nenhum Client Secret versionado;
+- token do Search Console fica separado do token do rclone/Drive;
+- requests de rede somente quando o adapter Search Console ou o comando explícito de conexão é usado;
 - sem tracking first-party nesta fase;
-- sem persistência;
 - sem alteração automática de páginas;
 - sem dependência de SaaS pago.
