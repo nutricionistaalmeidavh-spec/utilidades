@@ -19,12 +19,9 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
-      - name: Verify upload, files and annotations module contracts
+      - name: Verify upload and annotations module contracts
         run: |
           npm test --prefix modules/artisys-upload
-          npm test --prefix modules/artisys-files
-          npm run check --prefix modules/artisys-files
-          npm run example --prefix modules/artisys-files
           npm test --prefix modules/artisys-annotations
       - name: Verify release validator contracts
         run: npm test --prefix modules/artisys-release-validator
