@@ -15,7 +15,7 @@ function config() {
       url: 'https://example.com',
       language: 'pt-BR',
       defaultImage: '/social.jpg',
-      professional: { name: 'Débora Exemplo', jobTitle: 'Consultora' },
+      professional: { name: 'Profissional Exemplo', jobTitle: 'Consultora' },
       twitterSite: '@exemplo'
     },
     pages: [
@@ -46,10 +46,11 @@ test('renderHeadTags escapes HTML and emits technical tags', () => {
   assert.match(html, /application\/ld\+json/);
 });
 
-test('buildRobotsTxt disallows noindex pages and announces sitemap', () => {
+test('buildRobotsTxt keeps noindex pages crawlable so crawlers can read the noindex directive', () => {
   const robots = buildRobotsTxt(config());
   assert.match(robots, /User-agent: \*/);
-  assert.match(robots, /Disallow: \/privado/);
+  assert.match(robots, /Allow: \/$/m);
+  assert.doesNotMatch(robots, /Disallow: \/privado/);
   assert.match(robots, /Sitemap: https:\/\/example\.com\/sitemap\.xml/);
 });
 
