@@ -31,6 +31,29 @@ test('refresh token provider exchanges refresh token and caches access token unt
   assert.equal(calls.length, 2);
 });
 
+test('refresh token provider coalesces concurrent refresh requests', async () => {
+  let calls = 0;
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const getAccessToken = createGoogleRefreshTokenProvider({
+    clientId: 'client.apps.googleusercontent.com',
+    clientSecret: 'secret-123',
+    refreshToken: 'refresh-123',
+    fetch: async () => {
+      calls += 1;
+      await gate;
+      return new Response(JSON.stringify({ access_token: 'shared-access', expires_in: 3600, token_type: 'Bearer' }), { status: 200 });
+    }
+  });
+
+  const pending = Promise.all([getAccessToken(), getAccessToken(), getAccessToken()]);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(calls, 1);
+  release();
+  assert.deepEqual(await pending, ['shared-access', 'shared-access', 'shared-access']);
+  assert.equal(calls, 1);
+});
+
 test('refresh token provider exposes Google OAuth errors without leaking secrets', async () => {
   const getAccessToken = createGoogleRefreshTokenProvider({
     clientId: 'client.apps.googleusercontent.com',
