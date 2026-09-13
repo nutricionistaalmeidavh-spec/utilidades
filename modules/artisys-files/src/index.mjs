@@ -142,6 +142,13 @@ async function ensureDestinationAvailable(destination, root) {
   }
 }
 
+function assertNotDescendantMove(source, destination) {
+  const relative = path.relative(source, destination);
+  if (relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative))) {
+    throw workspaceError('DESTINATION_INSIDE_SOURCE', 'Destination cannot be the source or one of its descendants');
+  }
+}
+
 export async function createWorkspace(root) {
   if (!root || typeof root !== 'string') {
     throw workspaceError('INVALID_ROOT', 'A workspace root directory is required');
@@ -192,6 +199,7 @@ export async function createWorkspace(root) {
       await assertNoSymlinkTraversal(workspaceRoot, destinationPath, { includeLeaf: false });
       const source = resolveInsideRoot(workspaceRoot, sourcePath);
       const destination = resolveInsideRoot(workspaceRoot, destinationPath);
+      assertNotDescendantMove(source, destination);
       await ensureDestinationAvailable(destination, workspaceRoot);
       await mkdir(path.dirname(destination), { recursive: true });
       await fsRename(source, destination);
@@ -202,6 +210,7 @@ export async function createWorkspace(root) {
       await assertNoSymlinkTraversal(workspaceRoot, destinationPath, { includeLeaf: false });
       const source = resolveInsideRoot(workspaceRoot, sourcePath);
       const destination = resolveInsideRoot(workspaceRoot, destinationPath);
+      assertNotDescendantMove(source, destination);
       await ensureDestinationAvailable(destination, workspaceRoot);
       const info = await stat(source);
       await mkdir(path.dirname(destination), { recursive: true });
@@ -226,7 +235,10 @@ export async function applyDrop(workspace, request) {
   if (!workspace || typeof workspace.move !== 'function' || typeof workspace.copy !== 'function') {
     throw workspaceError('INVALID_WORKSPACE', 'A workspace instance is required');
   }
-  const source = normalizeRelative(request?.sourcePath).split(path.sep).join('/');
+  if (!request?.sourcePath || typeof request.sourcePath !== 'string') {
+    throw workspaceError('INVALID_DROP_SOURCE', 'sourcePath is required for drag-and-drop');
+  }
+  const source = normalizeRelative(request.sourcePath).split(path.sep).join('/');
   const targetDirectory = normalizeRelative(request?.targetDirectory ?? '').split(path.sep).join('/');
   const destination = path.posix.join(targetDirectory, path.posix.basename(source));
   if (source === destination) return destination;
@@ -299,7 +311,8 @@ export function createStorageBridge(storage, namespace = 'files') {
 
   return Object.freeze({
     async put(workspacePath, data, metadata) {
-      return storage.put(key(workspacePath), data, metadata);
+      const options = metadata === undefined ? {} : { metadata };
+      return storage.put(key(workspacePath), data, options);
     },
     async get(workspacePath) {
       return storage.get(key(workspacePath));
