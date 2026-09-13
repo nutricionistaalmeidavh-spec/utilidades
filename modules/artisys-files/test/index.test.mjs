@@ -50,20 +50,25 @@ test('workspace mirrors create, write, rename, copy, move and remove on disk', a
   });
 });
 
-test('workspace refuses to overwrite an existing drag-and-drop destination', async () => {
+test('workspace refuses destination overwrite and moving a directory into itself', async () => {
   await withTempWorkspace(async (root) => {
     const workspace = await createWorkspace(root);
     await workspace.writeFile('source/file.txt', 'one');
     await workspace.writeFile('target/file.txt', 'two');
+
     await assert.rejects(
       () => applyDrop(workspace, { sourcePath: 'source/file.txt', targetDirectory: 'target' }),
       { code: 'DESTINATION_EXISTS' },
     );
     assert.equal(await readFile(path.join(root, 'target', 'file.txt'), 'utf8'), 'two');
+
+    await assert.rejects(() => workspace.move('source', 'source/nested/source'), {
+      code: 'DESTINATION_INSIDE_SOURCE',
+    });
   });
 });
 
-test('drag-and-drop supports move and copy', async () => {
+test('drag-and-drop supports move and copy and validates input', async () => {
   await withTempWorkspace(async (root) => {
     const workspace = await createWorkspace(root);
     await workspace.writeFile('inbox/move.txt', 'move');
@@ -75,6 +80,12 @@ test('drag-and-drop supports move and copy', async () => {
     assert.equal(await readFile(path.join(root, 'docs', 'move.txt'), 'utf8'), 'move');
     assert.equal(await readFile(path.join(root, 'copy.txt'), 'utf8'), 'copy');
     assert.equal(await readFile(path.join(root, 'docs', 'copy.txt'), 'utf8'), 'copy');
+
+    await assert.rejects(() => applyDrop(workspace, { targetDirectory: 'docs' }), { code: 'INVALID_DROP_SOURCE' });
+    await assert.rejects(
+      () => applyDrop(workspace, { sourcePath: 'copy.txt', targetDirectory: 'docs', mode: 'invalid' }),
+      { code: 'INVALID_DROP_MODE' },
+    );
   });
 });
 
@@ -82,14 +93,18 @@ test('tree does not follow symbolic links and file operations reject traversal t
   await withTempWorkspace(async (root) => {
     const outside = await mkdtemp(path.join(os.tmpdir(), 'artisys-files-outside-'));
     try {
-      await symlink(outside, path.join(root, 'external'), process.platform === 'win32' ? 'junction' : 'dir').catch((error) => {
+      let symlinkCreated = true;
+      try {
+        await symlink(outside, path.join(root, 'external'), process.platform === 'win32' ? 'junction' : 'dir');
+      } catch (error) {
         if (process.platform === 'win32' && ['EPERM', 'EACCES'].includes(error.code)) {
+          symlinkCreated = false;
           t.skip('Symlink creation is not permitted on this Windows environment');
-          return;
+        } else {
+          throw error;
         }
-        throw error;
-      });
-      if (t.signal.aborted) return;
+      }
+      if (!symlinkCreated) return;
 
       const workspace = await createWorkspace(root);
       const tree = await workspace.listTree();
@@ -127,10 +142,10 @@ test('watcher event normalization stays relative to the workspace', () => {
   assert.equal(normalizeWatchEvent(root, 'change', null), null);
 });
 
-test('storage bridge is optional and namespace-aware', async () => {
+test('storage bridge is optional, namespace-aware and compatible with artisys-storage options', async () => {
   const calls = [];
   const storage = {
-    async put(key, value, metadata) { calls.push(['put', key, value, metadata]); },
+    async put(key, value, options) { calls.push(['put', key, value, options]); },
     async get(key) { calls.push(['get', key]); return { value: 'ok' }; },
     async delete(key) { calls.push(['delete', key]); },
     async list(prefix) { calls.push(['list', prefix]); return []; },
@@ -140,12 +155,14 @@ test('storage bridge is optional and namespace-aware', async () => {
   await bridge.get('docs/a.txt');
   await bridge.delete('docs/a.txt');
   await bridge.list('docs');
+
   assert.deepEqual(calls.map((item) => item[1]), [
     'workspace-a/docs/a.txt',
     'workspace-a/docs/a.txt',
     'workspace-a/docs/a.txt',
     'workspace-a/docs',
   ]);
+  assert.deepEqual(calls[0][3], { metadata: { mime: 'text/plain' } });
 });
 
 test('module exposes a version', () => {
