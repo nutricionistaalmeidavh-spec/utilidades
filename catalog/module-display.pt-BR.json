@@ -14,6 +14,7 @@
     {"id":"artisys-office","name":"Documentos e Planilhas Office","category":"Documentos e Mídia","description":"Manipula documentos, planilhas e apresentações em formatos de escritório."},
     {"id":"artisys-ui-builder","name":"Construtor de Interfaces","category":"Interface e Produtividade","description":"Cria páginas e blocos de interface editáveis e portáveis."},
     {"id":"artisys-upload","name":"Envio e Validação de Arquivos","category":"Arquivos e Captura","description":"Controla upload, políticas, validações, filas e seleção de arquivos."},
+    {"id":"artisys-files","name":"Organização e Exploração de Arquivos","category":"Arquivos e Captura","description":"Cria workspaces espelhados em pastas locais com árvore, drag-and-drop, busca e acompanhamento de alterações."},
     {"id":"artisys-annotations","name":"Anotações em Imagens e PDFs","category":"Documentos e Mídia","description":"Adiciona marcações e anotações reutilizáveis em imagens e documentos PDF."},
     {"id":"artisys-serialport","name":"Integração com Dispositivos Seriais","category":"Desktop e Hardware","description":"Conecta balanças, gavetas e outros equipamentos por porta serial."},
     {"id":"artisys-printing","name":"Impressão, Cupons e Etiquetas","category":"Desktop e Hardware","description":"Gera e imprime recibos, cupons, etiquetas e saídas para impressoras térmicas."},
