@@ -3,17 +3,33 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import {
   buildGoogleAuthorizationUrl,
   buildGoogleTokenRequestBody
 } from '../src/google-oauth.mjs';
 import { SEARCH_CONSOLE_READONLY_SCOPE } from '../src/search-console.mjs';
 
-const clientId = process.env.ARTISYS_GOOGLE_CLIENT_ID;
-const clientSecret = process.env.ARTISYS_GOOGLE_CLIENT_SECRET;
+function credentialsFromRclone() {
+  try {
+    const result = spawnSync('rclone', ['config', 'dump'], { encoding: 'utf8', windowsHide: true });
+    if (result.status !== 0 || !result.stdout) return null;
+    const config = JSON.parse(result.stdout);
+    const remoteName = process.env.ARTISYS_GOOGLE_RCLONE_REMOTE || 'artisys-qa-drive';
+    const remote = config?.[remoteName];
+    if (!remote?.client_id || !remote?.client_secret) return null;
+    return { clientId: remote.client_id, clientSecret: remote.client_secret };
+  } catch {
+    return null;
+  }
+}
+
+const savedCredentials = credentialsFromRclone();
+const clientId = process.env.ARTISYS_GOOGLE_CLIENT_ID || savedCredentials?.clientId;
+const clientSecret = process.env.ARTISYS_GOOGLE_CLIENT_SECRET || savedCredentials?.clientSecret;
 if (!clientId || !clientSecret) {
-  console.error('ARTISYS_GOOGLE_CLIENT_ID and ARTISYS_GOOGLE_CLIENT_SECRET are required.');
+  console.error('Google OAuth credentials were not found.');
+  console.error('Expected ARTISYS_GOOGLE_CLIENT_ID / ARTISYS_GOOGLE_CLIENT_SECRET or client_id/client_secret in rclone remote artisys-qa-drive.');
   process.exit(1);
 }
 
