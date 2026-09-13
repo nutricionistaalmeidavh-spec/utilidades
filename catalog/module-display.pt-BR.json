@@ -35,6 +35,7 @@
     {"id":"artisys-privacy","name":"Privacidade e Proteção de Dados","category":"Qualidade e Entrega","description":"Detecta, anonimiza e mascara dados pessoais e informações sensíveis."},
     {"id":"artisys-bim","name":"Leitura e Processamento BIM/IFC","category":"Engenharia e BIM","description":"Lê modelos IFC, propriedades, quantidades e informações reutilizáveis de projetos BIM."},
     {"id":"artisys-eventbus","name":"Comunicação entre Módulos","category":"Plataforma e Dados","description":"Permite que partes do sistema troquem eventos sem ficarem fortemente acopladas."},
+    {"id":"artisys-alerts","name":"Alertas e Prazos","category":"Plataforma e Dados","description":"Gerencia alertas locais, vencimentos, severidade, reconhecimento, adiamento e dispensa."},
     {"id":"artisys-backup","name":"Backup e Restauração","category":"Plataforma e Dados","description":"Cria cópias de segurança verificáveis, retenção e checagem de integridade."},
     {"id":"artisys-importer","name":"Importação de Dados","category":"Plataforma e Dados","description":"Mapeia, pré-visualiza e valida dados antes de importar para o sistema."},
     {"id":"artisys-finance-domain","name":"Motor Financeiro e Conciliação","category":"Gestão e Operação","description":"Processa regras financeiras, duplicidades, transferências e conciliação de forma determinística."},
