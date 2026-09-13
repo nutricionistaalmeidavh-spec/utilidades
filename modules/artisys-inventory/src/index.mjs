@@ -17,8 +17,8 @@ export function createInventoryMovement({id,sku,kind,quantity,lotNumber=null,ser
 }
 export function applyTrackedMovement(state,movement,{adjustmentDelta=null}={}){
   const sku=String(movement.sku);const current=state[sku]??{sku,onHand:0,reserved:0,lots:{},serials:{}};
+  if(movement.kind==='adjustment'&&adjustmentDelta==null)throw new TypeError('adjustmentDelta is required for adjustment movements');
   const delta=movement.kind==='adjustment'?qty(adjustmentDelta):movement.delta;
-  if(delta==null)throw new TypeError('adjustmentDelta is required for adjustment movements');
   if(current.onHand+delta<0)throw new RangeError('insufficient stock');
   const lots={...(current.lots??{})};const serials={...(current.serials??{})};
   if(movement.lotNumber){const lot=lots[movement.lotNumber]??{lotNumber:movement.lotNumber,onHand:0,expiresAt:movement.expiresAt};if(lot.onHand+delta<0)throw new RangeError('insufficient lot stock');lots[movement.lotNumber]={...lot,onHand:lot.onHand+delta,expiresAt:movement.expiresAt??lot.expiresAt??null};}
