@@ -34,15 +34,16 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 | Privacy | 0.2.0 | local/CI | PII, anonymization e redaction por spans |
 | BIM | 0.2.0 | local sob demanda | boundary IFC/IfcOpenShell, propriedades e quantidades |
 | EventBus | 0.2.0 | embedded/worker | eventos Node/browser, outbox memória/SQLite/D1, BroadcastChannel, SSE e efeitos idempotentes |
-| Backup | 0.1.0 | embedded/local | manifesto, SHA-256 e verificação de integridade |
+| Backup | 0.2.0 | embedded/local | manifesto, SHA-256, retenção e verificação de integridade |
 | Importer | 0.1.0 | embedded | mapeamento, preview e validação de importações |
-| Auth RBAC | 0.1.0 | embedded | papéis, permissões e guards independentes de provedor |
-| Storage | 0.1.0 | embedded | contrato de storage, memória e namespaces |
+| Finance Domain | 0.1.0 | embedded | fingerprints, regras determinísticas, transferências e conciliação explicável |
+| Auth RBAC | 0.2.0 | embedded | papéis, permissões, auth local e sessões independentes de provedor |
+| Storage | 0.2.1 | embedded | contrato de storage, memória, SQLite e namespaces |
 | Audit Log | 0.1.0 | embedded | trilha append-only de ações e entidades |
-| Sync | 0.1.0 | embedded | fila offline, retry e conflitos |
+| Sync | 0.2.0 | embedded | fila offline persistente, retry e conflitos |
 | PWA Runtime | 0.1.0 | embedded | cache versionado, fallback offline e atualização |
 | WebView Bridge | 0.1.0 | embedded | envelope e validação WebView ↔ native |
-| Inventory | 0.1.0 | embedded | movimentos, reservas e saldo disponível |
+| Inventory | 0.2.0 | embedded | movimentos, reservas, lotes/séries e saldo disponível |
 | OS | 0.1.0 | embedded | ordens de serviço com transições configuráveis |
 | Catalog | 0.1.0 | embedded | produtos/serviços, variantes, busca e ativação |
 | Pricing | 0.1.0 | embedded | preço por quantidade, faixas e descontos |
@@ -60,7 +61,9 @@ Os kits executáveis são reutilizáveis e não exigem infraestrutura permanente
 
 **Lote B — operações reutilizáveis:** Inventory, OS, Catalog, Pricing, Settings, Multitenancy, Feature Flags, Checklists e Reporting.
 
-Os módulos dos dois lotes têm zero dependências runtime obrigatórias. Persistência real, autenticação externa, serviços cloud, fiscal, pagamentos e regras verticais permanecem nos consumidores ou em adapters opcionais.
+**Domínio financeiro:** Finance Domain concentra lógica determinística pura e explicável. Parsing de arquivos, OCR, persistência, HTTP, UI e serviços externos permanecem em módulos/adapters separados.
+
+Os módulos dos dois lotes e o Finance Domain têm zero dependências runtime obrigatórias. Persistência real, autenticação externa, serviços cloud, fiscal, pagamentos e regras verticais permanecem nos consumidores ou em adapters opcionais.
 
 ## Release e validação de artefato
 

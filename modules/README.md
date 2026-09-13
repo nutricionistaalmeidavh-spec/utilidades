@@ -40,6 +40,7 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 | `artisys-bim` 0.2.0 | implemented | boundary IFC/IfcOpenShell, propriedades e quantidades |
 | `artisys-backup` 0.1.0 | implemented | manifesto de backup, SHA-256 e verificação de integridade |
 | `artisys-importer` 0.1.0 | implemented | mapeamento, preview e validação de importações |
+| `artisys-finance-domain` 0.1.0 | implemented | motor financeiro determinístico: fingerprints, regras, duplicidade, transferências e conciliação explicável |
 | `artisys-auth-rbac` 0.1.0 | implemented | papéis, permissões e guards independentes de provedor |
 | `artisys-storage` 0.2.1 | implemented | contrato de storage, memória, SQLite local durável, SQL para migrations e namespaces |
 | `artisys-audit-log` 0.1.0 | implemented | trilha append-only de ator, ação, entidade e metadados |
@@ -59,5 +60,7 @@ Nenhum módulo pode exigir servidor, daemon, banco dedicado, VPS, PC ligado ou r
 ## Integração
 
 O consumidor usa o contrato ArtiSys. Regras de negócio, persistência, permissões, styling, credenciais e runtimes opcionais continuam no repositório do produto. Não copie upstreams completos para dentro do produto.
+
+Para fluxos financeiros, normalize/importa dados no consumidor (ou com `artisys-importer`/`artisys-pdf`/`artisys-ocr`) e envie a transação canônica para `artisys-finance-domain`; o módulo não assume banco, API ou provedor externo.
 
 Consulte `../docs/MODULE_KITS.md` e `../docs/INTEGRATION_GUIDE.md`.

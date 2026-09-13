@@ -13,8 +13,8 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 ## Estado atual
 
 - **60 projetos upstream curados**: 49 aprovados como Git submodules + 11 referências incorporadas e pinadas por commit.
-- **47 módulos ArtiSys** registrados.
-- **47 kits executáveis**: 11 `stable` e 36 `implemented`.
+- **48 módulos ArtiSys** registrados.
+- **48 kits executáveis**: 11 `stable` e 37 `implemented`.
 - **0 foundations** pendentes.
 - Nenhum projeto incorporado exige infraestrutura always-on mantida pelo usuário por padrão.
 
@@ -78,6 +78,7 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 
 ### Domínio reutilizável
 
+- `artisys-finance-domain` 0.1.0 — motor financeiro determinístico puro: fingerprints, regras, duplicidade, transferências entre contas, conciliação e feedback explicável.
 - `artisys-inventory` 0.1.0 — movimentos, reservas e saldo disponível de estoque.
 - `artisys-os` 0.1.0 — ordem de serviço genérica com transições configuráveis e histórico.
 - `artisys-catalog` 0.1.0 — catálogo de produtos/serviços, variantes, busca e ativação.

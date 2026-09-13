@@ -1,0 +1,14 @@
+{
+  "schemaVersion":1,
+  "id":"artisys-finance-domain",
+  "name":"ArtiSys Finance Domain",
+  "version":"0.1.0",
+  "status":"implemented",
+  "consumptionMode":"shared",
+  "upstreams":[],
+  "boundary":"Pure deterministic finance-domain primitives for transaction normalization, fingerprints, rule evaluation, duplicate handling, account-transfer reconciliation, obligation matching and feedback scoring. Import parsing, persistence, HTTP, UI and external AI remain consumer concerns.",
+  "provides":["transaction-normalization","source-fingerprint","business-fingerprint","deterministic-rules","duplicate-detection","account-transfer-reconciliation","obligation-matching","decision-feedback"],
+  "costPolicy":{"coreLicenseFee":0,"selfHosted":true,"requiredPaidServices":[]},
+  "implementedCapabilities":["accent-insensitive-normalization","dual-fingerprint-strategy","priority-rule-engine","explainable-rule-decisions","exact-source-deduplication","business-personal-transfer-detection","explainable-reconciliation-score","accepted-rejected-manual-feedback","optional-pt-br-finance-rule-preset"],
+  "requirements":{"node":">=22","runtimeDependencies":"none"}
+}

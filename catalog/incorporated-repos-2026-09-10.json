@@ -14,6 +14,7 @@
     {"id":"powertoys","repo":"microsoft/PowerToys","branch":"main","pinnedCommit":"da4c274367a173c938d46a3a0b94e59f32ab3905","capability":"desktop-utilities-reference","runtimeClass":"dev-tool","integration":"source/reference; extract patterns selectively"},
     {"id":"rustdesk","repo":"rustdesk/rustdesk","branch":"master","pinnedCommit":"67e0a1f5827160f8eacb311d283a7fa7083b9132","capability":"remote-desktop","runtimeClass":"local-on-demand","integration":"isolated/reference; no mandatory server"},
     {"id":"opensourcepos","repo":"opensourcepos/opensourcepos","branch":"master","pinnedCommit":"b610ae28acfad48728d38c09e1e1e311a2a309d8","capability":"point-of-sale-reference","runtimeClass":"dev-tool","integration":"product/reference for PDV flows"},
-    {"id":"pocketbase","repo":"pocketbase/pocketbase","branch":"master","pinnedCommit":"5684ee24f1e88f71a2ede73d20cf547fbd509e16","capability":"embedded-local-backend","runtimeClass":"local-on-demand","integration":"optional local backend adapter"}
+    {"id":"pocketbase","repo":"pocketbase/pocketbase","branch":"master","pinnedCommit":"5684ee24f1e88f71a2ede73d20cf547fbd509e16","capability":"embedded-local-backend","runtimeClass":"local-on-demand","integration":"optional local backend adapter"},
+    {"id":"rclone","repo":"rclone/rclone","branch":"master","pinnedCommit":"812e693fd787d324981d423e9a73c873716c1046","capability":"file-sync-cloud-drive","runtimeClass":"local-on-demand","integration":"optional CLI adapter; user-authorized remotes only"}
   ]
 }
