@@ -1,0 +1,1 @@
+{"name":"@artisys/alerts","version":"0.1.0","type":"module","exports":"./src/index.mjs","files":["src","module.json","README.md","LICENSE","examples"],"scripts":{"test":"node --test","check":"node --check src/index.mjs","example":"node examples/basic.mjs"},"engines":{"node":">=22"},"license":"MIT"}
