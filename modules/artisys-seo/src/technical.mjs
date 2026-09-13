@@ -138,17 +138,7 @@ export function renderHeadTags(model) {
 }
 
 export function buildRobotsTxt(config) {
-  const lines = ['User-agent: *'];
-  const rootBlocked = config.pages.some((page) => page.path === '/' && !page.index);
-  if (rootBlocked) lines.push('Disallow: /');
-  else {
-    lines.push('Allow: /');
-    for (const page of config.pages) {
-      if (!page.index && page.path !== '/') lines.push(`Disallow: ${page.path}`);
-    }
-  }
-  lines.push('', `Sitemap: ${config.site.url}/sitemap.xml`);
-  return `${lines.join('\n')}\n`;
+  return `User-agent: *\nAllow: /\n\nSitemap: ${config.site.url}/sitemap.xml\n`;
 }
 
 export function buildSitemapXml(config) {
