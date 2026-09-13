@@ -17,7 +17,7 @@ READY = (
     'artisys-remote-support', 'artisys-release', 'artisys-release-validator',
     'artisys-desktop-shell', 'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
     'artisys-ai-quality', 'artisys-privacy', 'artisys-bim', 'artisys-eventbus',
-    'artisys-backup', 'artisys-importer', 'artisys-auth-rbac', 'artisys-storage',
+    'artisys-backup', 'artisys-importer', 'artisys-finance-domain', 'artisys-auth-rbac', 'artisys-storage',
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
@@ -33,7 +33,7 @@ JS_MODULES = (
     'artisys-release', 'artisys-release-validator', 'artisys-desktop-shell', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
     'artisys-privacy', 'artisys-bim', 'artisys-eventbus',
-    'artisys-backup', 'artisys-importer', 'artisys-auth-rbac', 'artisys-storage',
+    'artisys-backup', 'artisys-importer', 'artisys-finance-domain', 'artisys-auth-rbac', 'artisys-storage',
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
@@ -91,7 +91,7 @@ def main():
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
-    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', *NEW_PRODUCT_MODULES[8:]):
+    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:]):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)
