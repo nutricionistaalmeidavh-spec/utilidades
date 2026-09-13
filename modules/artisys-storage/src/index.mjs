@@ -41,9 +41,7 @@ export class SqliteStorage {
     );`);
   }
 
-  #assertOpen() {
-    if (this.#closed) throw new Error('Storage is closed.');
-  }
+  #assertOpen() { if (this.#closed) throw new Error('Storage is closed.'); }
 
   async put(path, value, options = {}) {
     this.#assertOpen();
@@ -80,6 +78,24 @@ export class SqliteStorage {
       .all(normalized.length, normalized).map((row) => row.path);
   }
 
+  async exec(sql) { this.#assertOpen(); this.#db.exec(sql); }
+
+  async run(sql, params = []) {
+    this.#assertOpen();
+    return this.#db.prepare(sql).run(...params);
+  }
+
+  async getRow(sql, params = []) {
+    this.#assertOpen();
+    const row = this.#db.prepare(sql).get(...params);
+    return row ? { ...row } : null;
+  }
+
+  async allRows(sql, params = []) {
+    this.#assertOpen();
+    return this.#db.prepare(sql).all(...params).map((row) => ({ ...row }));
+  }
+
   async health() {
     this.#assertOpen();
     const row = this.#db.prepare('SELECT 1 AS ok').get();
@@ -87,10 +103,7 @@ export class SqliteStorage {
   }
 
   async close() {
-    if (!this.#closed) {
-      this.#db.close();
-      this.#closed = true;
-    }
+    if (!this.#closed) { this.#db.close(); this.#closed = true; }
   }
 }
 
