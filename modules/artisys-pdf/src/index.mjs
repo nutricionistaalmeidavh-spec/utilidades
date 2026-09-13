@@ -1,17 +1,13 @@
 function assertObject(value, name) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new TypeError(`${name} must be an object`);
-  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError(`${name} must be an object`);
 }
+
+const optionalRuntimeImport = (specifier) => import(/* @vite-ignore */ specifier);
 
 export function validatePdfTemplate(template) {
   assertObject(template, 'template');
-  if (!('basePdf' in template) || template.basePdf == null) {
-    throw new TypeError('template.basePdf is required');
-  }
-  if (!Array.isArray(template.schemas)) {
-    throw new TypeError('template.schemas must be an array');
-  }
+  if (!('basePdf' in template) || template.basePdf == null) throw new TypeError('template.basePdf is required');
+  if (!Array.isArray(template.schemas)) throw new TypeError('template.schemas must be an array');
   return template;
 }
 
@@ -29,9 +25,7 @@ export function normalizePdfInputs(inputs) {
 }
 
 function assertNormalizedCoordinate(value, name) {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1) {
-    throw new TypeError(`${name} must be a number between 0 and 1`);
-  }
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1) throw new TypeError(`${name} must be a number between 0 and 1`);
 }
 
 export function normalizeHighlight(highlight) {
@@ -41,28 +35,19 @@ export function normalizeHighlight(highlight) {
   assertObject(highlight.rect, 'highlight.rect');
   for (const key of ['x1', 'y1', 'x2', 'y2']) assertNormalizedCoordinate(highlight.rect[key], `highlight.rect.${key}`);
   if (highlight.rect.x2 < highlight.rect.x1 || highlight.rect.y2 < highlight.rect.y1) throw new TypeError('highlight.rect bounds are invalid');
-  return {
-    id: highlight.id,
-    pageNumber: highlight.pageNumber,
-    rect: { x1: highlight.rect.x1, y1: highlight.rect.y1, x2: highlight.rect.x2, y2: highlight.rect.y2 },
-    text: highlight.text ?? '',
-    comment: highlight.comment ?? '',
-    meta: highlight.meta && typeof highlight.meta === 'object' && !Array.isArray(highlight.meta) ? { ...highlight.meta } : {},
-  };
+  return {id: highlight.id,pageNumber: highlight.pageNumber,rect: { x1: highlight.rect.x1, y1: highlight.rect.y1, x2: highlight.rect.x2, y2: highlight.rect.y2 },text: highlight.text ?? '',comment: highlight.comment ?? '',meta: highlight.meta && typeof highlight.meta === 'object' && !Array.isArray(highlight.meta) ? { ...highlight.meta } : {}};
 }
 
 export function buildPdfmePlugins(schemasModule = {}) {
   const plugins = {};
-  for (const key of ['text', 'image', 'signature', 'table']) {
-    if (schemasModule[key]) plugins[key] = schemasModule[key];
-  }
+  for (const key of ['text', 'image', 'signature', 'table']) if (schemasModule[key]) plugins[key] = schemasModule[key];
   if (schemasModule.barcodes?.qrcode) plugins.qrcode = schemasModule.barcodes.qrcode;
   return plugins;
 }
 
 async function resolvePdfmeGenerator() {
   try {
-    const mod = await import('@pdfme/generator');
+    const mod = await optionalRuntimeImport('@pdfme/generator');
     if (typeof mod.generate !== 'function') throw new TypeError('@pdfme/generator does not export generate');
     return mod.generate;
   } catch (error) {
@@ -80,11 +65,8 @@ export async function generatePdf({ template, inputs, plugins, options, generato
 }
 
 async function resolvePdfjs() {
-  try {
-    return await import('pdfjs-dist');
-  } catch (error) {
-    throw new Error('PDF viewing requires pdfjs-dist in the consumer', { cause: error });
-  }
+  try { return await optionalRuntimeImport('pdfjs-dist'); }
+  catch (error) { throw new Error('PDF viewing requires pdfjs-dist in the consumer', { cause: error }); }
 }
 
 export async function loadPdfDocument(source, { pdfjs } = {}) {
@@ -96,52 +78,12 @@ export async function loadPdfDocument(source, { pdfjs } = {}) {
 }
 
 export function toReactPdfHighlight(highlight, pageSize) {
-  const portable = normalizeHighlight(highlight);
-  assertObject(pageSize, 'pageSize');
-  const { width, height } = pageSize;
-  if (!(width > 0) || !(height > 0)) throw new TypeError('pageSize width and height must be > 0');
-  const scaled = {
-    x1: portable.rect.x1 * width,
-    y1: portable.rect.y1 * height,
-    x2: portable.rect.x2 * width,
-    y2: portable.rect.y2 * height,
-    width,
-    height,
-    pageNumber: portable.pageNumber,
-  };
-  return {
-    id: portable.id,
-    content: { text: portable.text },
-    comment: { text: portable.comment, emoji: portable.meta.emoji ?? '' },
-    position: {
-      boundingRect: scaled,
-      rects: [scaled],
-      pageNumber: portable.pageNumber,
-      usePdfCoordinates: true,
-    },
-  };
+  const portable = normalizeHighlight(highlight);assertObject(pageSize, 'pageSize');const { width, height } = pageSize;if (!(width > 0) || !(height > 0)) throw new TypeError('pageSize width and height must be > 0');
+  const scaled = {x1: portable.rect.x1 * width,y1: portable.rect.y1 * height,x2: portable.rect.x2 * width,y2: portable.rect.y2 * height,width,height,pageNumber: portable.pageNumber};
+  return {id: portable.id,content: { text: portable.text },comment: { text: portable.comment, emoji: portable.meta.emoji ?? '' },position: {boundingRect: scaled,rects: [scaled],pageNumber: portable.pageNumber,usePdfCoordinates: true}};
 }
 
 export function fromReactPdfHighlight(highlight) {
-  assertObject(highlight, 'highlight');
-  const position = highlight.position;
-  assertObject(position, 'highlight.position');
-  const rect = position.boundingRect;
-  assertObject(rect, 'highlight.position.boundingRect');
-  const width = rect.width;
-  const height = rect.height;
-  if (!(width > 0) || !(height > 0)) throw new TypeError('scaled highlight width and height must be > 0');
-  return normalizeHighlight({
-    id: highlight.id,
-    pageNumber: position.pageNumber ?? rect.pageNumber,
-    rect: {
-      x1: rect.x1 / width,
-      y1: rect.y1 / height,
-      x2: rect.x2 / width,
-      y2: rect.y2 / height,
-    },
-    text: highlight.content?.text ?? '',
-    comment: highlight.comment?.text ?? '',
-    meta: highlight.comment?.emoji ? { emoji: highlight.comment.emoji } : {},
-  });
+  assertObject(highlight, 'highlight');const position = highlight.position;assertObject(position, 'highlight.position');const rect = position.boundingRect;assertObject(rect, 'highlight.position.boundingRect');const width = rect.width;const height = rect.height;if (!(width > 0) || !(height > 0)) throw new TypeError('scaled highlight width and height must be > 0');
+  return normalizeHighlight({id: highlight.id,pageNumber: position.pageNumber ?? rect.pageNumber,rect: {x1: rect.x1 / width,y1: rect.y1 / height,x2: rect.x2 / width,y2: rect.y2 / height},text: highlight.content?.text ?? '',comment: highlight.comment?.text ?? '',meta: highlight.comment?.emoji ? { emoji: highlight.comment.emoji } : {}});
 }
