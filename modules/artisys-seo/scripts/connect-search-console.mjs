@@ -8,6 +8,7 @@ import {
   buildGoogleAuthorizationUrl,
   buildGoogleTokenRequestBody
 } from '../src/google-oauth.mjs';
+import { buildBrowserLaunchSpec } from '../src/browser-launch.mjs';
 import { SEARCH_CONSOLE_READONLY_SCOPE } from '../src/search-console.mjs';
 
 function credentialsFromRclone() {
@@ -39,15 +40,8 @@ function tokenPath() {
 }
 
 function openBrowser(url) {
-  if (process.platform === 'win32') {
-    spawn('cmd', ['/c', 'start', '', url], { detached: true, stdio: 'ignore' }).unref();
-    return;
-  }
-  if (process.platform === 'darwin') {
-    spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
-    return;
-  }
-  spawn('xdg-open', [url], { detached: true, stdio: 'ignore' }).unref();
+  const spec = buildBrowserLaunchSpec({ platform: process.platform, url });
+  spawn(spec.command, spec.args, { detached: true, stdio: 'ignore', windowsHide: true }).unref();
 }
 
 const state = randomUUID();
