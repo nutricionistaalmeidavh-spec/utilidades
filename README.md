@@ -68,7 +68,7 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 - `artisys-eventbus` 0.2.0 — eventos Node/browser, wildcard/once, outbox memória/SQLite/D1, BroadcastChannel, SSE e efeitos idempotentes.
 - `artisys-importer` 0.1.0 — mapeamento, preview e validação de importações.
 - `artisys-auth-rbac` 0.1.0 — papéis, permissões e guards independentes de provedor.
-- `artisys-storage` 0.1.0 — contrato de storage, memória e isolamento por namespace.
+- `artisys-storage` 0.2.1 — contrato de storage, memória, SQLite local durável, SQL para migrations e isolamento por namespace.
 - `artisys-sync` 0.1.0 — fila offline, retry e resolução de conflitos.
 - `artisys-pwa-runtime` 0.1.0 — cache versionado, precache, fallback e atualização PWA.
 - `artisys-webview-bridge` 0.1.0 — envelope e validação WebView ↔ native.
