@@ -28,3 +28,28 @@ test('browser workspace blocks path traversal', async()=>{
   const files=createBrowserWorkspace(new MemoryStorage());
   await assert.rejects(()=>files.writeFile('../secret.txt','x'),error=>error?.code==='PATH_TRAVERSAL');
 });
+
+test('browser workspace snapshot restores directories, files and metadata exactly', async()=>{
+  const storage=new MemoryStorage();
+  const files=createBrowserWorkspace(storage,{root:'attachments'});
+  await files.createDirectory('clients/acme');
+  await files.writeFile('clients/acme/report.txt','original');
+  await files.writeFile('root.txt','root-value');
+
+  const snapshot=await files.exportSnapshot();
+  assert.equal(snapshot.schemaVersion,1);
+  assert.equal(snapshot.root,'attachments');
+  assert.ok(snapshot.entries.some(entry=>entry.kind==='directory'&&entry.path==='clients/acme'));
+  assert.ok(snapshot.entries.some(entry=>entry.kind==='file'&&entry.path==='clients/acme/report.txt'));
+
+  await files.writeFile('clients/acme/report.txt','mutated');
+  await files.writeFile('temporary.txt','remove-me');
+  await files.remove('root.txt');
+
+  const restored=await files.importSnapshot(snapshot,{clear:true});
+  assert.equal(restored.restored,true);
+  assert.equal(await files.readFile('clients/acme/report.txt'),'original');
+  assert.equal(await files.readFile('root.txt'),'root-value');
+  await assert.rejects(()=>files.readFile('temporary.txt'),/File not found/);
+  assert.equal((await files.listTree('clients/acme/report.txt')).modifiedAt!==undefined,true);
+});
