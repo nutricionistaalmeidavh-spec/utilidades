@@ -14,6 +14,11 @@ P0_JS_MODULES = (
     'artisys-custody', 'artisys-maintenance', 'artisys-metering',
     'artisys-search', 'artisys-exporter'
 )
+P1_JS_MODULES = (
+    'artisys-contracts', 'artisys-deadlines', 'artisys-compliance',
+    'artisys-inspections', 'artisys-occurrences', 'artisys-measurements',
+    'artisys-costing', 'artisys-document-templates'
+)
 READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
@@ -27,7 +32,7 @@ READY = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *P1_JS_MODULES
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -43,7 +48,7 @@ JS_MODULES = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *P1_JS_MODULES
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -62,6 +67,14 @@ def run(args, cwd=ROOT, env=None):
     subprocess.run(args, cwd=cwd, env=env, check=True)
 
 
+def load_catalog():
+    catalog = json.loads((ROOT / 'catalog/modules.json').read_text())['modules']
+    extension = ROOT / 'catalog/modules.p1.json'
+    if extension.is_file():
+        catalog += json.loads(extension.read_text())['modules']
+    return catalog
+
+
 def known_upstreams():
     upstreams = {p['id'] for p in json.loads((ROOT / 'catalog/projects.json').read_text())['projects']}
     incorporated = ROOT / 'catalog/incorporated-repos-2026-09-10.json'
@@ -73,6 +86,9 @@ def known_upstreams():
 def validate_display_catalog(catalog):
     display_path = ROOT / 'catalog/module-display.pt-BR.json'
     display = json.loads(display_path.read_text())['modules']
+    extension = ROOT / 'catalog/module-display.p1.pt-BR.json'
+    if extension.is_file():
+        display += json.loads(extension.read_text())['modules']
     catalog_ids = {entry['id'] for entry in catalog}
     display_ids = [entry['id'] for entry in display]
     if len(set(display_ids)) != len(display_ids):
@@ -89,7 +105,7 @@ def main():
     parser.add_argument('--pact', action='store_true')
     parser.add_argument('--generator', action='store_true')
     args = parser.parse_args()
-    catalog = json.loads((ROOT / 'catalog/modules.json').read_text())['modules']
+    catalog = load_catalog()
     if len({m['id'] for m in catalog}) != len(catalog):
         raise ValueError('Duplicate module id')
     validate_display_catalog(catalog)
@@ -113,6 +129,8 @@ def main():
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
     for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:]):
+        run([npm, 'run', 'check'], ROOT / 'modules' / module)
+    for module in P1_JS_MODULES:
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)

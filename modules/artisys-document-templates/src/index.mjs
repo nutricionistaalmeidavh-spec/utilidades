@@ -1,0 +1,6 @@
+const text=(v,l)=>{if(v==null||String(v).trim()==='')throw new TypeError(`${l} is required`);return String(v)};
+const pattern=/{{\s*([A-Za-z0-9_.-]+)\s*}}/g;const get=(obj,path)=>path.split('.').reduce((v,k)=>v==null?undefined:v[k],obj);
+export function createDocumentTemplate({id,name,content,format='text',metadata={}}={}){const source=text(content,'content');const placeholders=[...new Set([...source.matchAll(pattern)].map(m=>m[1]))];return Object.freeze({id:text(id,'template id').trim(),name:text(name,'template name').trim(),content:source,format:String(format),placeholders:Object.freeze(placeholders),metadata:Object.freeze({...metadata})})}
+export function validateTemplateData(template,data={}){const missing=template.placeholders.filter(p=>{const v=get(data,p);return v===undefined||v===null});return Object.freeze({valid:missing.length===0,missing:Object.freeze(missing)})}
+export function renderDocumentTemplate(template,data={},options={}){const validation=validateTemplateData(template,data);if(!validation.valid&&!options.allowMissing)throw new Error(`missing template data: ${validation.missing.join(', ')}`);return template.content.replace(pattern,(_,path)=>{const v=get(data,path);return v==null?(options.missingValue??''):String(v)})}
+export function templateFields(template){return [...template.placeholders]}

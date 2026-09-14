@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createOccurrence,updateOccurrenceStatus,addOccurrenceAction,occurrenceTimeline} from '../src/index.mjs';
+test('occurrence keeps action/status timeline',()=>{let o=createOccurrence({id:'o1',kind:'incident',reportedAt:'2026-09-14'});o=addOccurrenceAction(o,{id:'a1',type:'note',at:'2026-09-14T01:00:00Z'});o=updateOccurrenceStatus(o,'closed',{at:'2026-09-14T02:00:00Z'});assert.equal(o.status,'closed');assert.equal(occurrenceTimeline(o).length,3);});

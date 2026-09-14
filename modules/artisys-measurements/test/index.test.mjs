@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createMeasurement,convertMeasurement,aggregateMeasurements} from '../src/index.mjs';
+test('measurement converts and aggregates compatible units',()=>{const a=createMeasurement({id:'m1',value:1000,unit:'m',kind:'distance',at:'2026-09-14'});const km=convertMeasurement(a,'km');assert.equal(km.value,1);const sum=aggregateMeasurements([a,createMeasurement({id:'m2',value:500,unit:'m',kind:'distance',at:'2026-09-14'})],{unit:'km'});assert.equal(sum.value,1.5);});

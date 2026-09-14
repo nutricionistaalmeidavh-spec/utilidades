@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createInspection,recordInspectionItem,completeInspection,inspectionSummary} from '../src/index.mjs';
+test('inspection captures findings and completes',()=>{let i=createInspection({id:'i1',subjectRef:{kind:'asset',id:'a1'},items:[{id:'x',label:'Item'}]});i=recordInspectionItem(i,'x',{result:'nonconforming',notes:'Falha'});assert.equal(inspectionSummary(i).nonconforming,1);i=completeInspection(i,{at:'2026-09-14'});assert.equal(i.status,'completed-with-findings');});

@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createCostEntry,allocateCosts,summarizeCosts,costPerUnit} from '../src/index.mjs';
+test('cost entries allocate and summarize',()=>{const e=createCostEntry({id:'c1',amount:100,currency:'BRL',category:'labor',occurredAt:'2026-09-14'});const a=allocateCosts(e,[{ref:'A',weight:3},{ref:'B',weight:1}]);assert.equal(a[0].amount,75);assert.equal(summarizeCosts([e]).total,100);assert.equal(costPerUnit([e],20),5);});

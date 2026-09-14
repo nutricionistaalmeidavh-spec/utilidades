@@ -1,59 +1,11 @@
-function finite(value, name) {
-  if (!Number.isFinite(value)) throw new TypeError(`${name} must be a finite number`);
-}
-
-function ownDefined(target, key, value) {
-  if (value !== undefined) target[key] = value;
-  return target;
-}
-
-export function validateDashboardLayout(layout) {
-  if (!Array.isArray(layout)) throw new TypeError('layout must be an array');
-  const ids = new Set();
-  return layout.map((item) => {
-    if (!item || typeof item !== 'object') throw new TypeError('layout item must be an object');
-    if (typeof item.id !== 'string' || item.id.trim() === '') throw new TypeError('layout item id is required');
-    if (ids.has(item.id)) throw new Error(`duplicate dashboard id: ${item.id}`);
-    ids.add(item.id);
-    for (const key of ['x', 'y', 'w', 'h']) finite(item[key], key);
-    if (item.x < 0 || item.y < 0 || item.w <= 0 || item.h <= 0) throw new RangeError('layout coordinates and dimensions are invalid');
-    return { ...item };
-  });
-}
-
-export function toReactGridLayout(layout) {
-  return validateDashboardLayout(layout).map((item) => {
-    const out = { i: item.id, x: item.x, y: item.y, w: item.w, h: item.h };
-    for (const key of ['minW', 'maxW', 'minH', 'maxH', 'static', 'isDraggable', 'isResizable']) ownDefined(out, key, item[key]);
-    return out;
-  });
-}
-
-export function toResizablePanels(panels) {
-  if (!Array.isArray(panels)) throw new TypeError('panels must be an array');
-  const ids = new Set();
-  return panels.map((panel) => {
-    if (!panel || typeof panel.id !== 'string' || panel.id.trim() === '') throw new TypeError('panel id is required');
-    if (ids.has(panel.id)) throw new Error(`duplicate panel id: ${panel.id}`);
-    ids.add(panel.id);
-    finite(panel.size, 'size');
-    const out = { id: panel.id, defaultSize: panel.size };
-    for (const key of ['minSize', 'maxSize', 'collapsible', 'collapsedSize']) ownDefined(out, key, panel[key]);
-    return out;
-  });
-}
-
-export function toGlideColumns(columns) {
-  if (!Array.isArray(columns)) throw new TypeError('columns must be an array');
-  const ids = new Set();
-  return columns.map((column) => {
-    if (!column || typeof column.id !== 'string' || column.id.trim() === '') throw new TypeError('column id is required');
-    if (ids.has(column.id)) throw new Error(`duplicate column id: ${column.id}`);
-    ids.add(column.id);
-    if (typeof column.title !== 'string') throw new TypeError('column title is required');
-    finite(column.width, 'width');
-    const out = { id: column.id, title: column.title, width: column.width };
-    for (const key of ['group', 'icon', 'hasMenu', 'grow']) ownDefined(out, key, column[key]);
-    return out;
-  });
-}
+function finite(value,name){if(!Number.isFinite(value))throw new TypeError(`${name} must be a finite number`)}function ownDefined(target,key,value){if(value!==undefined)target[key]=value;return target}
+export function validateDashboardLayout(layout){if(!Array.isArray(layout))throw new TypeError('layout must be an array');const ids=new Set();return layout.map(item=>{if(!item||typeof item!=='object')throw new TypeError('layout item must be an object');if(typeof item.id!=='string'||item.id.trim()==='')throw new TypeError('layout item id is required');if(ids.has(item.id))throw new Error(`duplicate dashboard id: ${item.id}`);ids.add(item.id);for(const key of['x','y','w','h'])finite(item[key],key);if(item.x<0||item.y<0||item.w<=0||item.h<=0)throw new RangeError('layout coordinates and dimensions are invalid');return{...item}})}
+export function toReactGridLayout(layout){return validateDashboardLayout(layout).map(item=>{const out={i:item.id,x:item.x,y:item.y,w:item.w,h:item.h};for(const key of['minW','maxW','minH','maxH','static','isDraggable','isResizable'])ownDefined(out,key,item[key]);return out})}
+export function toResizablePanels(panels){if(!Array.isArray(panels))throw new TypeError('panels must be an array');const ids=new Set();return panels.map(panel=>{if(!panel||typeof panel.id!=='string'||panel.id.trim()==='')throw new TypeError('panel id is required');if(ids.has(panel.id))throw new Error(`duplicate panel id: ${panel.id}`);ids.add(panel.id);finite(panel.size,'size');const out={id:panel.id,defaultSize:panel.size};for(const key of['minSize','maxSize','collapsible','collapsedSize'])ownDefined(out,key,panel[key]);return out})}
+export function toGlideColumns(columns){if(!Array.isArray(columns))throw new TypeError('columns must be an array');const ids=new Set();return columns.map(column=>{if(!column||typeof column.id!=='string'||column.id.trim()==='')throw new TypeError('column id is required');if(ids.has(column.id))throw new Error(`duplicate column id: ${column.id}`);ids.add(column.id);if(typeof column.title!=='string')throw new TypeError('column title is required');finite(column.width,'width');const out={id:column.id,title:column.title,width:column.width};for(const key of['group','icon','hasMenu','grow'])ownDefined(out,key,column[key]);return out})}
+const req=(v,l)=>{if(v==null||String(v).trim()==='')throw new TypeError(`${l} is required`);return String(v).trim()};
+export function createDashboardKpi({id,label,source,metric,field=null,filters=[],format=null}={}){return Object.freeze({id:req(id,'kpi id'),label:req(label,'kpi label'),source:req(source,'source'),metric:req(metric,'metric'),field,filters:Object.freeze(filters.map(x=>Object.freeze({...x}))),format})}
+export function createDashboardDefinition({id,name,layout=[],kpis=[],filters=[],drilldowns=[],metadata={}}={}){return Object.freeze({id:req(id,'dashboard id'),name:req(name,'dashboard name'),layout:Object.freeze(layout.map(x=>Object.freeze({...x}))),kpis:Object.freeze(kpis),filters:Object.freeze(filters.map(x=>Object.freeze({...x}))),drilldowns:Object.freeze(drilldowns.map(x=>Object.freeze({...x}))),metadata:Object.freeze({...metadata})})}
+const match=(row,f)=>{const v=row[f.field];if(f.op==='eq')return v===f.value;if(f.op==='neq')return v!==f.value;if(f.op==='in')return Array.isArray(f.value)&&f.value.includes(v);if(f.op==='contains')return String(v??'').includes(String(f.value??''));throw new Error(`unsupported dashboard filter: ${f.op}`)};
+export function applyDashboardFilter(rows,filters=[]){return rows.filter(row=>filters.every(f=>match(row,f)))}
+export function createDashboardDrilldown({dashboardId,kpiId,target,filters=[],params={}}={}){return Object.freeze({dashboardId:req(dashboardId,'dashboard id'),kpiId:req(kpiId,'kpi id'),target:req(target,'target'),filters:Object.freeze(filters.map(x=>Object.freeze({...x}))),params:Object.freeze({...params})})}
