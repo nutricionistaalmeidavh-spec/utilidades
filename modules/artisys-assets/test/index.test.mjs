@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createAsset,changeAssetStatus,updateAsset} from '../src/index.mjs';
+test('asset lifecycle fields are generic',()=>{let a=createAsset({id:'a1',name:'Compressor',type:'equipment',metadata:{power:10}});a=changeAssetStatus(a,'unavailable',{at:'2026-09-14T10:00:00Z'});assert.equal(a.status,'unavailable');a=updateAsset(a,{metadata:{sector:'A'}},'2026-09-14T11:00:00Z');assert.equal(a.metadata.power,10);assert.equal(a.metadata.sector,'A')});

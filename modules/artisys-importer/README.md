@@ -1,3 +1,3 @@
-# @artisys/importer
+# Importação de Dados
 
-Contrato compartilhado de importação: mapeamento, transformações, preview e validação antes da persistência. CSV/XLSX são adapters opcionais, evitando dependência obrigatória.
+Mapeamento, pré-visualização, validação, detecção de duplicidades e execução transacional com rollback via callbacks do consumidor. Parsing CSV/XLSX e persistência continuam opcionais.

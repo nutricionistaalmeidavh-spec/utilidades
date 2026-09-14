@@ -1,13 +1,3 @@
-# ArtiSys Alerts
+# Alertas e Notificações
 
-Módulo transversal local-first para alertas operacionais dos produtos ArtiSys.
-
-- cria alertas ligados a uma entidade (`entityRef`);
-- define `dueAt` e severidade `info | warning | critical`;
-- lista alertas vencidos/ativos;
-- permite reconhecer (`acknowledge`), adiar (`snooze`) e dispensar (`dismiss`);
-- não exige serviço remoto, daemon ou banco próprio.
-
-Canais de entrega como notificação do sistema operacional, browser, e-mail ou WhatsApp são adapters opcionais do produto consumidor e nunca dependências obrigatórias do core.
-
-Core R$ 0 / self-hosted / open source.
+Alertas locais por vencimento e notificações internas com estado lido/não lido. Canais externos (push, e-mail, SMS) são adaptadores opcionais do produto.
