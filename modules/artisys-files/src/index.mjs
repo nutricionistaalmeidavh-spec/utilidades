@@ -4,6 +4,7 @@ import {
   cp,
   lstat,
   mkdir,
+  readFile as fsReadFile,
   readdir,
   realpath,
   rename as fsRename,
@@ -182,6 +183,16 @@ export async function createWorkspace(root) {
         }
       }
       await fsWriteFile(destination, data);
+    },
+
+    async readFile(relativePath, options) {
+      await assertNoSymlinkTraversal(workspaceRoot, relativePath);
+      const source = resolveInsideRoot(workspaceRoot, relativePath);
+      const info = await lstat(source);
+      if (!info.isFile()) {
+        throw workspaceError('NOT_FILE', 'Workspace path must be a file', { path: relativePath });
+      }
+      return fsReadFile(source, options);
     },
 
     async rename(relativePath, newName) {
