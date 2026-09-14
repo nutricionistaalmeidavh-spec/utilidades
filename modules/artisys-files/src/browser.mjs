@@ -34,6 +34,24 @@ export function createBrowserWorkspace(storage,{root='attachments'}={}){
     async copy(sourcePath,destinationPath){const source=clean(sourcePath),destination=clean(destinationPath);if(!source||!destination)throw new TypeError('Source and destination are required.');if(destination===source||destination.startsWith(`${source}/`))throw new Error('Destination cannot be the source or one of its descendants.');if(await storage.get(fileKey(workspaceRoot,destination))||await directoryExists(destination))throw new Error('Destination already exists.');const file=await storage.get(fileKey(workspaceRoot,source));if(file){await ensureParents(destination);await storage.put(fileKey(workspaceRoot,destination),clone(file.value),{metadata:clone(file.metadata??{})});return destination;}if(!(await directoryExists(source)))throw new Error('Source not found.');await api.createDirectory(destination);for(const key of await storage.list(childPrefix(dirKey(workspaceRoot,source)))){const relative=relativeFrom(key,childPrefix(dirKey(workspaceRoot,source)));await api.createDirectory(join(destination,relative));}for(const key of await storage.list(childPrefix(fileKey(workspaceRoot,source)))){const relative=relativeFrom(key,childPrefix(fileKey(workspaceRoot,source)));const entry=await storage.get(key);await ensureParents(join(destination,relative));await storage.put(fileKey(workspaceRoot,join(destination,relative)),clone(entry.value),{metadata:clone(entry.metadata??{})});}return destination;},
     async move(sourcePath,destinationPath){const destination=await api.copy(sourcePath,destinationPath);await api.remove(sourcePath);return destination;},
     async rename(relativePath,newName){const source=clean(relativePath);return api.move(source,join(parent(source),simple(newName)));},
+    async exportSnapshot(){
+      const entries=[];
+      for(const key of await storage.list(dirsPrefix)){
+        const path=relativeFrom(key,dirsPrefix);if(!path)continue;const found=await storage.get(key);if(found)entries.push(Object.freeze({kind:'directory',path,value:clone(found.value),metadata:clone(found.metadata??{})}));
+      }
+      for(const key of await storage.list(filesPrefix)){
+        const path=relativeFrom(key,filesPrefix);if(!path)continue;const found=await storage.get(key);if(found)entries.push(Object.freeze({kind:'file',path,value:clone(found.value),metadata:clone(found.metadata??{})}));
+      }
+      entries.sort((a,b)=>a.kind.localeCompare(b.kind)||a.path.localeCompare(b.path));
+      return Object.freeze({schemaVersion:1,root:workspaceRoot,createdAt:new Date().toISOString(),entries:Object.freeze(entries)});
+    },
+    async importSnapshot(snapshot,{clear=true}={}){
+      if(snapshot?.schemaVersion!==1||snapshot?.root!==workspaceRoot||!Array.isArray(snapshot?.entries))throw new TypeError('Invalid browser workspace snapshot.');
+      if(clear){for(const key of await storage.list(filesPrefix))await storage.delete(key);for(const key of await storage.list(dirsPrefix))await storage.delete(key);}
+      let restored=0;
+      for(const entry of snapshot.entries){const path=clean(entry?.path);if(!path||(entry?.kind!=='file'&&entry?.kind!=='directory'))throw new TypeError('Invalid browser workspace snapshot entry.');const key=entry.kind==='file'?fileKey(workspaceRoot,path):dirKey(workspaceRoot,path);await storage.put(key,clone(entry.value),{metadata:clone(entry.metadata??{})});restored+=1;}
+      return Object.freeze({restored:true,root:workspaceRoot,entries:restored});
+    },
     health:async()=>({ok:true,mode:'browser-storage-files',root:workspaceRoot})
   };
   return Object.freeze(api);
