@@ -8,6 +8,12 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+P0_JS_MODULES = (
+    'artisys-alerts', 'artisys-workflow-engine', 'artisys-approvals',
+    'artisys-contacts', 'artisys-assets', 'artisys-asset-lifecycle',
+    'artisys-custody', 'artisys-maintenance', 'artisys-metering',
+    'artisys-search', 'artisys-exporter'
+)
 READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
@@ -21,7 +27,7 @@ READY = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting'
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -37,7 +43,7 @@ JS_MODULES = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting'
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -64,6 +70,19 @@ def known_upstreams():
     return upstreams
 
 
+def validate_display_catalog(catalog):
+    display_path = ROOT / 'catalog/module-display.pt-BR.json'
+    display = json.loads(display_path.read_text())['modules']
+    catalog_ids = {entry['id'] for entry in catalog}
+    display_ids = [entry['id'] for entry in display]
+    if len(set(display_ids)) != len(display_ids):
+        raise ValueError('Duplicate module display id')
+    missing = catalog_ids - set(display_ids)
+    extra = set(display_ids) - catalog_ids
+    if missing or extra:
+        raise ValueError(f'Module display mismatch: missing={sorted(missing)} extra={sorted(extra)}')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--browser', action='store_true')
@@ -73,6 +92,7 @@ def main():
     catalog = json.loads((ROOT / 'catalog/modules.json').read_text())['modules']
     if len({m['id'] for m in catalog}) != len(catalog):
         raise ValueError('Duplicate module id')
+    validate_display_catalog(catalog)
     upstreams = known_upstreams()
     for entry in catalog:
         path = ROOT / 'modules' / entry['id']
