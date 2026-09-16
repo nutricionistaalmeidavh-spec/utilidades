@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-16",
+  "note": "Catálogo de módulos planejados. Não altera catalog/modules.json nem marca módulos como implementados antes de existirem código, manifesto, testes e verificação. artisys-pdf e artisys-security são extensões de módulos existentes.",
+  "modules": [
+    {
+      "id": "artisys-device-firmware",
+      "friendlyName": "Firmware e Provisionamento de Dispositivos",
+      "category": "IoT e Hardware",
+      "status": "planned",
+      "upstreamNumbers": [152, 153, 193],
+      "upstreams": ["esphome/esphome", "arendst/Tasmota", "espressif/esp-idf"],
+      "integrationModes": ["adapter", "embedded"],
+      "roadmap": [
+        {"step": 1, "work": "Definir contrato neutro de target, firmware, configuração, build e flash."},
+        {"step": 2, "work": "Criar adapter ESP-IDF e adapters de processo para ESPHome/Tasmota, sem incorporar runtime GPL ao core."},
+        {"step": 3, "work": "Criar fixtures de ESP32, manifestos, hashes e testes de build/flash simulados; manter smoke em hardware real opcional."},
+        {"step": 4, "work": "Entregar CLI prepare/build/flash, documentação de OTA/rollback e exemplo de integração em produto."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-iot-flows",
+      "friendlyName": "Fluxos e Automações IoT",
+      "category": "IoT e Automação",
+      "status": "planned",
+      "upstreamNumbers": [158],
+      "upstreams": ["node-red/node-red"],
+      "integrationModes": ["adapter"],
+      "roadmap": [
+        {"step": 1, "work": "Definir DSL de trigger, condição, ação, retry, timeout e auditoria."},
+        {"step": 2, "work": "Criar executor local mínimo e adapter opcional para Node-RED."},
+        {"step": 3, "work": "Testar serialização, idempotência, falhas, retries e prevenção de loops."},
+        {"step": 4, "work": "Entregar exemplos device→evento→ação e integração com artisys-eventbus/artisys-alerts."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-zigbee",
+      "friendlyName": "Integração Zigbee",
+      "category": "IoT e Protocolos",
+      "status": "planned",
+      "upstreamNumbers": [160],
+      "upstreams": ["Koenkk/zigbee2mqtt"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir contratos de coordinator, discovery, interview, state e command."},
+        {"step": 2, "work": "Criar adapter Zigbee2MQTT por processo/MQTT, sem incorporar código GPL."},
+        {"step": 3, "work": "Adicionar simulador/fixtures e testes de reconnect, availability e comandos."},
+        {"step": 4, "work": "Entregar exemplo opcional com coordenador real e guia de pareamento."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-matter",
+      "friendlyName": "Integração Matter",
+      "category": "IoT e Protocolos",
+      "status": "planned",
+      "upstreamNumbers": [165, 166, 167],
+      "upstreams": ["project-chip/connectedhomeip", "matter-js/matter.js", "Luligu/matterbridge"],
+      "integrationModes": ["adapter", "embedded"],
+      "roadmap": [
+        {"step": 1, "work": "Definir contratos de commissioning, fabric, device, cluster e command."},
+        {"step": 2, "work": "Implementar primeiro adapter TypeScript sobre matter.js; manter connectedhomeip como opção nativa."},
+        {"step": 3, "work": "Testar commissioning simulado, leitura/escrita, reconexão e erros de sessão."},
+        {"step": 4, "work": "Entregar exemplo web/desktop e bridge opcional via Matterbridge."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-mqtt-broker",
+      "friendlyName": "Broker e Transporte MQTT",
+      "category": "IoT e Mensageria",
+      "status": "planned",
+      "upstreamNumbers": [168],
+      "upstreams": ["eclipse-mosquitto/mosquitto"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir contrato de endpoint, topics, QoS, retained messages e health."},
+        {"step": 2, "work": "Criar launcher/adapter opcional para Mosquitto e cliente desacoplado do broker."},
+        {"step": 3, "work": "Testar pub/sub, reconnect, ACL/policy e falha do broker."},
+        {"step": 4, "work": "Entregar perfil local de produto e documentação de implantação sem serviço pago."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-iot-platform",
+      "friendlyName": "Plataforma de Dispositivos IoT",
+      "category": "IoT e Plataforma",
+      "status": "planned",
+      "upstreamNumbers": [177, 178, 179],
+      "upstreams": ["thingsboard/thingsboard", "thingsboard/thingsboard-gateway", "openremote/openremote"],
+      "integrationModes": ["adapter", "service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir interface comum de registry, telemetry, commands e rules."},
+        {"step": 2, "work": "Criar adapters ThingsBoard/Gateway e manter OpenRemote isolado como serviço."},
+        {"step": 3, "work": "Criar contract tests com mocks e rotinas de import/export de dispositivos."},
+        {"step": 4, "work": "Entregar exemplo de produto conectado sem tornar plataforma externa obrigatória."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-plc",
+      "friendlyName": "Integração com PLCs",
+      "category": "Industrial",
+      "status": "planned",
+      "upstreamNumbers": [186, 218],
+      "upstreams": ["apache/plc4x", "libplctag/libplctag"],
+      "integrationModes": ["adapter"],
+      "roadmap": [
+        {"step": 1, "work": "Definir contratos de endpoint, tag, read/write, datatype e quality."},
+        {"step": 2, "work": "Criar adapter PLC4X e wrapper separado para libplctag."},
+        {"step": 3, "work": "Testar simuladores, timeout, reconnect, endianess e proteções de escrita."},
+        {"step": 4, "work": "Entregar exemplos Modbus/Allen-Bradley e política de escrita perigosa."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-scada",
+      "friendlyName": "SCADA e Supervisão",
+      "category": "Industrial",
+      "status": "planned",
+      "upstreamNumbers": [187],
+      "upstreams": ["frangoteam/FUXA"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir modelo próprio de pontos, telas, alarmes e histórico."},
+        {"step": 2, "work": "Criar conector de serviço FUXA e ligação com artisys-dashboard."},
+        {"step": 3, "work": "Testar tags, alarmes, desconexões e atualização de estado."},
+        {"step": 4, "work": "Entregar painel industrial de referência e guia de implantação."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-lorawan",
+      "friendlyName": "Integração LoRaWAN",
+      "category": "IoT e Protocolos",
+      "status": "planned",
+      "upstreamNumbers": [191, 192],
+      "upstreams": ["TheThingsNetwork/lorawan-stack", "chirpstack/chirpstack"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir tenant, application, device, gateway, uplink e downlink."},
+        {"step": 2, "work": "Criar adapters The Things Stack e ChirpStack."},
+        {"step": 3, "work": "Testar codecs, deduplicação, downlink, retry, webhook e MQTT."},
+        {"step": 4, "work": "Entregar exemplo agro/telemetria e configuração self-hosted."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-gps-tracking",
+      "friendlyName": "Rastreamento GPS e Frotas",
+      "category": "IoT e Telemetria",
+      "status": "planned",
+      "upstreamNumbers": [200],
+      "upstreams": ["traccar/traccar"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir device, position, trip, geofence e alert."},
+        {"step": 2, "work": "Criar adapter REST/WebSocket para Traccar."},
+        {"step": 3, "work": "Testar coordenadas, eventos atrasados, offline e geofences."},
+        {"step": 4, "work": "Entregar exemplo de frota, mapa e integração com relatórios."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-thread",
+      "friendlyName": "Rede Thread",
+      "category": "IoT e Protocolos",
+      "status": "planned",
+      "upstreamNumbers": [207, 208],
+      "upstreams": ["openthread/openthread", "openthread/ot-br-posix"],
+      "integrationModes": ["embedded", "service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir border-router, dataset, node e status de rede."},
+        {"step": 2, "work": "Criar adapters OpenThread e launcher opcional OTBR."},
+        {"step": 3, "work": "Testar dataset, attach/detach e health do border router."},
+        {"step": 4, "work": "Entregar guia Thread↔Matter e exemplo com Raspberry Pi."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-modbus",
+      "friendlyName": "Integração Modbus",
+      "category": "Industrial",
+      "status": "planned",
+      "upstreamNumbers": [213, 216],
+      "upstreams": ["stephane/libmodbus", "espressif/esp-modbus"],
+      "integrationModes": ["adapter", "embedded"],
+      "roadmap": [
+        {"step": 1, "work": "Definir TCP/RTU, unit, register, datatype e operações de leitura/escrita."},
+        {"step": 2, "work": "Implementar adapter ESP-Modbus e wrapper separado para libmodbus."},
+        {"step": 3, "work": "Testar coils/registers, endianess, timeout, retry e validação de escrita."},
+        {"step": 4, "work": "Entregar simulador e exemplos de sensor, inversor e PLC."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-lwm2m",
+      "friendlyName": "Gerenciamento LwM2M",
+      "category": "IoT e Device Management",
+      "status": "planned",
+      "upstreamNumbers": [219],
+      "upstreams": ["eclipse-leshan/leshan"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir bootstrap, registration, object, resource e command."},
+        {"step": 2, "work": "Criar adapter Leshan como serviço, preferindo caminho BSD onde aplicável."},
+        {"step": 3, "work": "Testar lifecycle, observe, read/write e expiração de registro."},
+        {"step": 4, "work": "Entregar exemplo de provisionamento e inventário de dispositivos."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-zwave",
+      "friendlyName": "Integração Z-Wave",
+      "category": "IoT e Protocolos",
+      "status": "planned",
+      "upstreamNumbers": [221],
+      "upstreams": ["zwave-js/zwave-js"],
+      "integrationModes": ["embedded"],
+      "roadmap": [
+        {"step": 1, "work": "Definir controller, node, interview, value e command."},
+        {"step": 2, "work": "Criar adapter zwave-js."},
+        {"step": 3, "work": "Testar inclusion/exclusion, heal, discovery e comandos com mocks."},
+        {"step": 4, "work": "Entregar exemplo opcional com controlador USB e documentação de segurança."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-rf433",
+      "friendlyName": "Sensores RF 433/868/915",
+      "category": "IoT e Sensores",
+      "status": "planned",
+      "upstreamNumbers": [226],
+      "upstreams": ["merbanan/rtl_433"],
+      "integrationModes": ["adapter"],
+      "roadmap": [
+        {"step": 1, "work": "Definir payload normalizado de sensor RF, source e metadata."},
+        {"step": 2, "work": "Criar adapter de processo rtl_433 sem incorporar código GPL."},
+        {"step": 3, "work": "Testar parsing, deduplicação, filtros e entradas gravadas."},
+        {"step": 4, "work": "Entregar exemplo de sensores de temperatura/porta e ponte MQTT/eventbus."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-universal-gateway",
+      "friendlyName": "Gateway Universal de Dispositivos",
+      "category": "IoT e Gateways",
+      "status": "planned",
+      "upstreamNumbers": [228],
+      "upstreams": ["1technophile/OpenMQTTGateway"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir capabilities, inputs, outputs e roteamento de gateway."},
+        {"step": 2, "work": "Criar adapter para OpenMQTTGateway como firmware/serviço externo."},
+        {"step": 3, "work": "Testar mensagens MQTT gravadas, descoberta e normalização."},
+        {"step": 4, "work": "Entregar perfis/documentação para ESP32 BLE/RF/IR/LoRa."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-presence",
+      "friendlyName": "Presença e Localização Interna",
+      "category": "IoT e Sensores",
+      "status": "planned",
+      "upstreamNumbers": [229],
+      "upstreams": ["ESPresense/ESPresense"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir beacon/device, room, confidence e lastSeen."},
+        {"step": 2, "work": "Criar adapter MQTT para ESPresense, mantendo firmware AGPL isolado."},
+        {"step": 3, "work": "Testar smoothing, ausência, mudança de sala e eventos fora de ordem."},
+        {"step": 4, "work": "Entregar exemplo de automação por presença integrado ao eventbus."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-digital-twin",
+      "friendlyName": "Gêmeo Digital",
+      "category": "IoT e Plataforma",
+      "status": "planned",
+      "upstreamNumbers": [231],
+      "upstreams": ["eclipse-ditto/ditto"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir desired/reported state, metadata e revision."},
+        {"step": 2, "work": "Criar storage local mínimo e adapter opcional para Eclipse Ditto."},
+        {"step": 3, "work": "Testar merge, conflitos, optimistic concurrency e commands."},
+        {"step": 4, "work": "Entregar fluxo device↔twin↔UI integrado ao artisys-eventbus."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-ota",
+      "friendlyName": "Atualização Remota de Dispositivos",
+      "category": "IoT e Entrega",
+      "status": "planned",
+      "upstreamNumbers": [233, 237],
+      "upstreams": ["mendersoftware/mender", "rauc/rauc"],
+      "integrationModes": ["adapter", "service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir artifact, version, target, rollout, status e rollback."},
+        {"step": 2, "work": "Criar adapters separados para Mender e RAUC."},
+        {"step": 3, "work": "Testar assinatura/hash, interrupção, rollback e compatibilidade de target."},
+        {"step": 4, "work": "Entregar rollout controlado e integração futura com artisys-release."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-edge-runtime",
+      "friendlyName": "Runtime Edge",
+      "category": "IoT e Edge",
+      "status": "planned",
+      "upstreamNumbers": [240],
+      "upstreams": ["edgexfoundry/edgex-go"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir service registry, device adapter, telemetry e health."},
+        {"step": 2, "work": "Criar integração opcional com EdgeX."},
+        {"step": 3, "work": "Testar adapters falsos, restart, buffering e health."},
+        {"step": 4, "work": "Entregar exemplo de gateway local ponteando dispositivos para produto."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-edge-bus",
+      "friendlyName": "Mensageria Edge",
+      "category": "IoT e Edge",
+      "status": "planned",
+      "upstreamNumbers": [243],
+      "upstreams": ["eclipse-zenoh/zenoh"],
+      "integrationModes": ["adapter"],
+      "roadmap": [
+        {"step": 1, "work": "Definir pub/sub, request/reply, discovery e buffer offline."},
+        {"step": 2, "work": "Criar adapter Zenoh preferindo a trilha Apache."},
+        {"step": 3, "work": "Testar reconnect, backpressure, routing e serialização."},
+        {"step": 4, "work": "Entregar integração com artisys-eventbus para apps web/desktop/edge."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-energy",
+      "friendlyName": "Energia e Medição",
+      "category": "Gestão e IoT",
+      "status": "planned",
+      "upstreamNumbers": [246, 247],
+      "upstreams": ["OpenEnergyMonitor/emoncms", "OpenEMS/openems"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir meter, channel, sample, tariff, source e aggregation."},
+        {"step": 2, "work": "Criar adapters de serviço para Emoncms/OpenEMS sem incorporar UI AGPL."},
+        {"step": 3, "work": "Testar agregação, lacunas, importação e tarifas."},
+        {"step": 4, "work": "Entregar exemplo solar/bateria/consumo integrado ao reporting."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-radio",
+      "friendlyName": "Comunicação por Rádio",
+      "category": "IoT e Hardware",
+      "status": "planned",
+      "upstreamNumbers": [248],
+      "upstreams": ["jgromes/RadioLib"],
+      "integrationModes": ["embedded"],
+      "roadmap": [
+        {"step": 1, "work": "Definir radio driver, frequency, modulation, packet e RSSI."},
+        {"step": 2, "work": "Criar wrapper embarcado compatível/inspirado em RadioLib."},
+        {"step": 3, "work": "Testar encode/decode e validação de configuração com fixtures."},
+        {"step": 4, "work": "Entregar firmware/exemplo mínimo para ESP32."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-canbus",
+      "friendlyName": "CAN Bus e Telemetria Veicular",
+      "category": "Industrial e Frotas",
+      "status": "planned",
+      "upstreamNumbers": [249],
+      "upstreams": ["linux-can/can-utils"],
+      "integrationModes": ["adapter"],
+      "roadmap": [
+        {"step": 1, "work": "Definir frame, signal, transport, filter e diagnostic."},
+        {"step": 2, "work": "Criar adapter de processo para can-utils; copiar somente arquivos permissivos após auditoria individual."},
+        {"step": 3, "work": "Testar parsing, filtros, ISO-TP/J1939 e replay de frames."},
+        {"step": 4, "work": "Entregar exemplo de telemetria para veículos e máquinas."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-observability",
+      "friendlyName": "Observabilidade de Sistemas",
+      "category": "Qualidade e Operação",
+      "status": "planned",
+      "upstreamNumbers": [340],
+      "upstreams": ["coroot/coroot"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir metric, log, trace, health e SLO em contrato neutro."},
+        {"step": 2, "work": "Criar adapter opcional para Coroot e alinhamento a OpenTelemetry."},
+        {"step": 3, "work": "Testar correlação, redaction e falha do backend."},
+        {"step": 4, "work": "Entregar perfil de desenvolvimento/dashboard sem serviço obrigatório."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-pdf",
+      "friendlyName": "Geração e Leitura de PDFs",
+      "category": "Documentos e Mídia",
+      "status": "extension-planned",
+      "upstreamNumbers": [342],
+      "upstreams": ["Stirling-Tools/Stirling-PDF"],
+      "integrationModes": ["adapter"],
+      "roadmap": [
+        {"step": 1, "work": "Inventariar capacidades do Stirling-PDF ainda ausentes no artisys-pdf."},
+        {"step": 2, "work": "Reimplementar capacidades genéricas ou usar apenas componentes MIT auditados; excluir engine/componentes restritos."},
+        {"step": 3, "work": "Adicionar testes para merge, split, compressão/conversão selecionadas."},
+        {"step": 4, "work": "Atualizar exemplos e matriz de compatibilidade sem dependência de licença paga."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-signatures",
+      "friendlyName": "Assinaturas Eletrônicas",
+      "category": "Documentos e Fluxos",
+      "status": "planned",
+      "upstreamNumbers": [343, 344],
+      "upstreams": ["documenso/documenso", "docusealco/docuseal"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir envelope, template, signer, field, evidence e status."},
+        {"step": 2, "work": "Criar adapters HTTP para Documenso/DocuSeal mantendo serviços AGPL externos."},
+        {"step": 3, "work": "Testar lifecycle, webhooks, idempotência e evidence com mocks."},
+        {"step": 4, "work": "Entregar estado local mínimo e exemplos opt-in de provedores self-hosted."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-file-sync",
+      "friendlyName": "Sincronização de Arquivos",
+      "category": "Arquivos e Dados",
+      "status": "planned",
+      "upstreamNumbers": [347, 349],
+      "upstreams": ["haiwen/seafile", "syncthing/syncthing"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir peer, root, file, version e políticas de conflito."},
+        {"step": 2, "work": "Criar adapters de processo/API para Syncthing/Seafile e reutilizar artisys-files/artisys-sync."},
+        {"step": 3, "work": "Testar conflitos, rename/delete, offline e segurança de paths."},
+        {"step": 4, "work": "Entregar exemplo de pasta compartilhada e integração opcional com backup."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-project-management",
+      "friendlyName": "Gestão de Projetos e Tarefas",
+      "category": "Gestão e Operação",
+      "status": "planned",
+      "upstreamNumbers": [351, 352, 353],
+      "upstreams": ["makeplane/plane", "go-vikunja/vikunja", "Leantime/leantime"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir modelo próprio de project, board, task, milestone e assignee em clean-room."},
+        {"step": 2, "work": "Compor artisys-planning, workflow-engine e contacts com novo contrato de tarefas."},
+        {"step": 3, "work": "Testar estados, dependências, filtros e permissões."},
+        {"step": 4, "work": "Entregar UI/API de referência e adapters/importadores opcionais para Plane/Vikunja/Leantime."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-helpdesk",
+      "friendlyName": "Atendimento e Tickets",
+      "category": "Gestão e Operação",
+      "status": "planned",
+      "upstreamNumbers": [355],
+      "upstreams": ["zammad/zammad"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir ticket, requester, agent, queue, SLA, message e status."},
+        {"step": 2, "work": "Implementar core próprio e adapter opcional para Zammad."},
+        {"step": 3, "work": "Testar SLA, transições, anexos, threads e permissões."},
+        {"step": 4, "work": "Entregar exemplo de suporte integrado a contacts e alerts."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-crm",
+      "friendlyName": "CRM e Relacionamento",
+      "category": "Gestão e Operação",
+      "status": "planned",
+      "upstreamNumbers": [358],
+      "upstreams": ["monicahq/monica"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir lead, contact, account, activity, note e reminder sobre artisys-contacts."},
+        {"step": 2, "work": "Implementar core próprio usando Monica apenas como referência/adapter."},
+        {"step": 3, "work": "Testar histórico, deduplicação, filtros e permissões."},
+        {"step": 4, "work": "Entregar exemplo comercial integrado a catálogo/helpdesk."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-commerce",
+      "friendlyName": "Pedidos e Comércio",
+      "category": "Gestão e Operação",
+      "status": "planned",
+      "upstreamNumbers": [371, 372, 373, 374],
+      "upstreams": ["medusajs/medusa", "saleor/saleor", "vendurehq/vendure", "bagisto/bagisto"],
+      "integrationModes": ["adapter", "service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir order, cart, customer, channel, promotion, tax e shipping."},
+        {"step": 2, "work": "Compor catalog/pricing/inventory com novo core de pedidos; usar Medusa/Saleor/Bagisto como referências permissivas."},
+        {"step": 3, "work": "Testar contrato cart→order→inventory; manter Vendure GPL isolado."},
+        {"step": 4, "work": "Entregar storefront/POS de referência e guia de integração incremental."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-billing",
+      "friendlyName": "Assinaturas e Billing",
+      "category": "Gestão e Financeiro",
+      "status": "planned",
+      "upstreamNumbers": [377],
+      "upstreams": ["killbill/killbill"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir plan, subscription, usage, invoice, credit e charge sem processar pagamento diretamente."},
+        {"step": 2, "work": "Criar adapter Kill Bill e core mínimo determinístico para ciclos/planos."},
+        {"step": 3, "work": "Testar proration, cancelamento, idempotência e eventos."},
+        {"step": 4, "work": "Entregar integração com finance-domain e exemplo SaaS."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-security",
+      "friendlyName": "Segurança Automatizada",
+      "category": "Qualidade e Entrega",
+      "status": "extension-planned",
+      "upstreamNumbers": [388],
+      "upstreams": ["aquasecurity/trivy"],
+      "integrationModes": ["dev-tool"],
+      "roadmap": [
+        {"step": 1, "work": "Revalidar integração Trivy e definir perfis quick/full/release."},
+        {"step": 2, "work": "Adicionar scanner de licença/SBOM opt-in no mesmo contrato."},
+        {"step": 3, "work": "Testar exit codes, severity thresholds, allowlists e execução offline."},
+        {"step": 4, "work": "Padronizar resultado para artisys-release e futuros executores CI."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-rag",
+      "friendlyName": "RAG e Conhecimento Local",
+      "category": "IA",
+      "status": "planned",
+      "upstreamNumbers": [393],
+      "upstreams": ["Mintplex-Labs/anything-llm"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir documents, chunk, embedding, retrieval, citation e conversation."},
+        {"step": 2, "work": "Criar core independente com adapters de modelo/vetor; AnythingLLM permanece serviço/referência opcional."},
+        {"step": 3, "work": "Testar ingestion, tenant isolation, citations e execução sem provider."},
+        {"step": 4, "work": "Entregar exemplo local configurável sem API paga obrigatória."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    },
+    {
+      "id": "artisys-vector-store",
+      "friendlyName": "Armazenamento Vetorial",
+      "category": "IA e Dados",
+      "status": "planned",
+      "upstreamNumbers": [396, 397, 398],
+      "upstreams": ["qdrant/qdrant", "chroma-core/chroma", "milvus-io/milvus"],
+      "integrationModes": ["service"],
+      "roadmap": [
+        {"step": 1, "work": "Definir interface comum upsert, query, delete, namespace e health."},
+        {"step": 2, "work": "Criar adapters Qdrant, Chroma e Milvus, sem backend obrigatório."},
+        {"step": 3, "work": "Executar contract tests comuns para dimensões, filtros e namespaces."},
+        {"step": 4, "work": "Entregar adapter in-memory e exemplos para artisys-rag."}
+      ],
+      "readyWhen": ["Contrato público documentado e independente do upstream.", "Testes automatizados cobrem o comportamento do core e dos adapters com fixtures/mocks.", "Exemplo executável demonstra integração sem serviço pago obrigatório.", "Licenças e fronteiras de integração estão documentadas no módulo."]
+    }
+  ]
+}
