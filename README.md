@@ -12,11 +12,13 @@ O core deve permanecer **R$ 0 / self-hosted / open source**. Serviços pagos pod
 
 ## Estado atual
 
-- **61 projetos upstream curados**: 49 aprovados como Git submodules + 12 referências incorporadas e pinadas por commit.
+- **82 projetos upstream curados**: 49 aprovados como Git submodules + 33 referências incorporadas e pinadas por commit.
 - **48 módulos ArtiSys** registrados.
 - **48 kits executáveis**: 11 `stable` e 37 `implemented`.
 - **0 foundations** pendentes.
 - Nenhum projeto incorporado exige infraestrutura always-on mantida pelo usuário por padrão.
+
+O lote mais recente está em `catalog/incorporated-repos-2026-09-16-batch2.json`: 22 seleções aprovadas, sendo 21 novas incorporações e o Semgrep preservado sem duplicação porque já estava integrado.
 
 ## Nomenclatura dos módulos
 
@@ -105,18 +107,24 @@ A fonte completa de nomes, categorias e descrições em pt-BR está em `catalog/
 
 ## Repos aprovados por capacidade
 
-- **Documentos/dados:** PaddleOCR, OpenCV, Presidio, PPT Master, PDF.js, pdfme, react-pdf-highlighter, docxjs, Univer, Glide Data Grid, Annotorious.
-- **UI/fluxos:** Yjs, bpmn-js, XYFlow, LogicFlow, Rete.js, Storybook, Frappe Gantt, FullCalendar, react-grid-layout, react-resizable-panels, Craft.js, Puck, GrapesJS.
+- **Documentos/dados:** PaddleOCR, OpenCV, Presidio, PPT Master, PDF.js, pdfme, react-pdf-highlighter, docxjs, Univer, Glide Data Grid, Annotorious, Apache Arrow, DataFusion, Apache Iceberg.
+- **UI/fluxos/mapas:** Yjs, bpmn-js, XYFlow, LogicFlow, Rete.js, Storybook, Frappe Gantt, FullCalendar, react-grid-layout, react-resizable-panels, Craft.js, Puck, GrapesJS, MapLibre GL JS.
 - **Arquivos/captura:** Uppy, react-dropzone, html5-qrcode.
-- **Voz/IA/mídia:** sherpa-onnx, whisper.cpp, WebLLM, Motion Canvas, MediaBunny.
+- **Voz/IA/mídia:** sherpa-onnx, whisper.cpp, WebLLM, Motion Canvas, MediaBunny, vLLM, LiteLLM, DSPy, Haystack, LlamaIndex, PhotoPrism.
 - **Hardware/PDV:** Node SerialPort, ReceiptLine, node-thermal-printer.
 - **BIM/runtime:** Wasmtime, IfcOpenShell.
-- **QA/segurança:** Renovate, Trivy, Semgrep, Gitleaks, Cosign, k6, Playwright, WireMock, Pact JS, OpenAPI Generator, Promptfoo.
+- **QA/segurança:** Renovate, Trivy, Semgrep, Gitleaks, Cosign, k6, Playwright, WireMock, Pact JS, OpenAPI Generator, Promptfoo, TruffleHog, Grype, Dependency-Track, CycloneDX CLI, Bandit.
+- **Infraestrutura opcional:** NetBird, Sunshine, Gitea.
+- **Ferramentas de repositório:** Nx, ripgrep, fzf.
 - **Ferramenta interna:** AI Website Cloner Template.
 
 ## Referências incorporadas
 
-Estas referências estão salvas em `catalog/incorporated-repos-2026-09-10.json`, com branch e commit pinados. Podem ser usadas para extrair arquitetura, adapters ou funcionalidades, mas continuam opt-in.
+As referências são pinadas por commit e podem ser usadas para extrair arquitetura, adapters ou funcionalidades, mas continuam opt-in.
+
+### Lote histórico
+
+`catalog/incorporated-repos-2026-09-10.json`
 
 - **Mídia/edição:** GStreamer, MLT, Shotcut, libopenshot.
 - **Documentos/OCR:** Gotenberg, Tesseract, Tesseract.js.
@@ -124,6 +132,19 @@ Estas referências estão salvas em `catalog/incorporated-repos-2026-09-10.json`
 - **PDV:** OpenSourcePOS.
 - **Backend local:** PocketBase.
 - **Arquivos/sincronização:** rclone (CLI local opcional, remotes autorizados pelo usuário).
+
+### Lote 472–583
+
+`catalog/incorporated-repos-2026-09-16-batch2.json`
+
+- **Segurança/SBOM:** TruffleHog, Grype, Dependency-Track, CycloneDX CLI, Bandit; Semgrep já existia e não foi duplicado.
+- **Mapas:** MapLibre GL JS.
+- **IA/RAG:** vLLM, LiteLLM, DSPy, Haystack, LlamaIndex.
+- **Ferramentas de desenvolvimento:** Nx, ripgrep, fzf.
+- **Dados/analytics:** Apache Arrow, DataFusion, Apache Iceberg.
+- **Infraestrutura/suporte:** NetBird, Sunshine, Gitea, PhotoPrism.
+
+Detalhes de consumo e separação de responsabilidades: `docs/UPSTREAM_BATCH_472_583.md`.
 
 ## Arquitetura
 
@@ -147,4 +168,4 @@ cd utilidades
 git submodule update --init --recursive
 ```
 
-Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `catalog/module-display.pt-BR.json`, `modules/README.md` e `docs/INTEGRATION_GUIDE.md`.
+Veja `docs/SELECTION_POLICY.md`, `catalog/projects.json`, `catalog/modules.json`, `catalog/module-display.pt-BR.json`, `modules/README.md`, `docs/INTEGRATION_GUIDE.md`, `catalog/incorporated-repos-2026-09-16-batch2.json` e `docs/UPSTREAM_BATCH_472_583.md`.
