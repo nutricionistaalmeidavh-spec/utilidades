@@ -13,6 +13,7 @@
     "./runner": "./src/runner.js",
     "./profile-runner": "./src/profile-runner.js",
     "./profiles": "./src/profiles.js",
+    "./matrix": "./src/matrix.js",
     "./business-packs": "./src/business-packs.js",
     "./desktop": "./src/desktop.js",
     "./network": "./src/network.js",
