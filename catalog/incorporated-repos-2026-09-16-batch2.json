@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "incorporatedAt": "2026-09-16",
+  "batch": "selected-472-583",
+  "mode": "curated-source-reference",
+  "policy": {
+    "core": "R$ 0 / self-hosted / open source",
+    "paidServices": "Optional only; never required for core operation.",
+    "runtime": "No upstream in this batch becomes a mandatory always-on dependency merely by being cataloged.",
+    "license": "Repository selection is permanent, but code vendoring/linking still requires per-upstream license review."
+  },
+  "repositories": [
+    {"selectionNumber":472,"id":"trufflehog","repo":"trufflesecurity/trufflehog","pinnedCommit":"288a8a8643a2c5a36b81d231c550dccfa0beeb64","targetModule":"artisys-security","capability":"secret-scanning","integration":"dev-tool/reference","runtimeClass":"ci","status":"incorporated"},
+    {"selectionNumber":473,"id":"grype","repo":"anchore/grype","pinnedCommit":"5d59278f6ff6df1cf6d8c4258a8e38db4e503476","targetModule":"artisys-security","capability":"vulnerability-scanning","integration":"dev-tool/reference","runtimeClass":"ci","status":"incorporated"},
+    {"selectionNumber":475,"id":"dependency-track","repo":"DependencyTrack/dependency-track","pinnedCommit":"8787183387951c3b5c32ca0fc38fd1d5c88dc494","targetModule":"artisys-security","capability":"dependency-risk-and-sbom-tracking","integration":"optional isolated service/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":476,"id":"cyclonedx-cli","repo":"CycloneDX/cyclonedx-cli","pinnedCommit":"b3cfa4b0edc356dad07e0b6e7ab6da0a94af0246","targetModule":"artisys-security","capability":"sbom-generation-and-validation","integration":"dev-tool/reference","runtimeClass":"ci","status":"incorporated"},
+    {"selectionNumber":478,"id":"bandit","repo":"PyCQA/bandit","pinnedCommit":"1d3053df070c91fe0fde002a21536c277d67e5d9","targetModule":"artisys-security","capability":"python-security-static-analysis","integration":"dev-tool/reference","runtimeClass":"ci","status":"incorporated"},
+    {"selectionNumber":479,"id":"semgrep","repo":"semgrep/semgrep","pinnedCommit":"ad20f09ece0b652f4e532803ce3bcf0e1586c618","targetModule":"artisys-security","capability":"multi-language-static-analysis","integration":"existing git submodule","runtimeClass":"ci","status":"already-incorporated-no-duplicate"},
+    {"selectionNumber":500,"id":"maplibre-gl-js","repo":"maplibre/maplibre-gl-js","pinnedCommit":"3a5b25bf9a9224d6cac34268f5c66562914c5212","targetModule":"artisys-maps","capability":"interactive-maps","integration":"embedded adapter/reference","runtimeClass":"embedded","status":"incorporated"},
+    {"selectionNumber":511,"id":"vllm","repo":"vllm-project/vllm","pinnedCommit":"91b96a533cfb06579a360d3aefb2c8341fc89bdb","targetModule":"artisys-ai-runtime","capability":"local-llm-serving","integration":"optional local inference runtime/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":512,"id":"litellm","repo":"BerriAI/litellm","pinnedCommit":"319f427c403043756917aea39cab89021a7f92e7","targetModule":"artisys-ai-gateway","capability":"multi-model-llm-gateway","integration":"adapter/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":513,"id":"dspy","repo":"stanfordnlp/dspy","pinnedCommit":"9675ed0798181201c55bfdd7165d114403af3eb2","targetModule":"artisys-ai-orchestration","capability":"llm-programming-and-optimization","integration":"library/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":514,"id":"haystack","repo":"deepset-ai/haystack","pinnedCommit":"edf39dba6600b9a08b2febf0ee17f47923cb1446","targetModule":"artisys-ai-rag","capability":"rag-and-agent-pipelines","integration":"library/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":515,"id":"llama-index","repo":"run-llama/llama_index","pinnedCommit":"fd4a517ad6490f0c8464a13fdf133760b696434a","targetModule":"artisys-ai-rag","capability":"document-indexing-and-retrieval","integration":"library/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":530,"id":"nx","repo":"nrwl/nx","pinnedCommit":"8caae4d722a334b7944543a3600481817809f23d","targetModule":"artisys-repo-tooling","capability":"monorepo-task-orchestration","integration":"dev-tool/reference","runtimeClass":"dev-tool","status":"incorporated"},
+    {"selectionNumber":537,"id":"ripgrep","repo":"BurntSushi/ripgrep","pinnedCommit":"3fce3b5bb0236da2df6d99672afb8a719642eca7","targetModule":"artisys-repo-tooling","capability":"fast-code-search","integration":"dev-tool/reference","runtimeClass":"dev-tool","status":"incorporated"},
+    {"selectionNumber":538,"id":"fzf","repo":"junegunn/fzf","pinnedCommit":"b1be3a8be1b833ce5b92fbbac11637643d60a046","targetModule":"artisys-repo-tooling","capability":"interactive-fuzzy-selection","integration":"dev-tool/reference","runtimeClass":"dev-tool","status":"incorporated"},
+    {"selectionNumber":555,"id":"apache-arrow","repo":"apache/arrow","pinnedCommit":"8b617feafb6ff2b497688025b1ae0ea3941fc473","targetModule":"artisys-data-engine","capability":"columnar-memory-and-data-interchange","integration":"library/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":556,"id":"datafusion","repo":"apache/datafusion","pinnedCommit":"4e907557ad7e01d4f4bfaffc7f8df86f205ffed8","targetModule":"artisys-analytics","capability":"embedded-query-engine","integration":"library/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":557,"id":"apache-iceberg","repo":"apache/iceberg","pinnedCommit":"0a332b4ba49c2ad5081e445a456a4c73f558c2df","targetModule":"artisys-data-lake","capability":"versioned-large-table-format","integration":"architecture/reference","runtimeClass":"dev-tool","status":"incorporated"},
+    {"selectionNumber":565,"id":"netbird","repo":"netbirdio/netbird","pinnedCommit":"eab510178a46e4c8932f8985c7028737b5227361","targetModule":"artisys-private-network","capability":"self-hosted-private-network","integration":"optional isolated service/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":568,"id":"sunshine","repo":"LizardByte/Sunshine","pinnedCommit":"7c8926d7019d99881986fb53fb4bba7d98daa606","targetModule":"artisys-remote-support","capability":"low-latency-desktop-streaming","integration":"optional local process/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":569,"id":"gitea","repo":"go-gitea/gitea","pinnedCommit":"b2e11ddb37811d44725799e4574616230650bf4f","targetModule":"artisys-git-platform","capability":"self-hosted-git-forge","integration":"optional isolated service/reference","runtimeClass":"local-on-demand","status":"incorporated"},
+    {"selectionNumber":583,"id":"photoprism","repo":"photoprism/photoprism","pinnedCommit":"abb044aeaba2667d336c833263b1f1b362a0c814","targetModule":"artisys-media-library","capability":"photo-indexing-search-and-media-library","integration":"optional isolated service/reference","runtimeClass":"local-on-demand","status":"incorporated"}
+  ]
+}
