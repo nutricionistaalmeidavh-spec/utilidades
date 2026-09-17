@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  run_ci:
+    type: boolean
+    default: false
+
 executors:
   node_linux:
     docker:
@@ -134,6 +139,7 @@ jobs:
 
 workflows:
   utilidades_ci:
+    when: << pipeline.parameters.run_ci >>
     jobs:
       - qa
       - module_contracts
