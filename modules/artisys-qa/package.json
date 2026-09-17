@@ -14,6 +14,8 @@
     "./profile-runner": "./src/profile-runner.js",
     "./profiles": "./src/profiles.js",
     "./matrix": "./src/matrix.js",
+    "./api-sweep": "./src/api-sweep.js",
+    "./ui-sweep": "./src/ui-sweep.js",
     "./business-packs": "./src/business-packs.js",
     "./desktop": "./src/desktop.js",
     "./network": "./src/network.js",
