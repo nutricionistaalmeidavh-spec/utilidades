@@ -1,0 +1,12 @@
+labels:
+  platform: windows/amd64
+  backend: local
+
+when:
+  - event: [push, manual]
+
+steps:
+  - name: artisys-release
+    image: powershell.exe
+    commands:
+      - node .artisys/utilidades/modules/artisys-release/bin/artisys-release.mjs .artisys/release.json --profile release --report artifacts/artisys-release-report.json

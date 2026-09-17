@@ -1,0 +1,14 @@
+{
+  "product": "utilidades",
+  "version": "dev",
+  "profile": "quick",
+  "requiredSteps": ["lint", "test"],
+  "steps": {
+    "lint": "npm run check --prefix modules/artisys-release",
+    "test": "npm test --prefix modules/artisys-release"
+  },
+  "reportPath": "artifacts/artisys-release-report.json",
+  "metadata": {
+    "purpose": "self-validation of the shared release engine"
+  }
+}
