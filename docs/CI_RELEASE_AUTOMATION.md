@@ -44,7 +44,25 @@ A lógica executada continua sendo `artisys-release`; `act` apenas reproduz o am
 
 ## CircleCI
 
-O job `release_pipeline` chama `.artisys/release.json`. Isso permite migrar projetos gradualmente sem duplicar a sequência de comandos dentro do CircleCI.
+O CircleCI permanece suportado, porém está **opt-in** enquanto o executor remoto da conta estiver bloqueado. O parâmetro de pipeline `run_ci` tem `default: false`, então pushes comuns não criam jobs nem consomem créditos.
+
+Para executar o workflow no CircleCI quando a conta estiver disponível novamente, dispare o pipeline pela interface/API com:
+
+```json
+{
+  "parameters": {
+    "run_ci": true
+  }
+}
+```
+
+Quando ativado, o job `release_pipeline` chama exatamente o mesmo `.artisys/release.json`; não existe uma segunda implementação da lógica de release dentro do CircleCI.
+
+### Motivo do modo opt-in
+
+O histórico mostra que `release_validator_linux` passou no commit `dbe3a25`, mas depois passou a falhar junto com `qa` e `module_contracts` em commits que não alteraram o módulo nem a configuração CircleCI. Em seguida, todos os jobs passaram a falhar juntos. Esse padrão é compatível com indisponibilidade de execução da conta/plano/runner, e não com regressão do `artisys-release`.
+
+Sem acesso autenticado ao failure report da conta CircleCI, a mensagem exata do bloqueio não pode ser afirmada. A documentação oficial do CircleCI informa que, no Free Plan, jobs deixam de executar quando os créditos se esgotam. Por isso o repositório não deve depender do CircleCI para continuar entregando software.
 
 ## Woodpecker
 
@@ -68,6 +86,8 @@ Referências oficiais consultadas em 2026-09-16:
 - https://woodpecker-ci.org/docs/usage/workflow-syntax
 - https://woodpecker-ci.org/docs/administration/configuration/agent
 - https://woodpecker-ci.org/docs/next/administration/installation/supported-platforms
+- https://circleci.com/docs/guides/orchestrate/pipeline-variables/
+- https://circleci.com/docs/guides/plans-pricing/credits/
 
 ## Artefatos e evidências
 
