@@ -69,3 +69,7 @@ export { QA_PROGRESS_PREFIX, formatQaProgressEvent, createQaProgressParser } fro
 export { sanitizeName, resolveSecret, stepLabel } from './helpers.js';
 export { isVisualValidationRequested, shouldUpdateVisualBaselines, sanitizeVisualName, validateVisualSnapshot, VisualValidationError } from './visual.js';
 export { createQaRemoteControl } from './remote-control.js';
+
+export { buildQaMatrix, runQaMatrix } from './matrix.js';
+export { runApiSweep } from './api-sweep.js';
+export { runUiSweep } from './ui-sweep.js';
