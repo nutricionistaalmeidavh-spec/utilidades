@@ -1,10 +1,10 @@
-function normalizeInternal(baseURL,currentURL,href){
+function normalizeInternal(baseURL,currentURL,href,preserveHashRoutes=false){
   try{
     if(!href)return null;
     const url=new URL(href,currentURL||baseURL);
     const base=new URL(baseURL);
     if(!['http:','https:'].includes(url.protocol)||url.origin!==base.origin)return null;
-    url.hash='';
+    if(!preserveHashRoutes)url.hash='';
     return url.toString();
   }catch{return null}
 }
@@ -17,13 +17,14 @@ export async function runUiSweep({
   failOnHttp5xx=true,
   failOnPageError=true,
   failOnRequestFailure=true,
+  preserveHashRoutes=false,
 }={}){
   if(!page)throw new TypeError('page is required');
   const base=new URL(String(baseURL||''));
   const queue=[];
   const seen=new Set();
   for(const value of startPaths){
-    const url=normalizeInternal(base.toString(),base.toString(),String(value));
+    const url=normalizeInternal(base.toString(),base.toString(),String(value),preserveHashRoutes);
     if(url&&!queue.includes(url))queue.push(url);
   }
   if(!queue.length)queue.push(base.toString());
@@ -116,7 +117,7 @@ export async function runUiSweep({
     });
 
     for(const link of inventory.links||[]){
-      const next=normalizeInternal(base.toString(),current,link.resolved||link.href);
+      const next=normalizeInternal(base.toString(),current,link.resolved||link.href,preserveHashRoutes);
       if(next&&!seen.has(next)&&!queue.includes(next))queue.push(next);
     }
   }
