@@ -1,0 +1,22 @@
+name: ArtiSys Release Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Pipeline profile
+        required: true
+        default: quick
+        type: choice
+        options: [quick, full, release]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run ArtiSys release pipeline
+        run: node .artisys/utilidades/modules/artisys-release/bin/artisys-release.mjs .artisys/release.json --profile "${{ inputs.profile }}" --report artifacts/artisys-release-report.json
