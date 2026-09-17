@@ -79,7 +79,9 @@
     "github-composite-action",
     "github-reusable-workflow",
     "consumer-template",
-    "pos-reference-example"
+    "pos-reference-example",
+    "same-origin-ui-sweep",
+    "api-contract-sweep"
   ],
   "packageName": "@artisys/qa",
   "entrypoint": "./src/index.js",
@@ -178,7 +180,12 @@
     "remote-control-history",
     "github-artifact-upload",
     "qa-matrix-cartesian-cases",
-    "qa-matrix-fail-fast"
+    "qa-matrix-fail-fast",
+    "ui-sweep-route-inventory",
+    "ui-sweep-runtime-error-capture",
+    "ui-sweep-spa-hash-routes",
+    "api-sweep-status-json-validation",
+    "api-sweep-secret-safe-reporting"
   ],
   "plannedCapabilities": [],
   "verification": {
