@@ -121,9 +121,21 @@ jobs:
             npm run example
             npm pack --dry-run
 
+  release_pipeline:
+    executor: node_linux
+    steps:
+      - checkout
+      - run:
+          name: Run provider-neutral ArtiSys release pipeline
+          command: node modules/artisys-release/bin/artisys-release.mjs .artisys/release.json --profile quick --report artifacts/artisys-release-report.json
+      - store_artifacts:
+          path: artifacts/artisys-release-report.json
+          destination: artisys-release/artisys-release-report.json
+
 workflows:
   utilidades_ci:
     jobs:
       - qa
       - module_contracts
       - release_validator_linux
+      - release_pipeline
