@@ -36,3 +36,20 @@ test('UI sweep fails on navigation errors',async()=>{
   assert.equal(report.status,'failed');
   assert.equal(report.failures[0].type,'navigation');
 });
+
+
+test('UI sweep preserves SPA hash routes when requested',async()=>{
+  const page=new FakePage();
+  const report=await runUiSweep({
+    page,
+    baseURL:'https://example.test/',
+    startPaths:['/#owner','/#portal'],
+    maxPages:5,
+    preserveHashRoutes:true,
+  });
+  assert.equal(report.status,'passed');
+  assert.deepEqual(
+    page.visits.slice(0,2),
+    ['https://example.test/#owner','https://example.test/#portal'],
+  );
+});
