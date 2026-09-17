@@ -1,6 +1,6 @@
 # ArtiSys Release
 
-Motor reutilizável de build, validação, release e deploy. Estado: **implemented 0.2.0**.
+Motor reutilizável de build, validação, release e deploy. Estado: **implemented 0.1.0**.
 
 A regra central é: **o pipeline pertence ao produto; o provedor de CI apenas chama o mesmo motor**. Assim, terminal, `act`, CircleCI, GitHub Actions e Woodpecker não precisam manter cópias diferentes da lógica de release.
 

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "artisys-release",
   "name": "ArtiSys Release",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "status": "implemented",
   "consumptionMode": "shared",
   "executionMode": "local-or-ci",
