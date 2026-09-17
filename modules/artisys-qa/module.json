@@ -2,11 +2,18 @@
   "schemaVersion": 1,
   "id": "artisys-qa",
   "name": "ArtiSys QA",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "status": "stable",
   "consumptionMode": "shared",
-  "upstreams": ["playwright", "rclone"],
-  "optionalExternalServices": ["cloudflare-workers", "cloudflare-d1", "cloudflare-r2"],
+  "upstreams": [
+    "playwright",
+    "rclone"
+  ],
+  "optionalExternalServices": [
+    "cloudflare-workers",
+    "cloudflare-d1",
+    "cloudflare-r2"
+  ],
   "boundary": "Reusable QA platform for web/Electron products with declarative flows, execution profiles, desktop smoke checks, network/concurrency helpers, reusable business packs, evidence capture, reports/history, fail-closed release gates, optional self-hosted Remote Control, a Windows local agent with logon startup and stable A/B auto-update, an outbound private-repository bridge for whitelisted QA jobs, deterministic Google Drive artifact storage, managed consumer repositories, durable live agent telemetry, an authenticated read-only LAN observability console, and optional best-effort Cloudflare D1/R2 observability mirroring. Product-specific persistence, schema mapping, credentials, selectors and installer behavior remain isolated behind consumer configuration/adapters.",
   "provides": [
     "shared-playwright-config",
@@ -33,6 +40,7 @@
     "playwright-trace",
     "console-network-telemetry",
     "desktop-tablet-mobile-viewports",
+    "viewport-matrix-orchestration",
     "consumer-process-lifecycle",
     "optional-self-hosted-remote-control",
     "token-authenticated-remote-runner",
@@ -168,7 +176,9 @@
     "remote-control-profile-whitelist",
     "remote-control-single-run-lock",
     "remote-control-history",
-    "github-artifact-upload"
+    "github-artifact-upload",
+    "qa-matrix-cartesian-cases",
+    "qa-matrix-fail-fast"
   ],
   "plannedCapabilities": [],
   "verification": {
