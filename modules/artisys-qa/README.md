@@ -60,6 +60,23 @@ artisys-qa release --config qa/artisys-qa.config.json \
   --override-reason "motivo documentado"
 ```
 
+## Matriz de viewport
+
+O P1 adiciona um helper compartilhado para orquestrar o mesmo gate em múltiplos ambientes/viewports sem duplicar a lógica em cada produto:
+
+```js
+import { buildQaMatrix, runQaMatrix } from '@artisys/qa/matrix';
+
+const cases=buildQaMatrix({
+  profiles:['quick'],
+  environments:['local'],
+  viewports:['desktop','tablet','mobile'],
+});
+const report=await runQaMatrix({cases,runner:runConsumerCase,failFast:true});
+```
+
+O helper é deliberadamente agnóstico ao processo consumidor: Loja Online, Central, Electron ou outro produto fornecem o `runner` que inicia seu próprio profile. Assim o runtime comum não ganha conhecimento de portas, credenciais ou scripts específicos do sistema.
+
 ## Desktop / executável
 
 ```json
