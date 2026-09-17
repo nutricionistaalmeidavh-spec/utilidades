@@ -4,7 +4,7 @@ Módulo compartilhado ArtiSys para QA, automação e gravação de demonstraçõ
 
 A versão **2.5.0** adiciona a orquestração reutilizável de matriz de ambiente/viewport usada pelo P1 de hardening. O canal `stable` permanece separado e só deve avançar depois da validação da branch.
 
-A versão **2.1.0** adiciona o **ArtiSys QA Windows Agent** opcional: instalação única no Windows 10/11, inicialização automática no logon, registro de múltiplos projetos, Remote Control supervisionado, atualização automática apenas pelo canal `stable` e rollback A/B quando uma atualização não fica saudável.
+A versão **2.5.0** adiciona as varreduras P1 de superfície web/API e matriz de viewport, preservando o **ArtiSys QA Windows Agent** opcional: instalação única no Windows 10/11, inicialização automática no logon, registro de múltiplos projetos, Remote Control supervisionado, atualização automática apenas pelo canal `stable` e rollback A/B quando uma atualização não fica saudável.
 
 A versão 2.0 já havia consolidado perfis `quick`, `full` e `release`, smoke de executável desktop, helpers de rede/concorrência, packs de negócio, relatório HTML/JSON com histórico local, gate de release fail-closed e Remote Control 2.0.
 
