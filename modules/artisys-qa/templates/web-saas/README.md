@@ -27,3 +27,16 @@ artisys-qa quick --config qa/artisys-qa.config.json --environment local --output
 artisys-qa full --config qa/artisys-qa.config.json --environment local --output qa-artifacts
 artisys-qa release --config qa/artisys-qa.config.json --environment local --output qa-artifacts
 ```
+
+## P1 — hardening
+
+Para produtos comerciais, o próximo nível após o smoke P0 deve executar:
+
+- matriz `desktop/tablet/mobile`;
+- fluxos negativos de autorização/licença;
+- URLs inválidas e dados hostis/XSS;
+- PWA/manifest/service worker quando aplicável;
+- isolamento multitenant;
+- gates nativos antes do profile `release`.
+
+Use `@artisys/qa/matrix` para construir a matriz e mantenha a lógica específica no consumidor.
