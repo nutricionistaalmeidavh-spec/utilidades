@@ -308,3 +308,13 @@ npm pack --dry-run
 ## Custo
 
 O núcleo, o Windows Agent, o Remote Control, os perfis QA, relatórios, release gate e helpers rodam localmente/self-hosted e não exigem serviço pago.
+
+## Varreduras P1
+
+O módulo também expõe helpers genéricos para a fase P1:
+
+- `@artisys/qa/ui-sweep`: percorre rotas same-origin, inventaria links/botões/formulários/controles e registra navegação quebrada, page errors, requests falhos e HTTP 5xx;
+- `@artisys/qa/api-sweep`: executa um inventário explícito de endpoints e valida status/JSON sem serializar headers/segredos no relatório;
+- `@artisys/qa/matrix`: repete gates nos viewports desktop/tablet/mobile.
+
+Os consumidores continuam responsáveis pelos casos de negócio e segurança específicos, especialmente isolamento de tenant e regras de licença.
