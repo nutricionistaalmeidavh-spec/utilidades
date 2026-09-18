@@ -25,26 +25,29 @@ if (Test-Path $reportPath) {
 
 "=== $Id ===" | Add-Content -Path $logPath -Encoding utf8
 "$Command" | Add-Content -Path $logPath -Encoding utf8
-$captured = New-Object 'System.Collections.Generic.List[string]'
 
-& cmd.exe /d /s /c $Command 2>&1 | ForEach-Object {
-  $line = [string]$_
-  Write-Host $line
-  Add-Content -Path $logPath -Value $line -Encoding utf8
-  $captured.Add($line)
-}
-$exitCode = $LASTEXITCODE
-if ($null -eq $exitCode) { $exitCode = 0 }
+$cmdFile = Join-Path $artifactsDir ("gate-{0}.cmd" -f ($Id -replace '[^A-Za-z0-9_.-]','_'))
+$stdoutFile = "$cmdFile.stdout.log"
+$stderrFile = "$cmdFile.stderr.log"
+@('@echo off', $Command) | Set-Content -Path $cmdFile -Encoding ascii
 
+$process = Start-Process -FilePath 'cmd.exe' -ArgumentList @('/d','/s','/c',"`"$cmdFile`"") -WorkingDirectory $root -Wait -PassThru -NoNewWindow -RedirectStandardOutput $stdoutFile -RedirectStandardError $stderrFile
+$exitCode = [int]$process.ExitCode
+$stdout = if (Test-Path $stdoutFile) { Get-Content $stdoutFile -Raw -ErrorAction SilentlyContinue } else { '' }
+$stderr = if (Test-Path $stderrFile) { Get-Content $stderrFile -Raw -ErrorAction SilentlyContinue } else { '' }
+if ($stdout) { Write-Host $stdout; Add-Content -Path $logPath -Value $stdout -Encoding utf8 }
+if ($stderr) { Write-Host $stderr; Add-Content -Path $logPath -Value $stderr -Encoding utf8 }
+
+$combined = @($stdout, $stderr) -join [Environment]::NewLine
+$tailLines = @($combined -split '\r?\n' | Select-Object -Last 200) -join [Environment]::NewLine
 $stepStatus = if ($exitCode -eq 0) { 'pass' } else { 'fail' }
-$outputTail = @($captured | Select-Object -Last 200) -join [Environment]::NewLine
 $step = [ordered]@{
   id = $Id
   status = $stepStatus
-  exitCode = [int]$exitCode
+  exitCode = $exitCode
   command = $Command
-  stdout = $outputTail
-  stderr = ''
+  stdout = $tailLines
+  stderr = if ($exitCode -ne 0) { $stderr } else { '' }
 }
 
 $steps = @($previousSteps | Where-Object { $_.id -ne $Id }) + @($step)
@@ -58,4 +61,5 @@ $report = [ordered]@{
 }
 $report | ConvertTo-Json -Depth 8 | Set-Content -Path $reportPath -Encoding utf8
 
+Remove-Item $cmdFile,$stdoutFile,$stderrFile -Force -ErrorAction SilentlyContinue
 if ($exitCode -ne 0) { exit $exitCode }
