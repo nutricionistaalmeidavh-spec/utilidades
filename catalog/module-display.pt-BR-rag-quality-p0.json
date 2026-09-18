@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "locale": "pt-BR",
+  "updatedAt": "2026-09-18",
+  "kind": "module-display-extension",
+  "modules": [
+    {
+      "id": "artisys-structured-facts",
+      "name": "Fatos Estruturados e Agregações",
+      "category": "Qualidade e Entrega",
+      "description": "Calcula contagens, agrupamentos e totais determinísticos antes de qualquer truncamento ou interpretação por IA."
+    },
+    {
+      "id": "artisys-property-testing",
+      "name": "Testes Baseados em Propriedades",
+      "category": "Qualidade e Entrega",
+      "description": "Gera automaticamente combinações de dados para validar invariantes e encontrar casos de borda com fast-check."
+    },
+    {
+      "id": "artisys-mutation-testing",
+      "name": "Testes de Mutação",
+      "category": "Qualidade e Entrega",
+      "description": "Valida a força da suíte de testes introduzindo mutações controladas no código com StrykerJS."
+    }
+  ]
+}
