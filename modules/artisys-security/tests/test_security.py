@@ -48,6 +48,32 @@ class SecurityTests(unittest.TestCase):
         self.assertIn('--redact=100', calls[0])
         self.assertIn('--strict', calls[-1])
 
+    def test_docker_engine_uses_portable_container_paths(self):
+        calls = []
+        reports = {
+            'gitleaks': [],
+            'trivy': {'SchemaVersion': 2, 'ArtifactName': 'fixture', 'ArtifactType': 'filesystem', 'Metadata': {}, 'Results': []},
+            'semgrep': {'results': [], 'errors': []},
+        }
+        def fake(command, **kwargs):
+            calls.append(command)
+            self.assertEqual(command[0:3], ['docker', 'run', '--rm'])
+            tool = command[command.index('--entrypoint') + 1]
+            flag = '--report-path' if tool == 'gitleaks' else '--output'
+            container_output = command[command.index(flag) + 1]
+            self.assertTrue(container_output.startswith('/artisys-output/'))
+            host_output_dir = Path(command[command.index('-v', command.index('-v') + 1) + 1].split(':', 1)[0])
+            host_output = host_output_dir / Path(container_output).name
+            host_output.write_text(json.dumps(reports[tool]))
+            self.assertIn('/workspace', command)
+            self.assertIn('/artisys-security', ' '.join(command))
+            return subprocess.CompletedProcess(command, 0)
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / '.git').mkdir()
+            result = security.scan(directory, 'release', engine='docker', execute=fake)
+        self.assertTrue(result['passed'])
+        self.assertEqual(len(calls), 4)
+
     def test_wrong_native_version_blocks(self):
         with tempfile.TemporaryDirectory() as directory, self.assertRaises(security.GateError):
             security.scan(directory, execute=lambda *args, **kwargs: subprocess.CompletedProcess(args, 0, stdout=b'99.0.0'))
