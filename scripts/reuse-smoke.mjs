@@ -18,6 +18,11 @@ const contracts = {
   'artisys-feature-flags': ['resolveFeatureFlag', 'isFeatureEnabled', 'mergeFeatureFlags'],
   'artisys-checklists': ['createChecklist', 'setChecklistItem', 'checklistProgress'],
   'artisys-reporting': ['filterRows', 'groupBy', 'aggregate', 'toCsv'],
+  'artisys-structured-facts': ['summarizeCollection', 'countBy', 'resolveAggregateQuestion', 'isAggregateQuestion'],
+  'artisys-property-testing': ['createCollectionArbitraries', 'assertCollectionProperties'],
+  'artisys-mutation-testing': ['buildStrykerConfig'],
+  'artisys-ai-quality': ['buildPromptfooConfig', 'evaluateFactRegression', 'buildExternalEvaluationBundle'],
+  'artisys-ai-observability': ['toOpenInferenceTrace', 'inferOpenInferenceSpanKind', 'createPhoenixConfig', 'buildPhoenixEnvironment', 'createOpenInferenceExporter'],
 };
 
 for (const [moduleId, expectedExports] of Object.entries(contracts)) {
