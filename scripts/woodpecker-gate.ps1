@@ -59,7 +59,8 @@ $report = [ordered]@{
   updatedAt = (Get-Date).ToString('o')
   steps = $steps
 }
-$report | ConvertTo-Json -Depth 8 | Set-Content -Path $reportPath -Encoding utf8
+$json = $report | ConvertTo-Json -Depth 8
+[IO.File]::WriteAllText($reportPath, $json, [Text.UTF8Encoding]::new($false))
 
 Remove-Item $cmdFile,$stdoutFile,$stderrFile -Force -ErrorAction SilentlyContinue
 if ($exitCode -ne 0) { exit $exitCode }
