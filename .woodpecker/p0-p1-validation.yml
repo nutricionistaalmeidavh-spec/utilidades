@@ -1,0 +1,80 @@
+when:
+  - event: [push, pull_request, manual]
+
+steps:
+  - name: system-dependencies
+    image: node:22-bookworm
+    commands:
+      - apt-get update
+      - apt-get install -y --no-install-recommends python3 python3-venv python3-pip curl ca-certificates openjdk-17-jre-headless
+      - node --version
+      - npm --version
+      - python3 --version
+      - java -version
+
+  - name: module-dependencies
+    image: node:22-bookworm
+    commands:
+      - npm ci --ignore-scripts --prefix modules/artisys-qa
+      - npm ci --ignore-scripts --prefix modules/artisys-api-contracts
+      - npm install --no-package-lock --prefix modules/artisys-serialport
+      - npm install --no-package-lock --prefix modules/artisys-printing
+      - npm install --no-package-lock --prefix modules/artisys-property-testing
+      - npm install --no-package-lock --prefix modules/artisys-mutation-testing
+      - npm install --no-package-lock --prefix modules/artisys-ai-quality
+      - npm install --no-package-lock --prefix modules/artisys-ai-observability
+      - python3 -m venv .ci-venv
+      - .ci-venv/bin/python -m pip install --upgrade pip
+      - .ci-venv/bin/python -m pip install './modules/artisys-documents[preprocess]'
+      - cd modules/artisys-qa && npx --no-install playwright install --with-deps chromium
+
+  - name: provision-openapi-generator
+    image: node:22-bookworm
+    commands:
+      - mkdir -p .ci-tools
+      - curl --fail --location --output .ci-tools/openapi-generator.jar https://repo.maven.apache.org/maven2/org/openapitools/openapi-generator-cli/7.16.0/openapi-generator-cli-7.16.0.jar
+      - echo '6999b18cece5b58f5d5b246fef5a43bdf61239491c4f0ed6513214e0f6e8464b  .ci-tools/openapi-generator.jar' | sha256sum --check
+
+  - name: p0-structured-facts
+    image: node:22-bookworm
+    commands:
+      - npm test --prefix modules/artisys-structured-facts
+      - npm run check --prefix modules/artisys-structured-facts
+
+  - name: p0-property-testing
+    image: node:22-bookworm
+    commands:
+      - npm test --prefix modules/artisys-property-testing
+      - npm run check --prefix modules/artisys-property-testing
+
+  - name: p0-mutation-testing
+    image: node:22-bookworm
+    commands:
+      - npm test --prefix modules/artisys-mutation-testing
+      - npm run check --prefix modules/artisys-mutation-testing
+
+  - name: p0-p1-ai-quality
+    image: node:22-bookworm
+    commands:
+      - npm test --prefix modules/artisys-ai-quality
+      - npm run check --prefix modules/artisys-ai-quality
+      - npm run example --prefix modules/artisys-ai-quality
+
+  - name: p1-ai-observability
+    image: node:22-bookworm
+    commands:
+      - npm test --prefix modules/artisys-ai-observability
+      - npm run check --prefix modules/artisys-ai-observability
+
+  - name: reusable-contract-smoke
+    image: node:22-bookworm
+    commands:
+      - node scripts/reuse-smoke.mjs
+
+  - name: full-module-checks
+    image: node:22-bookworm
+    environment:
+      PACT_DO_NOT_TRACK: 'true'
+      OPENAPI_GENERATOR_JAR: .ci-tools/openapi-generator.jar
+    commands:
+      - .ci-venv/bin/python scripts/check-modules.py --browser --pact --generator
