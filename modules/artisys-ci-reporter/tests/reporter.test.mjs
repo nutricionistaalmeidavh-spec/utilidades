@@ -28,6 +28,43 @@ test('summarizeRelease extracts release failure details and installer', () => {
   assert.deepEqual(summary.gates, [{id:'installer',status:'pass',exitCode:0},{id:'qa',status:'fail',exitCode:1}]);
 });
 
+test('summarizeRelease attaches structured QA failure details', () => {
+  const qaReport = {
+    status: 'FAIL',
+    counts: { flowsPassed: 25, flowsFailed: 1 },
+    flows: [
+      { flow: '17-relatorios-vendedor', status: 'PASS' },
+      {
+        flow: '18-comissao-vendedor',
+        status: 'FAIL',
+        error: 'QA flow failed: pdv-artisys/18-comissao-vendedor',
+        outputDir: 'qa-artifacts/run-18',
+        summary: {
+          flow: '18-comissao-vendedor',
+          steps: [
+            { name: 'Abrir relatório de comissão', action: 'click', status: 'passed' },
+            { name: 'Validar total de comissão', action: 'assertText', status: 'failed', error: 'Expected R$ 12,00, received R$ 0,00' },
+          ],
+          failure: { message: 'Expected R$ 12,00, received R$ 0,00' },
+        },
+      },
+    ],
+  };
+  const summary = summarizeRelease({
+    report: { status: 'blocked', failedStep: 'qa', steps: [{ id: 'qa', status: 'fail', exitCode: 1, stderr: 'wrapper failed' }] },
+    qaReport,
+    installerPaths: ['dist/App-Setup.exe'],
+  });
+  assert.equal(summary.qa.total, 26);
+  assert.equal(summary.qa.passed, 25);
+  assert.equal(summary.qa.failed, 1);
+  assert.equal(summary.qa.failures[0].flow, '18-comissao-vendedor');
+  assert.equal(summary.qa.failures[0].step, 'Validar total de comissão');
+  assert.match(summary.qa.failures[0].error, /R\$ 12,00/);
+  assert.match(summary.qa.failures[0].screenshot, /failure\.png$/);
+  assert.match(summary.errorExcerpt, /QA 25\/26 PASS/);
+});
+
 test('summarizeRelease survives missing workspace/report and labels early failure', () => {
   const summary = summarizeRelease({ report: null, logText: '', installerPaths: [], fallbackStep: 'clone-or-workflow', fallbackMessage: 'Pipeline failed before workspace became available.' });
   assert.equal(summary.failedStep, 'clone-or-workflow');
@@ -54,6 +91,43 @@ test('buildFailureMarkdown is product-generic and lists gates', () => {
   assert.match(markdown, /Step: `installer`/);
   assert.match(markdown, /build: pass/);
   assert.doesNotMatch(markdown, /PDV ArtiSys/);
+});
+
+test('buildFailureMarkdown includes QA flow, failed step and evidence paths', () => {
+  const markdown = buildFailureMarkdown({
+    repo: 'nutricionistaalmeidavh-spec/PDV-ARTISYS',
+    sha: 'abcdef1234567890',
+    branch: 'feat/qa',
+    pipelineUrl: 'https://ci.artisys.dev/repos/1/pipeline/95/1',
+    summary: {
+      failedStep: 'qa',
+      exitCode: 1,
+      installerFound: true,
+      installerPath: 'dist/ArtiSys-PDV-1.3.4-x64-Setup.exe',
+      command: 'powershell scripts/qa-release-full.ps1',
+      errorExcerpt: 'QA 25/26 PASS',
+      gates: [{ id: 'qa', status: 'fail', exitCode: 1 }],
+      qa: {
+        passed: 25,
+        failed: 1,
+        total: 26,
+        failures: [{
+          flow: '18-comissao-vendedor',
+          step: 'Validar total de comissão',
+          error: 'Expected R$ 12,00, received R$ 0,00',
+          screenshot: 'qa-artifacts/run-18/screenshots/failure.png',
+          trace: 'qa-artifacts/run-18/trace.zip',
+          runSummary: 'qa-artifacts/run-18/run-summary.json',
+        }],
+      },
+    },
+  });
+  assert.match(markdown, /### QA detalhado/);
+  assert.match(markdown, /25\/26 PASS/);
+  assert.match(markdown, /18-comissao-vendedor/);
+  assert.match(markdown, /Validar total de comissão/);
+  assert.match(markdown, /failure\.png/);
+  assert.match(markdown, /trace\.zip/);
 });
 
 test('buildSuccessMarkdown is product-generic', () => {
