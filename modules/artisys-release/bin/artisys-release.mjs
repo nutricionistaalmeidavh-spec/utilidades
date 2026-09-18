@@ -2,7 +2,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { createJsonReport, runPipeline } from '../src/index.mjs';
 
 function parseArgs(argv) {
@@ -54,6 +54,14 @@ export async function main(argv = process.argv.slice(2)) {
   return result.status === 'pass' ? 0 : 1;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+function isDirectExecution() {
+  if (!process.argv[1]) return false;
+  const invoked = path.resolve(process.argv[1]);
+  const current = path.resolve(fileURLToPath(import.meta.url));
+  if (process.platform === 'win32') return invoked.toLowerCase() === current.toLowerCase();
+  return invoked === current;
+}
+
+if (isDirectExecution()) {
   main().then((code) => { process.exitCode = code; }).catch((error) => { console.error(error.message); process.exitCode = 1; });
 }
