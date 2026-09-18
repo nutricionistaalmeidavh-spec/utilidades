@@ -20,7 +20,7 @@ READY = (
     'artisys-planning', 'artisys-media', 'artisys-office', 'artisys-ui-builder',
     'artisys-upload', 'artisys-files', 'artisys-annotations', 'artisys-serialport', 'artisys-printing',
     'artisys-video-engine', 'artisys-doc-convert', 'artisys-local-backend',
-    'artisys-remote-support', 'artisys-release', 'artisys-release-validator',
+    'artisys-remote-support', 'artisys-release', 'artisys-release-validator', 'artisys-ci-reporter',
     'artisys-desktop-shell', 'artisys-whatsapp-launcher', 'artisys-ocr', 'artisys-product-qa', 'artisys-licensing',
     'artisys-ai-quality', 'artisys-privacy', 'artisys-bim', 'artisys-eventbus',
     'artisys-backup', 'artisys-importer', 'artisys-finance-domain', 'artisys-auth-rbac', 'artisys-storage',
@@ -36,7 +36,7 @@ JS_MODULES = (
     'artisys-office', 'artisys-ui-builder', 'artisys-upload', 'artisys-files', 'artisys-annotations',
     'artisys-serialport', 'artisys-printing', 'artisys-video-engine',
     'artisys-doc-convert', 'artisys-local-backend', 'artisys-remote-support',
-    'artisys-release', 'artisys-release-validator', 'artisys-desktop-shell', 'artisys-whatsapp-launcher', 'artisys-ocr',
+    'artisys-release', 'artisys-release-validator', 'artisys-ci-reporter', 'artisys-desktop-shell', 'artisys-whatsapp-launcher', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
     'artisys-privacy', 'artisys-bim', 'artisys-eventbus',
     'artisys-backup', 'artisys-importer', 'artisys-finance-domain', 'artisys-auth-rbac', 'artisys-storage',
@@ -112,7 +112,7 @@ def main():
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
-    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:]):
+    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', 'artisys-ci-reporter', *NEW_PRODUCT_MODULES[8:]):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)
