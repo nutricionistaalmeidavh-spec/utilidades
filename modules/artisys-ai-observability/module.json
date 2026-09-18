@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-ai-observability",
+  "name": "ArtiSys AI Observability",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-local-on-demand",
+  "upstreams": [],
+  "optionalIntegrations": ["opentelemetry", "openinference", "phoenix"],
+  "boundary": "Local-first tracing normalization and OpenInference-compatible envelopes. Phoenix/OpenTelemetry exporters are optional integrations and no hosted service is required.",
+  "provides": ["openinference-trace-envelope", "span-kind-mapping", "privacy-safe-trace-normalization", "phoenix-self-hosted-config", "optional-otel-export-boundary"],
+  "packageName": "@artisys/ai-observability",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["agent-tool-retriever-llm-span-kinds", "trace-hierarchy-preservation", "content-capture-opt-in", "secret-key-elision", "self-hosted-phoenix-default", "remote-endpoint-explicit-opt-in", "injected-export-sink"],
+  "plannedCapabilities": [],
+  "recommendedConsumers": ["RAGArtisysRepos", "agents", "ai-products"],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "package": "npm pack --dry-run"},
+  "limitations": ["This module does not bundle a Phoenix server or OpenTelemetry SDK.", "Consumers that want OTLP transport install/configure their preferred OpenTelemetry or Phoenix exporter explicitly."],
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}
