@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "artisys-ci-reporter",
   "name": "ArtiSys CI Reporter",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "implemented",
   "consumptionMode": "shared",
   "executionMode": "local-or-ci",
@@ -12,6 +12,7 @@
     "woodpecker-failure-summary",
     "woodpecker-success-summary",
     "release-gate-summary",
+    "structured-qa-failure-summary",
     "github-commit-status",
     "github-commit-comment",
     "optional-pr-comment",
@@ -23,6 +24,9 @@
     "product-generic-diagnostics",
     "success-and-failure-status",
     "release-gate-summary",
+    "structured-qa-failure-summary",
+    "qa-failed-flow-and-step-reporting",
+    "qa-evidence-path-reporting",
     "github-commit-status",
     "github-commit-comment",
     "optional-pr-comment",
@@ -36,7 +40,8 @@
   },
   "limitations": [
     "Requires a GitHub token supplied by the CI host environment.",
-    "Detailed release-step diagnostics depend on an artisys-release report or captured log; otherwise it reports clone-or-workflow fallback context."
+    "Detailed release-step diagnostics depend on an artisys-release report or captured log; otherwise it reports clone-or-workflow fallback context.",
+    "Structured QA detail requires the product pipeline to publish artifacts/qa-summary.json or set ARTISYS_QA_REPORT_PATH."
   ],
   "costPolicy": {
     "coreLicenseFee": 0,
