@@ -45,6 +45,13 @@ class CatalogExtensionTests(unittest.TestCase):
         self.assertEqual({item['id'] for item in projects}, {'promptfoo', 'fast-check', 'stryker-js'})
         self.assertEqual(check_modules.known_upstreams(), {'promptfoo', 'fast-check', 'stryker-js'})
 
+    def test_display_catalog_merges_locale_extensions(self):
+        self.write('module-display.pt-BR.json', {'modules': [{'id': 'a', 'name': 'A'}]})
+        self.write('module-display.pt-BR-rag-quality-p0.json', {'modules': [{'id': 'b', 'name': 'B'}]})
+        display = check_modules.load_display_catalog()
+        self.assertEqual([item['id'] for item in display], ['a', 'b'])
+        self.assertEqual(display[1]['name'], 'B')
+
     def test_duplicate_ids_inside_one_catalog_file_are_rejected(self):
         self.write('modules.json', {'modules': [{'id': 'a'}, {'id': 'a'}]})
         with self.assertRaisesRegex(ValueError, 'Duplicate module id'):
