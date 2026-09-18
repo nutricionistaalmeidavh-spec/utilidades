@@ -4,7 +4,7 @@ Módulo compartilhado ArtiSys para QA, automação e gravação de demonstraçõ
 
 A versão **2.5.0** adiciona a orquestração reutilizável de matriz de ambiente/viewport usada pelo P1 de hardening. O canal `stable` permanece separado e só deve avançar depois da validação da branch.
 
-A versão **2.5.0** adiciona as varreduras P1 de superfície web/API e matriz de viewport, preservando o **ArtiSys QA Windows Agent** opcional: instalação única no Windows 10/11, inicialização automática no logon, registro de múltiplos projetos, Remote Control supervisionado, atualização automática apenas pelo canal `stable` e rollback A/B quando uma atualização não fica saudável.
+A versão **2.6.0** adiciona o bundle P2 de release (`QA-SUMMARY`, cobertura, endpoints e erros), gate de produto fail-closed e packs SaaS/licenciamento/multitenancy. A base P1 mantém varreduras de superfície web/API e matriz de viewport, preservando o **ArtiSys QA Windows Agent** opcional: instalação única no Windows 10/11, inicialização automática no logon, registro de múltiplos projetos, Remote Control supervisionado, atualização automática apenas pelo canal `stable` e rollback A/B quando uma atualização não fica saudável.
 
 A versão 2.0 já havia consolidado perfis `quick`, `full` e `release`, smoke de executável desktop, helpers de rede/concorrência, packs de negócio, relatório HTML/JSON com histórico local, gate de release fail-closed e Remote Control 2.0.
 
@@ -318,3 +318,30 @@ O módulo também expõe helpers genéricos para a fase P1:
 - `@artisys/qa/matrix`: repete gates nos viewports desktop/tablet/mobile.
 
 Os consumidores continuam responsáveis pelos casos de negócio e segurança específicos, especialmente isolamento de tenant e regras de licença.
+
+## P2 — relatório único e release gate
+
+O P2 consolida a evidência do produto em um único bundle:
+
+```text
+qa-delivery-artifacts/
+└── <sistema>-<run>/
+    ├── QA-SUMMARY.json
+    ├── QA-SUMMARY.txt
+    ├── report.html
+    ├── coverage.json
+    ├── endpoints.json
+    ├── console-errors.json
+    ├── network-errors.json
+    └── findings.json
+```
+
+A API pública `@artisys/qa/product-report` expõe `buildProductQaSummary`, `evaluateProductGate` e `writeProductQaBundle`. O gate bloqueia por padrão check crítico falho, finding crítico, HTTP 5xx, request failure, erro de console e lacuna de cobertura crítica. Overrides exigem motivo explícito e ficam registrados no summary.
+
+Packs adicionais:
+
+- `saas`: smoke, autenticação e multitenancy;
+- `licensing`: ciclo de licenciamento;
+- `multitenancy`: isolamento entre tenants.
+
+O canal `stable` deve ser promovido para 2.6.0 somente após os testes locais dos consumidores.
