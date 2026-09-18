@@ -8,6 +8,9 @@ import {
   normalizeFactRegressionCase,
   evaluateFactRegression,
   buildCollectionRegressionCase,
+  buildRagasSamples,
+  buildDeepEvalTestCases,
+  buildExternalEvaluationBundle,
 } from '../src/index.mjs';
 
 test('normalizes evaluation suite and defaults threshold', () => {
@@ -120,4 +123,50 @@ test('truncation awareness can require complete structured evidence', () => {
   });
   assert.equal(result.pass, false);
   assert.ok(result.failures.some(item => item.type === 'incomplete-evidence'));
+});
+
+const externalCase = {
+  id: 'module-count',
+  question: 'Quantos módulos temos?',
+  requiredFacts: ['61'],
+  expectedEvidenceIds: ['catalog/modules.json'],
+  metadata: { reference: 'Temos 61 módulos.', referenceContexts: ['O catálogo possui 61 módulos.'] },
+};
+const externalResult = {
+  answer: 'Temos 61 módulos.',
+  evidence: [
+    { source: { path: 'catalog/modules.json', text: 'total=61' } },
+    { source: { path: 'src/mcp/index.mjs', excerpt: 'repoutils.modules' } },
+  ],
+  trace: { executed: [{ tool: 'repoutils.modules', args: {} }] },
+};
+
+test('builds Ragas SingleTurnSample-shaped data without importing Ragas', () => {
+  const samples = buildRagasSamples([externalCase], [externalResult]);
+  assert.equal(samples.length, 1);
+  assert.equal(samples[0].user_input, 'Quantos módulos temos?');
+  assert.equal(samples[0].response, 'Temos 61 módulos.');
+  assert.equal(samples[0].reference, 'Temos 61 módulos.');
+  assert.deepEqual(samples[0].retrieved_contexts, ['total=61', 'repoutils.modules']);
+  assert.deepEqual(samples[0].reference_contexts, ['O catálogo possui 61 módulos.']);
+});
+
+test('builds DeepEval LLMTestCase-shaped data without importing DeepEval', () => {
+  const cases = buildDeepEvalTestCases([externalCase], [externalResult]);
+  assert.equal(cases.length, 1);
+  assert.equal(cases[0].input, 'Quantos módulos temos?');
+  assert.equal(cases[0].actual_output, 'Temos 61 módulos.');
+  assert.equal(cases[0].expected_output, 'Temos 61 módulos.');
+  assert.deepEqual(cases[0].retrieval_context, ['total=61', 'repoutils.modules']);
+  assert.deepEqual(cases[0].context, ['O catálogo possui 61 módulos.']);
+  assert.equal(cases[0].tools_called[0].name, 'repoutils.modules');
+});
+
+test('external evaluation bundle keeps optional integrations data-only and local', () => {
+  const bundle = buildExternalEvaluationBundle([externalCase], [externalResult]);
+  assert.equal(bundle.schemaVersion, 1);
+  assert.equal(bundle.ragas.samples.length, 1);
+  assert.equal(bundle.deepeval.testCases.length, 1);
+  assert.deepEqual(bundle.requiredPaidServices, []);
+  assert.equal(bundle.execution, 'local-or-consumer-managed');
 });
