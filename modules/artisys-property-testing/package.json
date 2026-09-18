@@ -1,0 +1,16 @@
+{
+  "name": "@artisys/property-testing",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.mjs",
+  "exports": "./src/index.mjs",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/index.mjs"
+  },
+  "devDependencies": {
+    "fast-check": "4.10.1"
+  },
+  "files": ["src", "README.md", "LICENSE", "module.json"]
+}
