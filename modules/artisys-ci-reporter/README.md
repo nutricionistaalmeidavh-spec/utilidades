@@ -1,4 +1,4 @@
-# ArtiSys CI Reporter 0.2.0
+# ArtiSys CI Reporter 0.3.0
 
 Reporter compartilhado de CI para produtos ArtiSys.
 
@@ -10,6 +10,10 @@ Publicar automaticamente no GitHub um diagnostico contendo:
 - gates executados e status de cada etapa;
 - step, exit code, comando e trecho final do erro quando houver falha;
 - presenca do instalador;
+- resumo estruturado de QA quando `artifacts/qa-summary.json` estiver disponivel;
+- quantidade de fluxos PASS/FAIL;
+- nome do fluxo e da etapa que falhou;
+- erro do passo de QA e caminhos para screenshot, trace e run-summary;
 - status detalhado no commit;
 - comentario no commit/PR em falhas;
 - status de sucesso sem spam de comentarios por padrao.
@@ -43,6 +47,7 @@ node "$env:ARTISYS_UTILIDADES_PATH\modules\artisys-ci-reporter\bin\artisys-ci-re
 - `CI_WORKSPACE`
 - `GITHUB_REPORT_TOKEN`
 - `ARTISYS_REPORT_PATH`
+- `ARTISYS_QA_REPORT_PATH`
 - `ARTISYS_LOG_PATH`
 - `ARTISYS_INSTALLER_DIR`
 - `ARTISYS_INSTALLER_PATTERN`
@@ -51,6 +56,8 @@ node "$env:ARTISYS_UTILIDADES_PATH\modules\artisys-ci-reporter\bin\artisys-ci-re
 - `ARTISYS_STATUS_CONTEXT`
 - `ARTISYS_CI_RESULT=success|failure`
 - `ARTISYS_COMMENT_SUCCESS=true|false`
+
+Se `ARTISYS_QA_REPORT_PATH` nao for informado, o CLI tenta ler `artifacts/qa-summary.json` dentro do workspace.
 
 ## Verificacao
 
