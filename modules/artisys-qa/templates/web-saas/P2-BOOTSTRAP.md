@@ -25,5 +25,6 @@ qa-delivery-artifacts/
     ├── endpoints.json
     ├── console-errors.json
     ├── network-errors.json
-    └── findings.json
+    ├── findings.json
+    └── evidence.json
 ```
