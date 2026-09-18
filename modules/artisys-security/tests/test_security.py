@@ -62,7 +62,8 @@ class SecurityTests(unittest.TestCase):
             flag = '--report-path' if tool == 'gitleaks' else '--output'
             container_output = command[command.index(flag) + 1]
             self.assertTrue(container_output.startswith('/artisys-output/'))
-            host_output_dir = Path(command[command.index('-v', command.index('-v') + 1) + 1].split(':', 1)[0])
+            output_mount = next(value for value in command if isinstance(value, str) and value.endswith(':/artisys-output'))
+            host_output_dir = Path(output_mount[:-len(':/artisys-output')])
             host_output = host_output_dir / Path(container_output).name
             host_output.write_text(json.dumps(reports[tool]))
             self.assertIn('/workspace', command)
