@@ -2,7 +2,7 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { constants as fsConstants } from 'node:fs';
-import { publishGitHubFailure, summarizeRelease } from '../src/index.mjs';
+import { publishGitHubFailure, publishGitHubSuccess, summarizeRelease } from '../src/index.mjs';
 
 async function exists(target) {
   try { await access(target, fsConstants.F_OK); return true; } catch { return false; }
@@ -48,7 +48,7 @@ async function main() {
       : 'Pipeline falhou antes de o workspace ficar disponível; provável falha de clone ou preparação do workflow.'),
   });
 
-  const result = await publishGitHubFailure({
+  const common = {
     token: process.env.GITHUB_REPORT_TOKEN,
     repo: process.env.CI_REPO,
     sha: process.env.CI_COMMIT_SHA,
@@ -57,9 +57,13 @@ async function main() {
     pipelineUrl: process.env.CI_PIPELINE_URL,
     statusContext: process.env.ARTISYS_STATUS_CONTEXT || 'ci/woodpecker/release-detail',
     summary,
-  });
+  };
+  const resultMode = String(process.env.ARTISYS_CI_RESULT || 'failure').toLowerCase();
+  const result = resultMode === 'success'
+    ? await publishGitHubSuccess({ ...common, comment: process.env.ARTISYS_COMMENT_SUCCESS === 'true' })
+    : await publishGitHubFailure(common);
 
-  console.log(`[ArtiSys CI Reporter] publicado para ${process.env.CI_REPO}@${String(process.env.CI_COMMIT_SHA || '').slice(0, 12)}; PR ${result.prNumber ?? 'n/a'}`);
+  console.log(`[ArtiSys CI Reporter] ${resultMode} publicado para ${process.env.CI_REPO}@${String(process.env.CI_COMMIT_SHA || '').slice(0, 12)}; PR ${result.prNumber ?? 'n/a'}`);
 }
 
 main().catch((error) => {
