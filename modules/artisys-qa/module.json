@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "artisys-qa",
   "name": "ArtiSys QA",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "status": "stable",
   "consumptionMode": "shared",
   "upstreams": [
@@ -81,7 +81,12 @@
     "consumer-template",
     "pos-reference-example",
     "same-origin-ui-sweep",
-    "api-contract-sweep"
+    "api-contract-sweep",
+    "unified-product-qa-bundle",
+    "product-release-gate",
+    "saas-business-pack",
+    "licensing-business-pack",
+    "multitenancy-business-pack"
   ],
   "packageName": "@artisys/qa",
   "entrypoint": "./src/index.js",
@@ -185,7 +190,12 @@
     "ui-sweep-runtime-error-capture",
     "ui-sweep-spa-hash-routes",
     "api-sweep-status-json-validation",
-    "api-sweep-secret-safe-reporting"
+    "api-sweep-secret-safe-reporting",
+    "product-summary-json-txt-html",
+    "product-coverage-endpoints-errors-bundle",
+    "product-gate-critical-checks",
+    "product-gate-http-console-coverage",
+    "audited-product-gate-override"
   ],
   "plannedCapabilities": [],
   "verification": {
