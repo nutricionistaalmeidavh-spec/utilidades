@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-mutation-testing",
+  "name": "ArtiSys Mutation Testing",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand-or-ci",
+  "upstreams": ["stryker-js"],
+  "boundary": "Reusable StrykerJS configuration for critical deterministic logic. Mutation execution is explicit and local/CI only.",
+  "provides": ["mutation-testing", "stryker-config", "mutation-threshold-policy", "test-strength-validation"],
+  "packageName": "@artisys/mutation-testing",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["command-runner-config", "strict-thresholds", "targeted-mutate-globs", "offline-execution"],
+  "plannedCapabilities": [],
+  "recommendedConsumers": ["RAGArtisysRepos", "critical-domain-modules"],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "mutation": "npm run test:mutation"},
+  "limitations": ["Mutation testing is intentionally slower and should run as an explicit quality gate."],
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}
