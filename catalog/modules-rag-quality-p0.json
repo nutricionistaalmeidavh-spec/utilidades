@@ -4,6 +4,10 @@
   "kind": "module-catalog-extension",
   "modules": [
     {
+      "id": "artisys-ai-quality",
+      "version": "0.3.0"
+    },
+    {
       "id": "artisys-structured-facts",
       "version": "0.1.0",
       "status": "implemented",
