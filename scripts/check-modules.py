@@ -14,8 +14,9 @@ P0_JS_MODULES = (
     'artisys-custody', 'artisys-maintenance', 'artisys-metering',
     'artisys-search', 'artisys-exporter'
 )
-P0_RAG_QUALITY_MODULES = (
-    'artisys-structured-facts', 'artisys-property-testing', 'artisys-mutation-testing'
+RAG_QUALITY_MODULES = (
+    'artisys-structured-facts', 'artisys-property-testing', 'artisys-mutation-testing',
+    'artisys-ai-observability'
 )
 READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
@@ -30,7 +31,7 @@ READY = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *P0_RAG_QUALITY_MODULES
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *RAG_QUALITY_MODULES
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -46,7 +47,7 @@ JS_MODULES = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *P0_RAG_QUALITY_MODULES
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *RAG_QUALITY_MODULES
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -147,7 +148,7 @@ def main():
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
-    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:], *P0_RAG_QUALITY_MODULES):
+    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:], *RAG_QUALITY_MODULES):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)
