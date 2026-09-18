@@ -33,21 +33,17 @@ $UtilidadesPath = (Resolve-Path $env:ARTISYS_UTILIDADES_PATH).Path
 $Lock = Get-Content $LockPath -Raw | ConvertFrom-Json
 $PinnedCommit = [string]$Lock.commit
 if ($PinnedCommit -notmatch '^[0-9a-f]{40}$') { throw 'Commit pinado de utilidades invalido.' }
-
 $inside = & git -C $UtilidadesPath rev-parse --is-inside-work-tree 2>$null
 if ($LASTEXITCODE -ne 0 -or $inside.Trim() -ne 'true') { throw "ARTISYS_UTILIDADES_PATH nao e repositorio git: $UtilidadesPath" }
 & git -C $UtilidadesPath cat-file -e "$PinnedCommit^{commit}" 2>$null
 if ($LASTEXITCODE -ne 0) { throw "Commit pinado $PinnedCommit nao existe no checkout local de utilidades. Atualize o clone explicitamente; nao ha fallback para main." }
-
 $ProductCommit = (& git -C $ProductRoot rev-parse HEAD).Trim()
 if ($LASTEXITCODE -ne 0 -or $ProductCommit -notmatch '^[0-9a-f]{40}$') { throw 'Nao foi possivel resolver o HEAD do produto.' }
 
 New-Item -ItemType Directory -Force -Path $ArtifactsDir,$QaArtifactsDir | Out-Null
 if (-not $DryRun) {
   Remove-Item $ReportPath,$LogPath,$ReleaseRunPath -Force -ErrorAction SilentlyContinue
-  if (Test-Path $InstallerDir) {
-    Get-ChildItem $InstallerDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match $InstallerPattern } | Remove-Item -Force
-  }
+  if (Test-Path $InstallerDir) { Get-ChildItem $InstallerDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match $InstallerPattern } | Remove-Item -Force }
 }
 
 $TempWorktree = Join-Path ([IO.Path]::GetTempPath()) ("artisys-utilidades-{0}-{1}" -f $PID,[guid]::NewGuid().ToString('N'))
@@ -60,85 +56,33 @@ try {
   & git -C $UtilidadesPath worktree add --detach $TempWorktree $PinnedCommit
   if ($LASTEXITCODE -ne 0) { throw 'Falha ao criar worktree pinado de utilidades.' }
   $WorktreeCreated = $true
-
   $ReleaseCli = Join-Path $TempWorktree 'modules\artisys-release\bin\artisys-release.mjs'
   $ReporterCli = Join-Path $TempWorktree 'modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs'
   if (-not (Test-Path $ReleaseCli)) { throw 'artisys-release ausente no commit pinado.' }
   if (-not (Test-Path $ReporterCli)) { throw 'artisys-ci-reporter ausente no commit pinado.' }
-
   $ReleaseArgs = @($ReleaseCli,$ReleaseConfig,'--profile','release','--report',$ReportPath)
   if ($DryRun) { $ReleaseArgs += '--dry-run' }
-
   Push-Location $ProductRoot
-  try {
-    & node @ReleaseArgs *>&1 | Tee-Object -FilePath $LogPath
-    $ReleaseExit = $LASTEXITCODE
-  } finally {
-    Pop-Location
-  }
-
+  try { & node @ReleaseArgs *>&1 | Tee-Object -FilePath $LogPath; $ReleaseExit = $LASTEXITCODE } finally { Pop-Location }
   $FinishedAt = (Get-Date).ToUniversalTime().ToString('o')
   $Installer = $null
-  if (Test-Path $InstallerDir) {
-    $Installer = Get-ChildItem $InstallerDir -File -ErrorAction SilentlyContinue |
-      Where-Object { $_.Name -match $InstallerPattern } |
-      Sort-Object LastWriteTimeUtc -Descending |
-      Select-Object -First 1
-  }
-
+  if (Test-Path $InstallerDir) { $Installer = Get-ChildItem $InstallerDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match $InstallerPattern } | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1 }
   if ($DryRun) {
-    Write-JsonUtf8NoBom -Path $DryRunPath -Value @{
-      status = if ($ReleaseExit -eq 0) { 'dry-run' } else { 'failed' }
-      dryRun = $true
-      commit = $ProductCommit
-      utilidadesCommit = $PinnedCommit
-      startedAt = $StartedAt
-      finishedAt = $FinishedAt
-    }
+    Write-JsonUtf8NoBom -Path $DryRunPath -Value @{status=if($ReleaseExit -eq 0){'dry-run'}else{'failed'};dryRun=$true;commit=$ProductCommit;utilidadesCommit=$PinnedCommit;startedAt=$StartedAt;finishedAt=$FinishedAt}
     exit $ReleaseExit
   }
-
-  if ($ReleaseExit -eq 0 -and -not $Installer) {
-    $ReleaseExit = 1
-    Add-Content $LogPath '[wrapper] pipeline retornou sucesso, mas nenhum instalador correspondente foi encontrado.'
-  }
-
+  if ($ReleaseExit -eq 0 -and -not $Installer) { $ReleaseExit = 1; Add-Content $LogPath '[wrapper] pipeline retornou sucesso, mas nenhum instalador correspondente foi encontrado.' }
   $InstallerRecord = $null
-  if ($Installer) {
-    $InstallerRecord = @{
-      name = $Installer.Name
-      path = $Installer.FullName
-      size = $Installer.Length
-      mtime = $Installer.LastWriteTimeUtc.ToString('o')
-      sha256 = (Get-FileHash -Algorithm SHA256 $Installer.FullName).Hash.ToLowerInvariant()
-    }
-  }
-
-  $RunRecord = @{
-    status = if ($ReleaseExit -eq 0) { 'passed' } else { 'failed' }
-    commit = $ProductCommit
-    utilidadesCommit = $PinnedCommit
-    startedAt = $StartedAt
-    finishedAt = $FinishedAt
-    installer = $InstallerRecord
-    reporterExit = $null
-  }
+  if ($Installer) { $InstallerRecord = @{name=$Installer.Name;path=$Installer.FullName;size=$Installer.Length;mtime=$Installer.LastWriteTimeUtc.ToString('o');sha256=(Get-FileHash -Algorithm SHA256 $Installer.FullName).Hash.ToLowerInvariant()} }
+  $RunRecord = @{status=if($ReleaseExit -eq 0){'passed'}else{'failed'};commit=$ProductCommit;utilidadesCommit=$PinnedCommit;startedAt=$StartedAt;finishedAt=$FinishedAt;installer=$InstallerRecord;reporterExit=$null;reportedAt=$null}
   Write-JsonUtf8NoBom -Path $ReleaseRunPath -Value $RunRecord
-
-  $env:ARTISYS_REPORT_PATH = $ReportPath
-  $env:ARTISYS_LOG_PATH = $LogPath
-  $env:ARTISYS_INSTALLER_DIR = $InstallerDir
-  $env:ARTISYS_INSTALLER_PATTERN = $InstallerPattern
-  $env:ARTISYS_STATUS_CONTEXT = $StatusContext
-  $env:ARTISYS_CI_RESULT = if ($ReleaseExit -eq 0) { 'success' } else { 'failure' }
-
+  $env:ARTISYS_REPORT_PATH=$ReportPath; $env:ARTISYS_LOG_PATH=$LogPath; $env:ARTISYS_INSTALLER_DIR=$InstallerDir; $env:ARTISYS_INSTALLER_PATTERN=$InstallerPattern; $env:ARTISYS_STATUS_CONTEXT=$StatusContext; $env:ARTISYS_CI_RESULT=if($ReleaseExit -eq 0){'success'}else{'failure'}
   & node $ReporterCli
   $ReporterExit = $LASTEXITCODE
-  $RunRecord.reporterExit = $ReporterExit
-  $RunRecord.reportedAt = (Get-Date).ToUniversalTime().ToString('o')
-  if ($ReporterExit -ne 0) { $RunRecord.status = 'failed' }
+  $RunRecord['reporterExit'] = $ReporterExit
+  $RunRecord['reportedAt'] = (Get-Date).ToUniversalTime().ToString('o')
+  if ($ReporterExit -ne 0) { $RunRecord['status'] = 'failed' }
   Write-JsonUtf8NoBom -Path $ReleaseRunPath -Value $RunRecord
-
   if ($ReleaseExit -ne 0) { exit $ReleaseExit }
   if ($ReporterExit -ne 0) { exit $ReporterExit }
   exit 0
