@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-windows-ci",
+  "name": "ArtiSys Windows CI",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-or-ci",
+  "upstreams": ["woodpecker"],
+  "boundary": "Shared trust and host-identity gate for privileged Windows CI execution. Product commands remain owned by the consumer repository.",
+  "provides": ["trusted-repository-allowlist", "elevated-agent-identity-check", "pull-request-block", "cli"],
+  "packageName": "@artisys/windows-ci",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["case-insensitive-repository-match", "fixed-trusted-repository-policy", "elevated-agent-check", "windows-amd64-check", "pull-request-deny", "cli"],
+  "plannedCapabilities": ["signed-host-attestation"],
+  "verification": {"unit": "npm test", "syntax": "npm run check"},
+  "limitations": ["Agent labels select the host; environment identity checks are defense in depth, not a replacement for Woodpecker scheduling policy.", "Pull request events are intentionally rejected for elevated execution."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}
