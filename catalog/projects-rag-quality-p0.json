@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-09-18",
+  "kind": "project-catalog-extension",
+  "projects": [
+    {
+      "id": "fast-check",
+      "name": "fast-check",
+      "category": "testing",
+      "path": "projects/testing/fast-check",
+      "upstream": "https://github.com/dubzzz/fast-check",
+      "branch": "main",
+      "pinnedCommit": "16622467c0d1866c71b79da6a34fd857048553f7",
+      "license": "MIT",
+      "consumption": "dev-tool-library",
+      "runtimeClass": "ci",
+      "notes": "Used for local/CI property-based tests only; not required by product runtime."
+    },
+    {
+      "id": "stryker-js",
+      "name": "StrykerJS",
+      "category": "testing",
+      "path": "projects/testing/stryker-js",
+      "upstream": "https://github.com/stryker-mutator/stryker-js",
+      "branch": "master",
+      "pinnedCommit": "f2a49ff02437e3b7fe2682dba808ac93039895bf",
+      "license": "Apache-2.0",
+      "consumption": "dev-tool",
+      "runtimeClass": "ci",
+      "notes": "Used as an explicit local/CI mutation-testing gate; no dashboard or hosted service is required."
+    }
+  ]
+}
