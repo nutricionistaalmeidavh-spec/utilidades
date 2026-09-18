@@ -37,7 +37,68 @@ function gatesText(gates) {
   return gates.map((gate) => `${gate.id}: ${gate.status}${gate.exitCode == null ? '' : ` (exit ${gate.exitCode})`}`).join('\n');
 }
 
-export function summarizeRelease({ report = null, logText = '', installerPaths = [], fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
+function flowFailureDetails(flow) {
+  const flowSummary = flow?.summary && typeof flow.summary === 'object' ? flow.summary : null;
+  const failedStep = Array.isArray(flowSummary?.steps)
+    ? flowSummary.steps.find((step) => step?.status === 'failed') ?? null
+    : null;
+  const evidence = flow?.evidence && typeof flow.evidence === 'object' ? flow.evidence : {};
+  const outputDir = cleanText(flow?.outputDir) || cleanText(evidence?.outputDir) || null;
+  const screenshot = cleanText(evidence?.screenshot)
+    || (outputDir ? `${outputDir}\\screenshots\\failure.png` : null);
+  const trace = cleanText(evidence?.trace)
+    || (outputDir ? `${outputDir}\\trace.zip` : null);
+  const runSummary = cleanText(evidence?.runSummary)
+    || (outputDir ? `${outputDir}\\run-summary.json` : null);
+  return {
+    flow: cleanText(flow?.flow) || cleanText(flowSummary?.flow) || 'unknown',
+    step: cleanText(flow?.failedStep?.name)
+      || cleanText(flow?.failedStep?.action)
+      || cleanText(failedStep?.name)
+      || cleanText(failedStep?.action)
+      || null,
+    error: cleanText(flow?.failedStep?.error)
+      || cleanText(failedStep?.error)
+      || cleanText(flowSummary?.failure?.message)
+      || cleanText(flow?.error)
+      || 'Falha sem detalhe capturado.',
+    outputDir,
+    screenshot,
+    trace,
+    runSummary,
+  };
+}
+
+export function summarizeQaReport(qaReport) {
+  if (!qaReport || typeof qaReport !== 'object') return null;
+  const flows = Array.isArray(qaReport.flows) ? qaReport.flows : [];
+  const passed = Number.isInteger(qaReport?.counts?.flowsPassed)
+    ? qaReport.counts.flowsPassed
+    : flows.filter((flow) => flow?.status === 'PASS').length;
+  const failed = Number.isInteger(qaReport?.counts?.flowsFailed)
+    ? qaReport.counts.flowsFailed
+    : flows.filter((flow) => flow?.status === 'FAIL').length;
+  const failures = flows.filter((flow) => flow?.status === 'FAIL').map(flowFailureDetails);
+  return {
+    status: cleanText(qaReport.status) || (failed ? 'FAIL' : 'PASS'),
+    passed,
+    failed,
+    total: passed + failed,
+    failures,
+  };
+}
+
+function qaDiagnosticText(qa) {
+  if (!qa || !Array.isArray(qa.failures) || !qa.failures.length) return '';
+  const header = `QA ${qa.passed}/${qa.total} PASS; ${qa.failed} FAIL`;
+  const failures = qa.failures.map((failure) => {
+    const step = failure.step ? ` | etapa: ${failure.step}` : '';
+    return `${failure.flow}${step} | ${failure.error}`;
+  });
+  return [header, ...failures].join('\n');
+}
+
+export function summarizeRelease({ report = null, qaReport = null, logText = '', installerPaths = [], fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
   const installerPath = Array.isArray(installerPaths) && installerPaths.length ? installerPaths[0] : null;
   const reportPassedWithoutInstaller = report?.status === 'pass' && !installerPath;
   const failedStepId = report?.failedStep || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
@@ -45,10 +106,12 @@ export function summarizeRelease({ report = null, logText = '', installerPaths =
     ? report.steps.find((step) => step?.id === failedStepId) ?? null
     : null;
   const gates = gatesFromReport(report);
+  const qa = summarizeQaReport(qaReport);
   const reportDiagnostic = report
     ? `artisys-release status: ${report.status || 'unknown'}${gates.length ? `\n${gatesText(gates)}` : ''}${reportPassedWithoutInstaller ? '\nInstaller esperado nao foi encontrado na validacao final.' : ''}`
     : '';
-  const diagnostic = cleanText(failedStep?.stderr)
+  const diagnostic = qaDiagnosticText(qa)
+    || cleanText(failedStep?.stderr)
     || cleanText(failedStep?.stdout)
     || cleanText(reportDiagnostic)
     || cleanText(logText)
@@ -65,6 +128,7 @@ export function summarizeRelease({ report = null, logText = '', installerPaths =
     installerPath,
     gates,
     stepsSummary: gatesText(gates),
+    qa,
   };
 }
 
@@ -94,6 +158,20 @@ function commonMarkdown({ repo, sha, branch, pipelineUrl, summary, title }) {
   return { lines, shortSha, product, url };
 }
 
+function appendQaMarkdown(lines, qa) {
+  if (!qa) return;
+  lines.push('', '### QA detalhado', `- Fluxos: **${qa.passed}/${qa.total} PASS**${qa.failed ? ` — **${qa.failed} FAIL**` : ''}`);
+  if (!qa.failures?.length) return;
+  for (const failure of qa.failures) {
+    lines.push('', `#### FAIL — \`${failure.flow}\``);
+    if (failure.step) lines.push(`- Etapa: \`${failure.step}\``);
+    lines.push(`- Erro: ${failure.error}`);
+    if (failure.screenshot) lines.push(`- Screenshot: \`${failure.screenshot}\``);
+    if (failure.trace) lines.push(`- Trace: \`${failure.trace}\``);
+    if (failure.runSummary) lines.push(`- Run summary: \`${failure.runSummary}\``);
+  }
+}
+
 export function buildFailureMarkdown({ repo, sha, branch, pipelineUrl, summary }) {
   const { lines } = commonMarkdown({ repo, sha, branch, pipelineUrl, summary, title: 'Woodpecker falhou' });
   const exitCode = summary?.exitCode == null ? 'indisponível' : String(summary.exitCode);
@@ -103,12 +181,14 @@ export function buildFailureMarkdown({ repo, sha, branch, pipelineUrl, summary }
     `- Step: \`${cleanText(summary?.failedStep) || 'workflow'}\``,
     `- Exit code: \`${exitCode}\`${command}${reportStatus}`,
   );
+  appendQaMarkdown(lines, summary?.qa);
   lines.push('', '### Erro capturado', '```text', tailLines(summary?.errorExcerpt || 'Falha sem saída capturada.', 40, 6000), '```', '', '_Relatório automático ArtiSys / Woodpecker._');
   return lines.join('\n');
 }
 
 export function buildSuccessMarkdown({ repo, sha, branch, pipelineUrl, summary }) {
   const { lines } = commonMarkdown({ repo, sha, branch, pipelineUrl, summary, title: 'Woodpecker aprovado' });
+  appendQaMarkdown(lines, summary?.qa);
   lines.push('', '_Relatório automático ArtiSys / Woodpecker._');
   return lines.join('\n');
 }
@@ -169,7 +249,8 @@ export async function publishGitHubFailure({ token, repo, sha, branch, sourceBra
   validatePublishInput({ token, repo, sha });
   const publicUrl = publicPipelineUrl(pipelineUrl);
   const markdown = buildFailureMarkdown({ repo, sha, branch, pipelineUrl: publicUrl, summary });
-  const description = truncateDescription(`${summary?.failedStep || 'workflow'} falhou${summary?.exitCode == null ? '' : ` (exit ${summary.exitCode})`}; installer ${summary?.installerFound ? 'gerado' : 'nao gerado'}`);
+  const qaSuffix = summary?.qa?.failed ? `; QA ${summary.qa.passed}/${summary.qa.total}` : '';
+  const description = truncateDescription(`${summary?.failedStep || 'workflow'} falhou${summary?.exitCode == null ? '' : ` (exit ${summary.exitCode})`}${qaSuffix}; installer ${summary?.installerFound ? 'gerado' : 'nao gerado'}`);
   await githubRequest(`${apiBase}/repos/${repo}/statuses/${sha}`, { token, method: 'POST', body: { state: 'failure', target_url: publicUrl, description, context: statusContext }, fetchImpl });
   const prNumber = await findOpenPr({ token, repo, branch, sourceBranch, fetchImpl, apiBase });
   await publishComment({ token, repo, sha, prNumber, markdown, fetchImpl, apiBase });
@@ -180,7 +261,8 @@ export async function publishGitHubSuccess({ token, repo, sha, branch, sourceBra
   validatePublishInput({ token, repo, sha });
   const publicUrl = publicPipelineUrl(pipelineUrl);
   const markdown = buildSuccessMarkdown({ repo, sha, branch, pipelineUrl: publicUrl, summary });
-  const description = truncateDescription(`pipeline aprovado; installer ${summary?.installerFound ? 'gerado' : 'nao aplicavel'}`);
+  const qaSuffix = summary?.qa?.total ? `; QA ${summary.qa.passed}/${summary.qa.total}` : '';
+  const description = truncateDescription(`pipeline aprovado${qaSuffix}; installer ${summary?.installerFound ? 'gerado' : 'nao aplicavel'}`);
   await githubRequest(`${apiBase}/repos/${repo}/statuses/${sha}`, { token, method: 'POST', body: { state: 'success', target_url: publicUrl, description, context: statusContext }, fetchImpl });
   let prNumber = null;
   if (comment) {
