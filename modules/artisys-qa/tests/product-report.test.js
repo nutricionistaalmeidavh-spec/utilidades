@@ -41,3 +41,16 @@ test('product bundle writes the standardized P2 artifacts',async()=>{
 test('override requires an explicit reason',()=>{
   assert.throws(()=>evaluateProductGate({checks:[{status:'failed'}],override:true}),/overrideReason/);
 });
+
+test('product bundle redacts supplied secret values',async()=>{
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'artisys-qa-p2-secret-'));
+  const secret='super-secret-value';
+  const summary=buildProductQaSummary({systemId:'demo',checks:[{name:'smoke',status:'passed',details:{token:secret}}]});
+  const result=await writeProductQaBundle({outputRoot:root,summary,findings:[{severity:'warning',detail:secret}],secretValues:[secret],runId:'secret'});
+  const text=await fs.readFile(result.files.summaryJson,'utf8');
+  const findings=await fs.readFile(result.files.findings,'utf8');
+  assert.equal(text.includes(secret),false);
+  assert.equal(findings.includes(secret),false);
+  assert.match(text,/\[REDACTED\]/);
+  await fs.rm(root,{recursive:true,force:true});
+});
