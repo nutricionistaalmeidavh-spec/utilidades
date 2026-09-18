@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "minimumNode": "22",
-  "notes": "Adds optional Cloudflare observability mirroring using D1 binding DB and R2 binding R2, while keeping local telemetry, LAN console, Drive archive, bridge and A/B updater independent."
+  "notes": "Centraliza o contrato artifacts/qa-summary.json no ArtiSys QA, preserva fluxo/etapa/erro/evidencias em falhas e permite fallback estruturado compartilhado para consumidores e reporter GitHub."
 }
