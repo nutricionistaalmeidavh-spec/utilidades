@@ -46,6 +46,15 @@ test('summarizeRelease survives missing workspace/report and labels early failur
   assert.equal(summary.installerFound, false);
 });
 
+test('summarizeRelease removes NUL bytes produced by Windows PowerShell UTF-16 logs', () => {
+  const summary = summarizeRelease({
+    report: null,
+    logText: 'n\u0000p\u0000m\u0000 \u0000E\u0000R\u0000R\u0000!\u0000',
+    installerPaths: [],
+  });
+  assert.equal(summary.errorExcerpt, 'npm ERR!');
+});
+
 test('publicPipelineUrl maps local Woodpecker link to public CI', () => {
   assert.equal(
     publicPipelineUrl('http://localhost:8000/repos/1/pipeline/29/1'),
