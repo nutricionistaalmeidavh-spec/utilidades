@@ -2,7 +2,9 @@ const DEFAULT_API = 'https://api.github.com';
 const DEFAULT_PUBLIC_CI = 'https://ci.artisys.dev';
 
 function cleanText(value) {
-  return typeof value === 'string' ? value.replace(/\u001b\[[0-9;]*m/g, '').trim() : '';
+  return typeof value === 'string'
+    ? value.replace(/\u0000/g, '').replace(/\u001b\[[0-9;]*m/g, '').trim()
+    : '';
 }
 
 export function tailLines(value, maxLines = 40, maxChars = 6000) {
@@ -21,21 +23,41 @@ export function publicPipelineUrl(value, publicBase = DEFAULT_PUBLIC_CI) {
     .replace(/^http:\/\/127\.0\.0\.1:8000/i, publicBase);
 }
 
+function stepSummary(report) {
+  if (!Array.isArray(report?.steps) || !report.steps.length) return '';
+  return report.steps.map((step) => {
+    const exit = Number.isInteger(step?.exitCode) ? ` exit=${step.exitCode}` : '';
+    return `${step?.id || 'unknown'}: ${step?.status || 'unknown'}${exit}`;
+  }).join('\n');
+}
+
 export function summarizeRelease({ report = null, logText = '', installerPaths = [], fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
-  const failedStepId = report?.failedStep || fallbackStep;
+  const installerPath = Array.isArray(installerPaths) && installerPaths.length ? installerPaths[0] : null;
+  const reportPassedWithoutInstaller = report?.status === 'pass' && !installerPath;
+  const failedStepId = report?.failedStep || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
   const failedStep = Array.isArray(report?.steps)
     ? report.steps.find((step) => step?.id === failedStepId) ?? null
     : null;
-  const diagnostic = cleanText(failedStep?.stderr) || cleanText(failedStep?.stdout) || cleanText(logText) || cleanText(fallbackMessage) || 'Falha sem saída capturada.';
-  const installerPath = Array.isArray(installerPaths) && installerPaths.length ? installerPaths[0] : null;
+  const steps = stepSummary(report);
+  const reportDiagnostic = report
+    ? `artisys-release status: ${report.status || 'unknown'}${steps ? `\n${steps}` : ''}${reportPassedWithoutInstaller ? '\nInstaller esperado nao foi encontrado na validacao final.' : ''}`
+    : '';
+  const diagnostic = cleanText(failedStep?.stderr)
+    || cleanText(failedStep?.stdout)
+    || cleanText(reportDiagnostic)
+    || cleanText(logText)
+    || cleanText(fallbackMessage)
+    || 'Falha sem saída capturada.';
   return {
     status: report?.status || 'failure',
+    reportStatus: report?.status || null,
     failedStep: failedStepId,
     exitCode: Number.isInteger(failedStep?.exitCode) ? failedStep.exitCode : null,
     command: cleanText(failedStep?.command) || null,
     errorExcerpt: tailLines(diagnostic),
     installerFound: Boolean(installerPath),
     installerPath,
+    stepsSummary: steps,
   };
 }
 
@@ -52,6 +74,7 @@ export function buildFailureMarkdown({ repo, sha, branch, pipelineUrl, summary }
   const installer = summary?.installerFound ? `SIM — \`${summary.installerPath}\`` : 'NÃO';
   const exitCode = summary?.exitCode == null ? 'indisponível' : String(summary.exitCode);
   const command = summary?.command ? `\n- Comando: \`${summary.command}\`` : '';
+  const reportStatus = summary?.reportStatus ? `\n- artisys-release: \`${summary.reportStatus}\`` : '';
   return [
     `<!-- artisys-woodpecker-report:${shortSha} -->`,
     `## ${product} — Woodpecker falhou`,
@@ -59,7 +82,7 @@ export function buildFailureMarkdown({ repo, sha, branch, pipelineUrl, summary }
     `- Commit: \`${shortSha}\``,
     `- Branch: \`${cleanText(branch) || 'desconhecida'}\``,
     `- Step: \`${cleanText(summary?.failedStep) || 'workflow'}\``,
-    `- Exit code: \`${exitCode}\`${command}`,
+    `- Exit code: \`${exitCode}\`${command}${reportStatus}`,
     `- Instalador gerado: ${installer}`,
     `- Pipeline: ${url}`,
     '',
