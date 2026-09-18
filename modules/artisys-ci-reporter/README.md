@@ -1,21 +1,20 @@
-# ArtiSys CI Reporter
+# ArtiSys CI Reporter 0.2.0
 
-Reporter compartilhado de falhas de CI para produtos ArtiSys.
+Reporter compartilhado de CI para produtos ArtiSys.
 
 ## Objetivo
 
-Publicar automaticamente no GitHub um diagnostico de falha contendo:
+Publicar automaticamente no GitHub um diagnostico contendo:
 
-- step que falhou;
-- exit code e comando quando disponiveis;
-- trecho final do erro;
+- produto, branch, commit e pipeline;
+- gates executados e status de cada etapa;
+- step, exit code, comando e trecho final do erro quando houver falha;
 - presenca do instalador;
-- link publico do Woodpecker;
 - status detalhado no commit;
-- comentario no commit;
-- comentario opcional no PR aberto.
+- comentario no commit/PR em falhas;
+- status de sucesso sem spam de comentarios por padrao.
 
-O modulo nao depende do repositorio do produto estar clonado. Se o workspace ou o relatorio do `artisys-release` nao existirem, ele publica um fallback `clone-or-workflow`.
+O modulo e generico e nao depende de codigo do PDV. Tambem nao depende do repositorio do produto estar clonado: se o workspace ou o relatorio do `artisys-release` nao existirem, publica fallback `clone-or-workflow`.
 
 ## Uso no Woodpecker local
 
@@ -25,7 +24,16 @@ O host precisa expor `GITHUB_REPORT_TOKEN` ao processo do Agent e `ARTISYS_UTILI
 node "$env:ARTISYS_UTILIDADES_PATH\modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs"
 ```
 
-Variaveis reconhecidas:
+Por padrao o CLI publica uma falha. Para registrar sucesso:
+
+```powershell
+$env:ARTISYS_CI_RESULT='success'
+node "$env:ARTISYS_UTILIDADES_PATH\modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs"
+```
+
+`ARTISYS_COMMENT_SUCCESS=true` tambem comenta sucesso no commit/PR; o padrao e apenas status para evitar ruido.
+
+## Variaveis reconhecidas
 
 - `CI_REPO`
 - `CI_COMMIT_SHA`
@@ -41,6 +49,8 @@ Variaveis reconhecidas:
 - `ARTISYS_FAILED_STEP`
 - `ARTISYS_FAILURE_MESSAGE`
 - `ARTISYS_STATUS_CONTEXT`
+- `ARTISYS_CI_RESULT=success|failure`
+- `ARTISYS_COMMENT_SUCCESS=true|false`
 
 ## Verificacao
 
