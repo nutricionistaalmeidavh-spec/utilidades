@@ -28,18 +28,21 @@ async function findInstallers(dir, pattern) {
 async function main() {
   const workspace = process.env.CI_WORKSPACE || process.cwd();
   const reportPath = process.env.ARTISYS_REPORT_PATH || path.join(workspace, 'artifacts', 'artisys-release-report.json');
+  const qaReportPath = process.env.ARTISYS_QA_REPORT_PATH || path.join(workspace, 'artifacts', 'qa-summary.json');
   const logPath = process.env.ARTISYS_LOG_PATH || path.join(workspace, 'artifacts', 'woodpecker-release.log');
   const installerDir = process.env.ARTISYS_INSTALLER_DIR || path.join(workspace, 'dist');
   const installerPattern = process.env.ARTISYS_INSTALLER_PATTERN || 'Setup\\.exe$';
   const workspaceExists = await exists(workspace);
-  const [report, logText, installerPaths] = await Promise.all([
+  const [report, qaReport, logText, installerPaths] = await Promise.all([
     readJson(reportPath),
+    readJson(qaReportPath),
     readText(logPath),
     findInstallers(installerDir, installerPattern),
   ]);
 
   const summary = summarizeRelease({
     report,
+    qaReport,
     logText,
     installerPaths,
     fallbackStep: process.env.ARTISYS_FAILED_STEP || (workspaceExists ? 'workflow' : 'clone-or-workflow'),
