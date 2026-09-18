@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-ci-reporter",
+  "name": "ArtiSys CI Reporter",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-or-ci",
+  "upstreams": [],
+  "boundary": "Reusable CI failure diagnostics and GitHub reporting for ArtiSys products.",
+  "provides": [
+    "woodpecker-failure-summary",
+    "github-commit-status",
+    "github-commit-comment",
+    "optional-pr-comment",
+    "clone-independent-fallback"
+  ],
+  "packageName": "@artisys/ci-reporter",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": [
+    "woodpecker-failure-summary",
+    "github-commit-status",
+    "github-commit-comment",
+    "optional-pr-comment",
+    "clone-independent-fallback"
+  ],
+  "plannedCapabilities": [],
+  "verification": {
+    "unit": "npm test",
+    "syntax": "npm run check"
+  },
+  "limitations": [
+    "Requires a GitHub token supplied by the CI host environment.",
+    "Detailed release-step diagnostics depend on an artisys-release report or captured log; otherwise it reports clone-or-workflow fallback context."
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}
