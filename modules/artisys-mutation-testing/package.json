@@ -1,0 +1,17 @@
+{
+  "name": "@artisys/mutation-testing",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./src/index.mjs",
+  "exports": "./src/index.mjs",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/index.mjs",
+    "test:mutation": "stryker run"
+  },
+  "devDependencies": {
+    "@stryker-mutator/core": "10.0.0"
+  },
+  "files": ["src", "README.md", "LICENSE", "module.json"]
+}
