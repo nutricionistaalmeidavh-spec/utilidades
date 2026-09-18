@@ -114,14 +114,16 @@ try {
     }
   }
 
-  Write-JsonUtf8NoBom -Path $ReleaseRunPath -Value @{
+  $RunRecord = @{
     status = if ($ReleaseExit -eq 0) { 'passed' } else { 'failed' }
     commit = $ProductCommit
     utilidadesCommit = $PinnedCommit
     startedAt = $StartedAt
     finishedAt = $FinishedAt
     installer = $InstallerRecord
+    reporterExit = $null
   }
+  Write-JsonUtf8NoBom -Path $ReleaseRunPath -Value $RunRecord
 
   $env:ARTISYS_REPORT_PATH = $ReportPath
   $env:ARTISYS_LOG_PATH = $LogPath
@@ -132,6 +134,10 @@ try {
 
   & node $ReporterCli
   $ReporterExit = $LASTEXITCODE
+  $RunRecord.reporterExit = $ReporterExit
+  $RunRecord.reportedAt = (Get-Date).ToUniversalTime().ToString('o')
+  if ($ReporterExit -ne 0) { $RunRecord.status = 'failed' }
+  Write-JsonUtf8NoBom -Path $ReleaseRunPath -Value $RunRecord
 
   if ($ReleaseExit -ne 0) { exit $ReleaseExit }
   if ($ReporterExit -ne 0) { exit $ReporterExit }
