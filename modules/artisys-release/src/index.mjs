@@ -12,6 +12,12 @@ function nonEmptyString(value, name) {
   return value.trim();
 }
 
+function stringList(value, name) {
+  const list = [...(value ?? [])];
+  if (!list.every((item) => typeof item === 'string' && item.trim())) throw new TypeError(`${name} must contain strings`);
+  return list.map((item) => item.trim());
+}
+
 export function createReleasePlan(value) {
   obj(value, 'release plan');
   return {
@@ -56,14 +62,17 @@ export const PIPELINE_PROFILES = Object.freeze({
 });
 
 function normalizeStep(id, value) {
-  if (typeof value === 'string') return { id, command: value, cwd: null, env: {}, continueOnError: false };
+  if (typeof value === 'string') return { id, command: value, cwd: null, env: {}, continueOnError: false, profiles: null };
   obj(value, `step ${id}`);
+  const profiles = value.profiles == null ? null : stringList(value.profiles, `step ${id}.profiles`);
+  if (profiles && !profiles.every((profile) => Object.hasOwn(PIPELINE_PROFILES, profile))) throw new TypeError(`step ${id}.profiles contains unknown profile`);
   return {
     id,
     command: nonEmptyString(value.command, `step ${id}.command`),
     cwd: value.cwd ?? null,
     env: { ...(value.env ?? {}) },
     continueOnError: value.continueOnError === true,
+    profiles,
   };
 }
 
@@ -71,8 +80,14 @@ export function normalizePipelineConfig(value) {
   obj(value, 'pipeline config');
   const profile = value.profile ?? 'full';
   if (!Object.hasOwn(PIPELINE_PROFILES, profile)) throw new TypeError(`unknown profile: ${profile}`);
-  const requiredSteps = [...(value.requiredSteps ?? [])];
-  if (!requiredSteps.every((step) => typeof step === 'string' && step.trim())) throw new TypeError('requiredSteps must contain strings');
+  const requiredSteps = stringList(value.requiredSteps, 'requiredSteps');
+  const rawRequiredByProfile = value.requiredStepsByProfile ?? {};
+  obj(rawRequiredByProfile, 'requiredStepsByProfile');
+  const requiredStepsByProfile = {};
+  for (const [key, list] of Object.entries(rawRequiredByProfile)) {
+    if (!Object.hasOwn(PIPELINE_PROFILES, key)) throw new TypeError(`requiredStepsByProfile contains unknown profile: ${key}`);
+    requiredStepsByProfile[key] = stringList(list, `requiredStepsByProfile.${key}`);
+  }
   const rawSteps = value.steps ?? {};
   obj(rawSteps, 'steps');
   const steps = Object.fromEntries(Object.entries(rawSteps).map(([id, step]) => [id, normalizeStep(id, step)]));
@@ -82,6 +97,7 @@ export function normalizePipelineConfig(value) {
     profile,
     workspace: value.workspace ?? process.cwd(),
     requiredSteps,
+    requiredStepsByProfile,
     steps,
     reportPath: value.reportPath ?? null,
     metadata: { ...(value.metadata ?? {}) },
@@ -90,22 +106,32 @@ export function normalizePipelineConfig(value) {
 
 export function createPipelinePlan(value) {
   const config = normalizePipelineConfig(value);
-  const required = new Set(config.requiredSteps);
+  const required = new Set([...config.requiredSteps, ...(config.requiredStepsByProfile[config.profile] ?? [])]);
   const sequence = PIPELINE_PROFILES[config.profile];
   const steps = sequence.map((id) => {
     const step = config.steps[id];
+    if (step && step.profiles && !step.profiles.includes(config.profile)) {
+      return { ...step, status: 'skipped', required: false };
+    }
     if (step) return { ...step, status: 'ready', required: required.has(id) };
-    if (required.has(id)) return { id, command: null, cwd: null, env: {}, continueOnError: false, status: 'missing-required', required: true };
-    return { id, command: null, cwd: null, env: {}, continueOnError: false, status: 'skipped', required: false };
+    if (required.has(id)) return { id, command: null, cwd: null, env: {}, continueOnError: false, profiles: null, status: 'missing-required', required: true };
+    return { id, command: null, cwd: null, env: {}, continueOnError: false, profiles: null, status: 'skipped', required: false };
   });
-  return { ...config, sequence: [...sequence], steps };
+  return { ...config, requiredSteps: [...required], sequence: [...sequence], steps };
 }
 
 export async function defaultCommandExecutor(step, context = {}) {
   return await new Promise((resolve) => {
     const child = spawn(step.command, {
       cwd: step.cwd ? path.resolve(context.workspace ?? process.cwd(), step.cwd) : (context.workspace ?? process.cwd()),
-      env: { ...process.env, ...(context.env ?? {}), ...(step.env ?? {}) },
+      env: {
+        ...process.env,
+        ARTISYS_RELEASE_PRODUCT: context.product ?? '',
+        ARTISYS_RELEASE_VERSION: context.version ?? '',
+        ARTISYS_RELEASE_PROFILE: context.profile ?? '',
+        ...(context.env ?? {}),
+        ...(step.env ?? {}),
+      },
       shell: true,
       windowsHide: true,
     });
