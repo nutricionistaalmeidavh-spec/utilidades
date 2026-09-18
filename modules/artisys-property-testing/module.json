@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-property-testing",
+  "name": "ArtiSys Property Testing",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand-or-ci",
+  "upstreams": ["fast-check"],
+  "boundary": "Reusable property-based testing helpers. fast-check is used only in local/CI test execution and is not a production runtime dependency.",
+  "provides": ["property-based-testing", "collection-arbitraries", "generated-regression-cases", "invariant-checking"],
+  "packageName": "@artisys/property-testing",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["order-invariance", "duplicate-invariance", "group-sum-invariant", "truncation-invariance", "idless-count-invariant", "large-text-invariance"],
+  "plannedCapabilities": [],
+  "recommendedConsumers": ["RAGArtisysRepos", "all-active-products"],
+  "verification": {"unit": "npm test", "syntax": "npm run check"},
+  "limitations": ["Consumers execute properties locally or in CI; no hosted runner is required."],
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}
