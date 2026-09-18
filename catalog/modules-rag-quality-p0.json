@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-09-18",
+  "kind": "module-catalog-extension",
+  "modules": [
+    {
+      "id": "artisys-structured-facts",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": ["RAGArtisysRepos", "agents", "analytics-products"]
+    },
+    {
+      "id": "artisys-property-testing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": ["fast-check"],
+      "recommendedConsumers": ["RAGArtisysRepos", "all-active-products"]
+    },
+    {
+      "id": "artisys-mutation-testing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": ["stryker-js"],
+      "recommendedConsumers": ["RAGArtisysRepos", "critical-domain-modules"]
+    }
+  ]
+}
