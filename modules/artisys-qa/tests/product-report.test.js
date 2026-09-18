@@ -32,7 +32,7 @@ test('product bundle writes the standardized P2 artifacts',async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'artisys-qa-p2-'));
   const summary=buildProductQaSummary({systemId:'demo',checks:[{name:'smoke',status:'passed'}]});
   const result=await writeProductQaBundle({outputRoot:root,summary,coverage:{discovered:1,covered:1,uncovered:0},runId:'test'});
-  for(const name of ['QA-SUMMARY.json','QA-SUMMARY.txt','report.html','coverage.json','endpoints.json','console-errors.json','network-errors.json','findings.json']){
+  for(const name of ['QA-SUMMARY.json','QA-SUMMARY.txt','report.html','coverage.json','endpoints.json','console-errors.json','network-errors.json','findings.json','evidence.json']){
     await fs.access(path.join(result.outputDir,name));
   }
   await fs.rm(root,{recursive:true,force:true});
