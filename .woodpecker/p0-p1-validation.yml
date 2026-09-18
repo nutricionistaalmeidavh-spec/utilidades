@@ -11,14 +11,9 @@ steps:
     environment:
       ARTISYS_UTILIDADES_PATH: 'C:\VICTOR\Artisys\AgroFrota\utilidades'
     commands:
-      - '$ErrorActionPreference = "Continue"'
       - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
       - '"=== RepoUteis P0/P1 validation ===" | Set-Content -Path ".\artifacts\woodpecker-release.log" -Encoding utf8'
-      - 'node --version'
-      - 'npm --version'
-      - 'python --version'
-      - 'java -version'
-      - 'if (-not (Test-Path $env:ARTISYS_UTILIDADES_PATH)) { throw "ARTISYS_UTILIDADES_PATH nao encontrado: $env:ARTISYS_UTILIDADES_PATH" }'
+      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "environment" -Command "node --version && npm --version && python --version && java -version && if exist \\"%ARTISYS_UTILIDADES_PATH%\\" (exit /b 0) else (echo ARTISYS_UTILIDADES_PATH nao encontrado: %ARTISYS_UTILIDADES_PATH% 1>&2 & exit /b 1)"'
 
   - name: module-dependencies
     image: powershell.exe
