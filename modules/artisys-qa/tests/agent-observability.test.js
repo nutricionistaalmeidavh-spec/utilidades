@@ -38,12 +38,16 @@ test('supervisor recovers telemetry, starts console, heartbeats and closes clean
     consoleFactory: () => consoleInstance,
     bridgeStarter: options => { calls.bridgeTelemetry = options.telemetry; return bridgeControl; },
   });
-  await wait(35);
-  assert.equal(calls.recover, 1);
-  assert.equal(calls.consoleStart, 1);
-  assert.equal(calls.bridgeTelemetry, telemetry);
-  assert.ok(calls.heartbeat >= 2);
-  await supervisor.stop();
+  try {
+    await wait(35);
+    assert.equal(calls.recover, 1);
+    assert.equal(calls.consoleStart, 1);
+    assert.equal(supervisor.localTelemetry, telemetry);
+    assert.equal(calls.bridgeTelemetry, supervisor.telemetry);
+    assert.ok(calls.heartbeat >= 2);
+  } finally {
+    await supervisor.stop();
+  }
   assert.equal(calls.consoleClose, 1);
 });
 
@@ -76,8 +80,11 @@ test('stale active job is marked stalled without crashing supervisor', async () 
     consoleFactory: () => ({ start: async () => ({}), close: async () => {} }),
     bridgeStarter: () => ({ stop() {} }),
   });
-  await wait(30);
-  assert.equal(transitions[0]?.stage, 'STALLED');
-  assert.equal(transitions[0]?.jobId, 'job-stale');
-  await supervisor.stop();
+  try {
+    await wait(30);
+    assert.equal(transitions[0]?.stage, 'STALLED');
+    assert.equal(transitions[0]?.jobId, 'job-stale');
+  } finally {
+    await supervisor.stop();
+  }
 });
