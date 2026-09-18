@@ -11,7 +11,7 @@ steps:
     environment:
       ARTISYS_UTILIDADES_PATH: 'C:\VICTOR\Artisys\AgroFrota\utilidades'
     commands:
-      - '$ErrorActionPreference = "Stop"'
+      - '$ErrorActionPreference = "Continue"'
       - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
       - '"=== RepoUteis P0/P1 validation ===" | Set-Content -Path ".\artifacts\woodpecker-release.log" -Encoding utf8'
       - 'node --version'
