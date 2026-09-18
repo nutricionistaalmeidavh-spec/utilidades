@@ -75,6 +75,7 @@ export function buildProductQaSummary({
   consoleErrors=[],
   networkErrors=[],
   findings=[],
+  evidence=[],
   metadata={},
   policy={},
   override=false,
@@ -102,6 +103,7 @@ export function buildProductQaSummary({
     consoleErrorCount:safeArray(consoleErrors).length,
     networkErrorCount:safeArray(networkErrors).length,
     findingCount:safeArray(findings).length,
+    evidenceCount:safeArray(evidence).length,
     gate,
     checks:normalizedChecks,
     metadata:metadata&&typeof metadata==='object'?metadata:{},
@@ -119,6 +121,7 @@ export function renderProductQaText(summary){
     'Console errors: '+summary.consoleErrorCount,
     'Network errors: '+summary.networkErrorCount,
     'Findings: '+summary.findingCount,
+    'Evidence files: '+(summary.evidenceCount??0),
     'Gate: '+(summary.gate.allowed?'ALLOWED':'BLOCKED'),
   ];
   if(summary.coverage){
@@ -142,6 +145,7 @@ export async function writeProductQaBundle({
   consoleErrors=[],
   networkErrors=[],
   findings=[],
+  evidence=[],
   runId=null,
   secretValues=[],
 }={}){
@@ -152,6 +156,7 @@ export async function writeProductQaBundle({
   const safeConsoleErrors=redactSecrets(safeArray(consoleErrors),secretValues);
   const safeNetworkErrors=redactSecrets(safeArray(networkErrors),secretValues);
   const safeFindings=redactSecrets(safeArray(findings),secretValues);
+  const safeEvidence=redactSecrets(safeArray(evidence),secretValues);
   const id=runId||new Date().toISOString().replace(/[:.]/g,'-');
   const dir=path.resolve(outputRoot,isoSlug(safeSummary.systemId)+'-'+id);
   await fs.mkdir(dir,{recursive:true});
@@ -164,6 +169,7 @@ export async function writeProductQaBundle({
     consoleErrors:path.join(dir,'console-errors.json'),
     networkErrors:path.join(dir,'network-errors.json'),
     findings:path.join(dir,'findings.json'),
+    evidence:path.join(dir,'evidence.json'),
   };
   await Promise.all([
     fs.writeFile(files.summaryJson,JSON.stringify(safeSummary,null,2)+'\n','utf8'),
@@ -174,6 +180,7 @@ export async function writeProductQaBundle({
     fs.writeFile(files.consoleErrors,JSON.stringify(safeConsoleErrors,null,2)+'\n','utf8'),
     fs.writeFile(files.networkErrors,JSON.stringify(safeNetworkErrors,null,2)+'\n','utf8'),
     fs.writeFile(files.findings,JSON.stringify(safeFindings,null,2)+'\n','utf8'),
+    fs.writeFile(files.evidence,JSON.stringify(safeEvidence,null,2)+'\n','utf8'),
   ]);
   return {outputDir:dir,files};
 }
