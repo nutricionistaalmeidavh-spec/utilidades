@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -42,7 +42,8 @@
     "./flow-library": "./src/flow-library.js",
     "./redaction": "./src/redaction.js",
     "./visual": "./src/visual.js",
-    "./remote-control": "./src/remote-control.js"
+    "./remote-control": "./src/remote-control.js",
+    "./product-report": "./src/product-report.js"
   },
   "bin": {
     "artisys-qa": "./src/cli.mjs",
