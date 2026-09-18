@@ -2,7 +2,7 @@
 
 Portable AI/RAG evaluation contracts with no embedded credentials and no mandatory hosted service.
 
-## Existing Promptfoo boundary
+## Promptfoo boundary
 
 ```js
 import { buildPromptfooConfig } from '@artisys/ai-quality';
@@ -35,4 +35,26 @@ const result = evaluateFactRegression(testCase, {
 
 The factual helpers verify required facts, forbidden claims, exact aggregate values, complete-evidence requirements and deterministic provenance. They do not call a model.
 
-Core license cost: R$ 0. Promptfoo/model-provider execution remains optional and is configured by the consumer.
+## Optional Ragas and DeepEval handoff
+
+The module can emit data shaped for external evaluators without importing them or making them runtime dependencies:
+
+```js
+import {
+  buildRagasSamples,
+  buildDeepEvalTestCases,
+  buildExternalEvaluationBundle,
+} from '@artisys/ai-quality';
+
+const ragasSamples = buildRagasSamples(dataset.cases, results);
+const deepEvalCases = buildDeepEvalTestCases(dataset.cases, results);
+const bundle = buildExternalEvaluationBundle(dataset.cases, results);
+```
+
+Ragas receives `user_input`, `retrieved_contexts`, `response`, `reference` and `reference_contexts`. DeepEval receives `input`, `actual_output`, `expected_output`, `context`, `retrieval_context` and the agent tools executed when available.
+
+These are data-only adapters. Installing or running Ragas/DeepEval is optional and remains in the consumer environment.
+
+## Cost policy
+
+Core license/service cost: R$ 0. Promptfoo, Ragas, DeepEval and model-provider execution are optional; no hosted platform is required by this module.
