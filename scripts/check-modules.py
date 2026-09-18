@@ -96,6 +96,10 @@ def load_project_catalog():
     return _load_catalog('projects.json', 'projects')
 
 
+def load_display_catalog():
+    return _load_catalog('module-display.pt-BR.json', 'modules')
+
+
 def known_upstreams():
     upstreams = {p['id'] for p in load_project_catalog()}
     incorporated = ROOT / 'catalog/incorporated-repos-2026-09-10.json'
@@ -105,8 +109,7 @@ def known_upstreams():
 
 
 def validate_display_catalog(catalog):
-    display_path = ROOT / 'catalog/module-display.pt-BR.json'
-    display = json.loads(display_path.read_text(encoding='utf-8'))['modules']
+    display = load_display_catalog()
     catalog_ids = {entry['id'] for entry in catalog}
     display_ids = [entry['id'] for entry in display]
     if len(set(display_ids)) != len(display_ids):
