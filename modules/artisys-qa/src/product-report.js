@@ -1,3 +1,4 @@
+import { redactSecrets } from './redaction.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -142,10 +143,17 @@ export async function writeProductQaBundle({
   networkErrors=[],
   findings=[],
   runId=null,
+  secretValues=[],
 }={}){
   if(!summary?.systemId)throw new TypeError('summary.systemId is required');
+  const safeSummary=redactSecrets(summary,secretValues);
+  const safeCoverage=redactSecrets(coverage||{},secretValues);
+  const safeEndpoints=redactSecrets(safeArray(endpoints),secretValues);
+  const safeConsoleErrors=redactSecrets(safeArray(consoleErrors),secretValues);
+  const safeNetworkErrors=redactSecrets(safeArray(networkErrors),secretValues);
+  const safeFindings=redactSecrets(safeArray(findings),secretValues);
   const id=runId||new Date().toISOString().replace(/[:.]/g,'-');
-  const dir=path.resolve(outputRoot,isoSlug(summary.systemId)+'-'+id);
+  const dir=path.resolve(outputRoot,isoSlug(safeSummary.systemId)+'-'+id);
   await fs.mkdir(dir,{recursive:true});
   const files={
     summaryJson:path.join(dir,'QA-SUMMARY.json'),
@@ -158,14 +166,14 @@ export async function writeProductQaBundle({
     findings:path.join(dir,'findings.json'),
   };
   await Promise.all([
-    fs.writeFile(files.summaryJson,JSON.stringify(summary,null,2)+'\n','utf8'),
-    fs.writeFile(files.summaryText,renderProductQaText(summary),'utf8'),
-    fs.writeFile(files.html,renderProductQaHtml(summary),'utf8'),
-    fs.writeFile(files.coverage,JSON.stringify(coverage||{},null,2)+'\n','utf8'),
-    fs.writeFile(files.endpoints,JSON.stringify(safeArray(endpoints),null,2)+'\n','utf8'),
-    fs.writeFile(files.consoleErrors,JSON.stringify(safeArray(consoleErrors),null,2)+'\n','utf8'),
-    fs.writeFile(files.networkErrors,JSON.stringify(safeArray(networkErrors),null,2)+'\n','utf8'),
-    fs.writeFile(files.findings,JSON.stringify(safeArray(findings),null,2)+'\n','utf8'),
+    fs.writeFile(files.summaryJson,JSON.stringify(safeSummary,null,2)+'\n','utf8'),
+    fs.writeFile(files.summaryText,renderProductQaText(safeSummary),'utf8'),
+    fs.writeFile(files.html,renderProductQaHtml(safeSummary),'utf8'),
+    fs.writeFile(files.coverage,JSON.stringify(safeCoverage,null,2)+'\n','utf8'),
+    fs.writeFile(files.endpoints,JSON.stringify(safeEndpoints,null,2)+'\n','utf8'),
+    fs.writeFile(files.consoleErrors,JSON.stringify(safeConsoleErrors,null,2)+'\n','utf8'),
+    fs.writeFile(files.networkErrors,JSON.stringify(safeNetworkErrors,null,2)+'\n','utf8'),
+    fs.writeFile(files.findings,JSON.stringify(safeFindings,null,2)+'\n','utf8'),
   ]);
   return {outputDir:dir,files};
 }
