@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-09-18",
+  "mergePolicy": "id-last-write-wins",
+  "modules": [
+    {
+      "id": "artisys-ai-quality",
+      "version": "0.4.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": ["promptfoo"],
+      "recommendedConsumers": ["RAGArtisysRepos", "Hackathon", "OBRANAMAOCOMERCIAL", "CLINICASMEDICAS", "cyber-study-hub"]
+    },
+    {
+      "id": "artisys-structured-facts",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": ["RAGArtisysRepos", "agents", "analytics-products"]
+    },
+    {
+      "id": "artisys-property-testing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": [],
+      "recommendedConsumers": ["RAGArtisysRepos", "all-active-products"]
+    },
+    {
+      "id": "artisys-mutation-testing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": [],
+      "recommendedConsumers": ["RAGArtisysRepos", "critical-domain-modules"]
+    },
+    {
+      "id": "artisys-ai-observability",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-local-on-demand",
+      "upstreams": [],
+      "recommendedConsumers": ["RAGArtisysRepos", "agents", "ai-products"]
+    }
+  ]
+}
