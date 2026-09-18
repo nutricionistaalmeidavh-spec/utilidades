@@ -5,6 +5,12 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+function Write-JsonUtf8NoBom {
+  param([Parameter(Mandatory=$true)][string]$Path,[Parameter(Mandatory=$true)]$Value)
+  $json = $Value | ConvertTo-Json -Depth 10
+  [IO.File]::WriteAllText($Path,$json,(New-Object Text.UTF8Encoding($false)))
+}
+
 $ProductRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $LockPath = Join-Path $ProductRoot '.artisys\utilidades.lock'
 $ReleaseConfig = Join-Path $ProductRoot '.artisys\release.json'
@@ -21,6 +27,7 @@ $StatusContext = if ($env:ARTISYS_STATUS_CONTEXT) { $env:ARTISYS_STATUS_CONTEXT 
 if (-not (Test-Path $LockPath)) { throw "Lock ausente: $LockPath" }
 if (-not (Test-Path $ReleaseConfig)) { throw "Config ausente: $ReleaseConfig" }
 if (-not $env:ARTISYS_UTILIDADES_PATH) { throw 'ARTISYS_UTILIDADES_PATH nao configurado no host.' }
+if (-not $DryRun -and -not $env:GITHUB_REPORT_TOKEN) { throw 'GITHUB_REPORT_TOKEN nao configurado no host.' }
 
 $UtilidadesPath = (Resolve-Path $env:ARTISYS_UTILIDADES_PATH).Path
 $Lock = Get-Content $LockPath -Raw | ConvertFrom-Json
@@ -80,14 +87,14 @@ try {
   }
 
   if ($DryRun) {
-    @{
+    Write-JsonUtf8NoBom -Path $DryRunPath -Value @{
       status = if ($ReleaseExit -eq 0) { 'dry-run' } else { 'failed' }
       dryRun = $true
       commit = $ProductCommit
       utilidadesCommit = $PinnedCommit
       startedAt = $StartedAt
       finishedAt = $FinishedAt
-    } | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 $DryRunPath
+    }
     exit $ReleaseExit
   }
 
@@ -107,14 +114,14 @@ try {
     }
   }
 
-  @{
+  Write-JsonUtf8NoBom -Path $ReleaseRunPath -Value @{
     status = if ($ReleaseExit -eq 0) { 'passed' } else { 'failed' }
     commit = $ProductCommit
     utilidadesCommit = $PinnedCommit
     startedAt = $StartedAt
     finishedAt = $FinishedAt
     installer = $InstallerRecord
-  } | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 $ReleaseRunPath
+  }
 
   $env:ARTISYS_REPORT_PATH = $ReportPath
   $env:ARTISYS_LOG_PATH = $LogPath
