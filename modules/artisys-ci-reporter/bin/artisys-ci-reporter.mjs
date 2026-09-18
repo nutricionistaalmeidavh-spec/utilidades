@@ -3,6 +3,7 @@ import { access, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { constants as fsConstants } from 'node:fs';
 import { publishGitHubFailure, publishGitHubSuccess, summarizeRelease } from '../src/index.mjs';
+import { normalizeLegacyPhase5QaReport } from '../src/legacy-phase5.mjs';
 
 async function exists(target) {
   try { await access(target, fsConstants.F_OK); return true; } catch { return false; }
@@ -32,17 +33,49 @@ async function main() {
   const logPath = process.env.ARTISYS_LOG_PATH || path.join(workspace, 'artifacts', 'woodpecker-release.log');
   const installerDir = process.env.ARTISYS_INSTALLER_DIR || path.join(workspace, 'dist');
   const installerPattern = process.env.ARTISYS_INSTALLER_PATTERN || 'Setup\\.exe$';
+  const legacyQaDir = path.join(workspace, 'qa-artifacts');
+  const legacySurfacePath = path.join(legacyQaDir, 'phase5-summary.json');
+  const legacyPlaywrightPath = path.join(legacyQaDir, 'playwright-summary.json');
+  const legacyFallbackPath = path.join(legacyQaDir, 'phase5-fallback-summary.json');
+  const legacyRawLogPath = path.join(legacyQaDir, 'phase5-raw.log');
   const workspaceExists = await exists(workspace);
-  const [report, qaReport, logText, installerPaths] = await Promise.all([
+
+  const [
+    report,
+    qaReport,
+    logText,
+    installerPaths,
+    legacySurface,
+    legacyPlaywright,
+    legacyFallback,
+    legacyRawLog,
+  ] = await Promise.all([
     readJson(reportPath),
     readJson(qaReportPath),
     readText(logPath),
     findInstallers(installerDir, installerPattern),
+    readJson(legacySurfacePath),
+    readJson(legacyPlaywrightPath),
+    readJson(legacyFallbackPath),
+    readText(legacyRawLogPath),
   ]);
+
+  const effectiveQaReport = qaReport || normalizeLegacyPhase5QaReport({
+    surface: legacySurface,
+    playwright: legacyPlaywright,
+    fallback: legacyFallback,
+    rawLog: legacyRawLog,
+    artifacts: {
+      log: legacyRawLogPath,
+      phase5Summary: legacySurfacePath,
+      playwrightSummary: legacyPlaywrightPath,
+      fallbackSummary: legacyFallbackPath,
+    },
+  });
 
   const summary = summarizeRelease({
     report,
-    qaReport,
+    qaReport: effectiveQaReport,
     logText,
     installerPaths,
     fallbackStep: process.env.ARTISYS_FAILED_STEP || (workspaceExists ? 'workflow' : 'clone-or-workflow'),
