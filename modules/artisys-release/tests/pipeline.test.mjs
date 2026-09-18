@@ -15,6 +15,22 @@ test('normalizes config and preserves custom required stages', () => {
   assert.equal(cfg.steps.build.command,'npm run build');
 });
 
+test('merges profile-specific required steps only for the active profile', () => {
+  const full = createPipelinePlan({
+    product:'x',version:'1',profile:'full',requiredSteps:['build'],requiredStepsByProfile:{release:['security','publish']},
+    steps:{build:'build',security:{command:'security',profiles:['release']},publish:{command:'publish',profiles:['release']}}
+  });
+  assert.equal(full.steps.find(s=>s.id==='security').status,'skipped');
+  assert.equal(full.steps.find(s=>s.id==='publish'), undefined);
+
+  const release = createPipelinePlan({
+    product:'x',version:'1',profile:'release',requiredSteps:['build'],requiredStepsByProfile:{release:['security','publish']},
+    steps:{build:'build',security:{command:'security',profiles:['release']},publish:{command:'publish',profiles:['release']}}
+  });
+  assert.equal(release.steps.find(s=>s.id==='security').required,true);
+  assert.equal(release.steps.find(s=>s.id==='publish').required,true);
+});
+
 test('creates pipeline plan with skipped optional stages and blocked required missing stage', () => {
   const plan = createPipelinePlan({product:'x',version:'1',profile:'full',requiredSteps:['installer'],steps:{build:'npm run build'}});
   assert.equal(plan.steps.find(s=>s.id==='build').status,'ready');
@@ -30,6 +46,16 @@ test('runs configured stages sequentially and stops on failure', async () => {
   assert.deepEqual(calls,['build','installer','qa']);
   assert.equal(result.status,'blocked');
   assert.equal(result.failedStep,'qa');
+});
+
+test('passes release context to the executor', async () => {
+  let context;
+  await runPipeline({product:'PDV',version:'1.2.3',profile:'quick',steps:{build:'build'}}, {
+    executor: async (_step, ctx) => { context=ctx; return {exitCode:0,stdout:'',stderr:''}; }
+  });
+  assert.equal(context.product,'PDV');
+  assert.equal(context.version,'1.2.3');
+  assert.equal(context.profile,'quick');
 });
 
 test('dry run reports stages without executing commands', async () => {
