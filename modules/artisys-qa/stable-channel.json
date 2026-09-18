@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "minimumNode": "22",
-  "notes": "Centraliza o contrato artifacts/qa-summary.json no ArtiSys QA, preserva fluxo/etapa/erro/evidencias em falhas e permite fallback estruturado compartilhado para consumidores e reporter GitHub."
+  "notes": "Adiciona runner de testes com saída em tempo real e timeout por arquivo, impedindo validações compartilhadas de ficarem presas silenciosamente; mantém os resumos CI fail-safe da 2.5.0."
 }
