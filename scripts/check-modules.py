@@ -14,6 +14,9 @@ P0_JS_MODULES = (
     'artisys-custody', 'artisys-maintenance', 'artisys-metering',
     'artisys-search', 'artisys-exporter'
 )
+P0_RAG_QUALITY_MODULES = (
+    'artisys-structured-facts', 'artisys-property-testing', 'artisys-mutation-testing'
+)
 READY = (
     'artisys-qa', 'artisys-security', 'artisys-api-contracts', 'artisys-documents',
     'artisys-pdf', 'artisys-workflows', 'artisys-capture', 'artisys-dashboard',
@@ -27,7 +30,7 @@ READY = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *P0_RAG_QUALITY_MODULES
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -43,7 +46,7 @@ JS_MODULES = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES, *P0_RAG_QUALITY_MODULES
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -62,17 +65,48 @@ def run(args, cwd=ROOT, env=None):
     subprocess.run(args, cwd=cwd, env=env, check=True)
 
 
+def _load_catalog(base_name, collection_key):
+    catalog_dir = ROOT / 'catalog'
+    base_path = catalog_dir / base_name
+    payloads = [(base_path, json.loads(base_path.read_text(encoding='utf-8')))]
+    prefix = base_path.stem + '-'
+    for extension_path in sorted(catalog_dir.glob(f'{prefix}*.json')):
+        payloads.append((extension_path, json.loads(extension_path.read_text(encoding='utf-8'))))
+    by_id = {}
+    for file_path, payload in payloads:
+        entries = payload.get(collection_key, [])
+        ids = [entry.get('id') for entry in entries]
+        duplicates = sorted({item for item in ids if item and ids.count(item) > 1})
+        if duplicates:
+            label = 'module' if collection_key == 'modules' else 'project'
+            raise ValueError(f'Duplicate {label} id in {file_path.name}: {duplicates}')
+        for entry in entries:
+            item_id = entry.get('id')
+            if not item_id:
+                continue
+            by_id[item_id] = {**by_id.get(item_id, {}), **entry}
+    return [by_id[item_id] for item_id in sorted(by_id)]
+
+
+def load_module_catalog():
+    return _load_catalog('modules.json', 'modules')
+
+
+def load_project_catalog():
+    return _load_catalog('projects.json', 'projects')
+
+
 def known_upstreams():
-    upstreams = {p['id'] for p in json.loads((ROOT / 'catalog/projects.json').read_text())['projects']}
+    upstreams = {p['id'] for p in load_project_catalog()}
     incorporated = ROOT / 'catalog/incorporated-repos-2026-09-10.json'
     if incorporated.is_file():
-        upstreams |= {p['id'] for p in json.loads(incorporated.read_text())['repositories']}
+        upstreams |= {p['id'] for p in json.loads(incorporated.read_text(encoding='utf-8'))['repositories']}
     return upstreams
 
 
 def validate_display_catalog(catalog):
     display_path = ROOT / 'catalog/module-display.pt-BR.json'
-    display = json.loads(display_path.read_text())['modules']
+    display = json.loads(display_path.read_text(encoding='utf-8'))['modules']
     catalog_ids = {entry['id'] for entry in catalog}
     display_ids = [entry['id'] for entry in display]
     if len(set(display_ids)) != len(display_ids):
@@ -89,14 +123,12 @@ def main():
     parser.add_argument('--pact', action='store_true')
     parser.add_argument('--generator', action='store_true')
     args = parser.parse_args()
-    catalog = json.loads((ROOT / 'catalog/modules.json').read_text())['modules']
-    if len({m['id'] for m in catalog}) != len(catalog):
-        raise ValueError('Duplicate module id')
+    catalog = load_module_catalog()
     validate_display_catalog(catalog)
     upstreams = known_upstreams()
     for entry in catalog:
         path = ROOT / 'modules' / entry['id']
-        manifest = json.loads((path / 'module.json').read_text())
+        manifest = json.loads((path / 'module.json').read_text(encoding='utf-8'))
         for key in ('id', 'version', 'status', 'consumptionMode', 'upstreams'):
             if entry[key] != manifest[key]:
                 raise ValueError(f'{entry["id"]}: catalog mismatch at {key}')
@@ -112,7 +144,7 @@ def main():
     npm = 'npm.cmd' if os.name == 'nt' else 'npm'
     for module in JS_MODULES:
         run([npm, 'test'], ROOT / 'modules' / module)
-    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:]):
+    for module in ('artisys-pdf', 'artisys-workflows', 'artisys-serialport', 'artisys-printing', 'artisys-finance-domain', *NEW_PRODUCT_MODULES[8:], *P0_RAG_QUALITY_MODULES):
         run([npm, 'run', 'check'], ROOT / 'modules' / module)
     for module in NEW_PRODUCT_MODULES:
         run([npm, 'run', 'example'], ROOT / 'modules' / module)
