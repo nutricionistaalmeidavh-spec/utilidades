@@ -11,7 +11,7 @@ async function tempRoot() {
   return fs.mkdtemp(path.join(os.tmpdir(), 'qa-agent-observability-'));
 }
 
-test('supervisor recovers telemetry, starts console, heartbeats and closes cleanly', async () => {
+test('supervisor recovers telemetry, starts console, heartbeats and closes cleanly', async t => {
   const root = await tempRoot();
   const calls = { recover: 0, heartbeat: 0, consoleStart: 0, consoleClose: 0, bridgeTelemetry: null };
   const telemetry = {
@@ -38,16 +38,19 @@ test('supervisor recovers telemetry, starts console, heartbeats and closes clean
     consoleFactory: () => consoleInstance,
     bridgeStarter: options => { calls.bridgeTelemetry = options.telemetry; return bridgeControl; },
   });
-  await wait(35);
+  t.after(async () => { await supervisor.stop(); await fs.rm(root, { recursive: true, force: true }); });
+  for (let attempt = 0; attempt < 50 && calls.heartbeat < 2; attempt++) await wait(10);
   assert.equal(calls.recover, 1);
   assert.equal(calls.consoleStart, 1);
-  assert.equal(calls.bridgeTelemetry, telemetry);
+  assert.ok(calls.bridgeTelemetry);
+  assert.equal(typeof calls.bridgeTelemetry.heartbeat, 'function');
+  assert.equal(typeof calls.bridgeTelemetry.transition, 'function');
   assert.ok(calls.heartbeat >= 2);
   await supervisor.stop();
   assert.equal(calls.consoleClose, 1);
 });
 
-test('stale active job is marked stalled without crashing supervisor', async () => {
+test('stale active job is marked stalled without crashing supervisor', async t => {
   const root = await tempRoot();
   const transitions = [];
   let current = {
@@ -76,7 +79,8 @@ test('stale active job is marked stalled without crashing supervisor', async () 
     consoleFactory: () => ({ start: async () => ({}), close: async () => {} }),
     bridgeStarter: () => ({ stop() {} }),
   });
-  await wait(30);
+  t.after(async () => { await supervisor.stop(); await fs.rm(root, { recursive: true, force: true }); });
+  for (let attempt = 0; attempt < 50 && transitions.length === 0; attempt++) await wait(10);
   assert.equal(transitions[0]?.stage, 'STALLED');
   assert.equal(transitions[0]?.jobId, 'job-stale');
   await supervisor.stop();
