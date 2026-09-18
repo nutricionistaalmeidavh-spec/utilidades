@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-structured-facts",
+  "name": "ArtiSys Structured Facts",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": [],
+  "boundary": "Deterministic collection facts and aggregate-question resolution. No LLM or hosted service is required.",
+  "provides": ["collection-summary", "deterministic-count", "grouped-count", "aggregate-question-resolution", "truncation-safe-metadata"],
+  "packageName": "@artisys/structured-facts",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["logical-deduplication", "physical-and-logical-counts", "group-aggregates", "complete-vs-truncated-metadata", "pt-en-count-intent"],
+  "plannedCapabilities": [],
+  "recommendedConsumers": ["RAGArtisysRepos", "agents", "analytics-products"],
+  "verification": {"unit": "npm test", "syntax": "npm run check"},
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}
