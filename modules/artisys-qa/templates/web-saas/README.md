@@ -40,3 +40,7 @@ Para produtos comerciais, o próximo nível após o smoke P0 deve executar:
 - gates nativos antes do profile `release`.
 
 Use `@artisys/qa/matrix` para construir a matriz e mantenha a lógica específica no consumidor.
+
+## P2 — bundle de release
+
+Consumidores web/SaaS devem gerar um bundle padronizado com `QA-SUMMARY.json/txt`, HTML, cobertura, endpoints e erros. O release final usa `evaluateProductGate` e deve falhar fechado quando houver check crítico, HTTP 5xx, request failure, console error acima da política ou lacuna crítica de cobertura. Para novos SaaS, use também os packs `saas`, `licensing` e `multitenancy` quando os flows correspondentes existirem.
