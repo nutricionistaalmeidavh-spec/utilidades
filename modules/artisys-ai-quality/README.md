@@ -1,16 +1,38 @@
-# artisys-ai-quality
+# ArtiSys AI Quality
 
-Kit compartilhado para regressão e avaliação de funcionalidades de IA.
+Portable AI/RAG evaluation contracts with no embedded credentials and no mandatory hosted service.
 
-Expõe validação de suites, geração de configuração Promptfoo, resumo de resultados e execução por adapter injetado. Nenhuma credencial de provedor ou dataset sensível é armazenado no kit.
+## Existing Promptfoo boundary
 
-## Verificação
-
-```bash
-npm test
-npm run check
-npm run example
-npm pack --dry-run
+```js
+import { buildPromptfooConfig } from '@artisys/ai-quality';
 ```
 
-Promptfoo e as credenciais dos modelos são instalados/configurados somente no ambiente que executa a avaliação.
+The existing suite/config/summary/adapter API remains compatible.
+
+## Deterministic factual regression
+
+```js
+import {
+  buildCollectionRegressionCase,
+  evaluateFactRegression,
+} from '@artisys/ai-quality';
+
+const testCase = buildCollectionRegressionCase({
+  id: 'repoutils-module-count',
+  question: 'Quantos módulos temos?',
+  expectedTotal: 61,
+  forbiddenTotals: [14],
+  requireDeterministic: true,
+});
+
+const result = evaluateFactRegression(testCase, {
+  answer: 'Temos 61 módulos.',
+  provider: 'deterministic',
+  aggregates: { total: 61 },
+});
+```
+
+The factual helpers verify required facts, forbidden claims, exact aggregate values, complete-evidence requirements and deterministic provenance. They do not call a model.
+
+Core license cost: R$ 0. Promptfoo/model-provider execution remains optional and is configured by the consumer.
