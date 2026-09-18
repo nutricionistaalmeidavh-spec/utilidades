@@ -67,6 +67,19 @@ def evaluate(tool, report, mode):
     return {'findings': len(findings), 'blocking': sum(RANK[s] >= threshold for s in findings)}
 
 
+def _map_docker_arg(value, mappings):
+    text = str(value)
+    for host, container in mappings:
+        host = str(host)
+        if text == host:
+            return container
+        if text.startswith(host):
+            suffix = text[len(host):].lstrip('/\\').replace('\\', '/')
+            if suffix:
+                return f'{container}/{suffix}'
+    return text
+
+
 def scan(target, mode='commit', engine='native', execute=subprocess.run):
     target = Path(target).resolve(strict=True)
     if not target.is_dir() or mode not in ('commit', 'release') or engine not in ('native', 'docker'):
@@ -84,11 +97,28 @@ def scan(target, mode='commit', engine='native', execute=subprocess.run):
                 raise GateError(f'{tool}: version unavailable') from None
     with tempfile.TemporaryDirectory(prefix='artisys-security-') as temp:
         temp = Path(temp)
-        # Containers see identical paths, keeping command generation identical across engines.
+        container_target = '/workspace'
+        container_root = '/artisys-security'
+        container_temp = '/artisys-output'
+        docker_mappings = ((temp, container_temp), (ROOT, container_root), (target, container_target))
+
         def run(tool, arguments, output):
             command = [tool, *arguments]
             if engine == 'docker':
-                command = ['docker', 'run', '--rm', '-e', 'GIT_CONFIG_COUNT=1', '-e', 'GIT_CONFIG_KEY_0=safe.directory', '-e', f'GIT_CONFIG_VALUE_0={target}', '-v', f'{target}:{target}:ro', '-v', f'{ROOT}:{ROOT}:ro', '-v', f'{temp}:{temp}', '-w', str(target), '--entrypoint', tool, IMAGES[tool], *arguments]
+                mapped_arguments = [_map_docker_arg(argument, docker_mappings) for argument in arguments]
+                command = [
+                    'docker', 'run', '--rm',
+                    '-e', 'GIT_CONFIG_COUNT=1',
+                    '-e', 'GIT_CONFIG_KEY_0=safe.directory',
+                    '-e', f'GIT_CONFIG_VALUE_0={container_target}',
+                    '-v', f'{target}:{container_target}:ro',
+                    '-v', f'{ROOT}:{container_root}:ro',
+                    '-v', f'{temp}:{container_temp}',
+                    '-w', container_target,
+                    '--entrypoint', tool,
+                    IMAGES[tool],
+                    *mapped_arguments,
+                ]
             try:
                 result = execute(command, cwd=target, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=900, check=False)
                 if result.returncode != 0:
@@ -122,7 +152,6 @@ def main():
         print(json.dumps(result, indent=2))
         return 0 if result['passed'] else 1
     except (GateError, OSError):
-        # Deliberately omit underlying diagnostics: scanners may include secrets in errors.
         print(json.dumps({'passed': False, 'error': 'Security scan incomplete; check tool installation, checkout and scanner configuration.'}))
         return 2
 
