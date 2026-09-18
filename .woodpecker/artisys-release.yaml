@@ -6,6 +6,17 @@ when:
   - event: [push, manual]
 
 steps:
+  - name: windows-ci-policy
+    image: powershell.exe
+    commands:
+      - '$ErrorActionPreference = "Stop"'
+      - 'Set-Location modules/artisys-windows-ci'
+      - 'npm test'
+      - 'if ($LASTEXITCODE -ne 0) { throw "artisys-windows-ci tests falharam." }'
+      - 'npm run check'
+      - 'if ($LASTEXITCODE -ne 0) { throw "artisys-windows-ci syntax check falhou." }'
+      - 'Set-Location ..\..'
+
   - name: artisys-release
     image: powershell.exe
     commands:
