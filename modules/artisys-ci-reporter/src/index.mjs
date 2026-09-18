@@ -98,9 +98,10 @@ function qaDiagnosticText(qa) {
   return [header, ...failures].join('\n');
 }
 
-export function summarizeRelease({ report = null, qaReport = null, logText = '', installerPaths = [], fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
+export function summarizeRelease({ report = null, qaReport = null, logText = '', installerPaths = [], installerRequired = process.env.ARTISYS_INSTALLER_REQUIRED !== 'false', fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
   const installerPath = Array.isArray(installerPaths) && installerPaths.length ? installerPaths[0] : null;
-  const reportPassedWithoutInstaller = report?.status === 'pass' && !installerPath;
+  const requiresInstaller = installerRequired !== false;
+  const reportPassedWithoutInstaller = requiresInstaller && report?.status === 'pass' && !installerPath;
   const failedStepId = report?.failedStep || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
   const failedStep = Array.isArray(report?.steps)
     ? report.steps.find((step) => step?.id === failedStepId) ?? null
@@ -124,6 +125,7 @@ export function summarizeRelease({ report = null, qaReport = null, logText = '',
     exitCode: Number.isInteger(failedStep?.exitCode) ? failedStep.exitCode : null,
     command: cleanText(failedStep?.command) || null,
     errorExcerpt: tailLines(diagnostic),
+    installerRequired: requiresInstaller,
     installerFound: Boolean(installerPath),
     installerPath,
     gates,
@@ -142,7 +144,11 @@ function commonMarkdown({ repo, sha, branch, pipelineUrl, summary, title }) {
   const safeRepo = cleanText(repo) || 'repositorio-desconhecido';
   const product = safeRepo.split('/').pop() || safeRepo;
   const url = publicPipelineUrl(pipelineUrl);
-  const installer = summary?.installerFound ? `SIM — \`${summary.installerPath}\`` : 'NÃO';
+  const installer = summary?.installerRequired === false
+    ? 'NÃO SE APLICA'
+    : summary?.installerFound
+      ? `SIM — \`${summary.installerPath}\``
+      : 'NÃO';
   const lines = [
     `<!-- artisys-woodpecker-report:${shortSha} -->`,
     `## ${product} — ${title}`,
@@ -250,7 +256,8 @@ export async function publishGitHubFailure({ token, repo, sha, branch, sourceBra
   const publicUrl = publicPipelineUrl(pipelineUrl);
   const markdown = buildFailureMarkdown({ repo, sha, branch, pipelineUrl: publicUrl, summary });
   const qaSuffix = summary?.qa?.failed ? `; QA ${summary.qa.passed}/${summary.qa.total}` : '';
-  const description = truncateDescription(`${summary?.failedStep || 'workflow'} falhou${summary?.exitCode == null ? '' : ` (exit ${summary.exitCode})`}${qaSuffix}; installer ${summary?.installerFound ? 'gerado' : 'nao gerado'}`);
+  const installerSuffix = summary?.installerRequired === false ? '' : `; installer ${summary?.installerFound ? 'gerado' : 'nao gerado'}`;
+  const description = truncateDescription(`${summary?.failedStep || 'workflow'} falhou${summary?.exitCode == null ? '' : ` (exit ${summary.exitCode})`}${qaSuffix}${installerSuffix}`);
   await githubRequest(`${apiBase}/repos/${repo}/statuses/${sha}`, { token, method: 'POST', body: { state: 'failure', target_url: publicUrl, description, context: statusContext }, fetchImpl });
   const prNumber = await findOpenPr({ token, repo, branch, sourceBranch, fetchImpl, apiBase });
   await publishComment({ token, repo, sha, prNumber, markdown, fetchImpl, apiBase });
@@ -262,7 +269,8 @@ export async function publishGitHubSuccess({ token, repo, sha, branch, sourceBra
   const publicUrl = publicPipelineUrl(pipelineUrl);
   const markdown = buildSuccessMarkdown({ repo, sha, branch, pipelineUrl: publicUrl, summary });
   const qaSuffix = summary?.qa?.total ? `; QA ${summary.qa.passed}/${summary.qa.total}` : '';
-  const description = truncateDescription(`pipeline aprovado${qaSuffix}; installer ${summary?.installerFound ? 'gerado' : 'nao aplicavel'}`);
+  const installerSuffix = summary?.installerRequired === false ? '' : `; installer ${summary?.installerFound ? 'gerado' : 'nao aplicavel'}`;
+  const description = truncateDescription(`pipeline aprovado${qaSuffix}${installerSuffix}`);
   await githubRequest(`${apiBase}/repos/${repo}/statuses/${sha}`, { token, method: 'POST', body: { state: 'success', target_url: publicUrl, description, context: statusContext }, fetchImpl });
   let prNumber = null;
   if (comment) {
