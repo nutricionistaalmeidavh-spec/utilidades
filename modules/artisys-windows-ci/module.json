@@ -6,7 +6,7 @@
   "status": "implemented",
   "consumptionMode": "shared",
   "executionMode": "local-or-ci",
-  "upstreams": ["woodpecker"],
+  "upstreams": [],
   "boundary": "Shared trust and host-identity gate for privileged Windows CI execution. Product commands remain owned by the consumer repository.",
   "provides": ["trusted-repository-allowlist", "elevated-agent-identity-check", "pull-request-block", "cli"],
   "packageName": "@artisys/windows-ci",
