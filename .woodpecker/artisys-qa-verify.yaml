@@ -1,4 +1,4 @@
-# ArtiSys QA self-verification: persist log/report before failing.
+# ArtiSys QA self-verification: always persist log/report before the gate fails.
 labels:
   platform: windows/amd64
   backend: local
@@ -16,12 +16,12 @@ steps:
       - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
       - 'Remove-Item ".\artifacts\artisys-qa-verify.log", ".\artifacts\artisys-qa-verify-report.json", ".\artifacts\artisys-qa-current-step.txt" -Force -ErrorAction SilentlyContinue'
       - '"verificar-artisys-qa" | Set-Content ".\artifacts\artisys-qa-current-step.txt" -Encoding utf8'
-      - '$ErrorActionPreference = "Continue"'
-      - 'node .\scripts\woodpecker-artisys-qa-verify.mjs'
-      - '$code = $LASTEXITCODE'
-      - '$ErrorActionPreference = "Stop"'
+      - '$cmd = (Get-Command cmd.exe -ErrorAction Stop).Source'
+      - '& $cmd /d /c ''node .\scripts\woodpecker-artisys-qa-verify.mjs & exit /b 0'''
       - 'if (-not (Test-Path ".\artifacts\artisys-qa-verify-report.json")) { throw "ArtiSys QA verifier nao gerou o report esperado." }'
-      - 'if ($code -ne 0) { throw "ArtiSys QA ci:verify falhou com exit $code" }'
+      - '$report = Get-Content ".\artifacts\artisys-qa-verify-report.json" -Raw | ConvertFrom-Json'
+      - '$code = if ($report.steps -and $report.steps.Count -gt 0) { [int]$report.steps[0].exitCode } else { 1 }'
+      - 'if ($report.status -ne "pass") { throw "ArtiSys QA ci:verify falhou com exit $code" }'
       - 'Remove-Item ".\artifacts\artisys-qa-current-step.txt" -ErrorAction SilentlyContinue'
 
   - name: reportar-sucesso
