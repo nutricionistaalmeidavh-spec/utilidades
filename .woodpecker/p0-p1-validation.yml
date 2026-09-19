@@ -6,7 +6,7 @@ when:
   - event: [push, pull_request, manual]
 
 steps:
-  - name: ambiente
+  - name: validar-p0-p1
     image: powershell.exe
     environment:
       ARTISYS_UTILIDADES_PATH: 'C:\VICTOR\Artisys\AgroFrota\utilidades'
@@ -14,20 +14,7 @@ steps:
       - '$ErrorActionPreference = "Stop"'
       - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
       - '$logPath = ".\artifacts\woodpecker-release.log"'
-      - '"=== ambiente ===" | Set-Content -Path $logPath -Encoding utf8'
-      - '$out = @(node --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
-      - '$out = @(npm --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
-      - '$out = @(python --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
-      - '$previous = $ErrorActionPreference; $ErrorActionPreference = "Continue"; $out = @(java -version 2>&1); $javaCode = $LASTEXITCODE; $ErrorActionPreference = $previous; $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }; if ($javaCode -ne 0) { throw "java -version falhou com codigo $javaCode" }'
-      - 'if (-not $env:ARTISYS_UTILIDADES_PATH) { throw "ARTISYS_UTILIDADES_PATH ausente no Agent Windows." }'
-      - 'if (-not (Test-Path $env:ARTISYS_UTILIDADES_PATH)) { throw "ARTISYS_UTILIDADES_PATH nao encontrado: $env:ARTISYS_UTILIDADES_PATH" }'
-
-  - name: validar-p0-p1
-    image: powershell.exe
-    commands:
-      - '$ErrorActionPreference = "Stop"'
-      - '$logPath = ".\artifacts\woodpecker-release.log"'
-      - '"=== validar-p0-p1 ===" | Add-Content -Path $logPath -Encoding utf8'
+      - '"=== validar-p0-p1 ===" | Set-Content -Path $logPath -Encoding utf8'
       - '$engine = ".\modules\artisys-release\bin\artisys-release.mjs"'
       - 'if (-not (Test-Path $engine)) { throw "artisys-release nao encontrado em $engine" }'
       - '$previous = $ErrorActionPreference; $ErrorActionPreference = "Continue"; & node $engine ".\.artisys\p0-p1-validation.json" --profile quick --report ".\artifacts\artisys-release-report.json" *>&1 | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }; $code = $LASTEXITCODE; $ErrorActionPreference = $previous; if ($code -ne 0) { throw "P0/P1 falhou com codigo $code." }'
