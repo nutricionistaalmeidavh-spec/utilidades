@@ -8,10 +8,15 @@ when:
 steps:
   - name: validar-p0-p1
     image: powershell.exe
-    environment:
-      ARTISYS_UTILIDADES_PATH: 'C:\VICTOR\Artisys\AgroFrota\utilidades'
     commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-p0-p1-ci.ps1'
+      - '$ErrorActionPreference = "Continue"'
+      - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
+      - '$utf8 = [Text.UTF8Encoding]::new($false)'
+      - '$fallback = ''{"product":"utilidades-rag-quality","version":"p0-p1","profile":"quick","status":"blocked","failedStep":"bootstrap","metadata":{"purpose":"P0/P1 reusable modules validation"},"steps":[{"id":"bootstrap","status":"fail","command":"woodpecker direct artisys-release bootstrap","exitCode":1,"reason":"artisys-release ainda nao concluiu","stdout":"","stderr":"artisys-release ainda nao concluiu"}]}'''
+      - '[IO.File]::WriteAllText(".\artifacts\artisys-release-report.json", $fallback + "`n", $utf8)'
+      - '[IO.File]::WriteAllText(".\artifacts\woodpecker-release.log", "=== RepoUteis P0/P1 ===`r`n", $utf8)'
+      - 'node --version'
+      - 'node .\modules\artisys-release\bin\artisys-release.mjs .\.artisys\p0-p1-validation.json --profile quick --report .\artifacts\artisys-release-report.json'
 
   - name: verificar-relatorio
     image: powershell.exe
