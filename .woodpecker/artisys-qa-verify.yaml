@@ -23,7 +23,7 @@ steps:
       - 'if (-not (Test-Path ".\artifacts\artisys-qa-verify-report.json")) { throw "ArtiSys QA verifier nao gerou o report esperado; wrapper exit=$wrapperExit." }'
       - '$report = Get-Content ".\artifacts\artisys-qa-verify-report.json" -Raw | ConvertFrom-Json'
       - '$code = if ($report.steps -and $report.steps.Count -gt 0) { [int]$report.steps[0].exitCode } else { $wrapperExit }'
-      - 'if ($report.status -ne "pass") { throw "ArtiSys QA ci:verify falhou com exit $code" }'
+      - 'if ($report.status -ne "pass") { $env:ARTISYS_REPORT_PATH = ".\artifacts\artisys-qa-verify-report.json"; $env:ARTISYS_LOG_PATH = ".\artifacts\artisys-qa-verify.log"; $env:ARTISYS_STATUS_CONTEXT = "ci/woodpecker/artisys-qa"; $env:ARTISYS_CI_RESULT = "failure"; $env:ARTISYS_INSTALLER_REQUIRED = "false"; $env:ARTISYS_FAILED_STEP = "artisys-qa:ci-verify"; if (Test-Path ".\artifacts\artisys-qa-verify.log") { $env:ARTISYS_FAILURE_MESSAGE = (Get-Content ".\artifacts\artisys-qa-verify.log" -Tail 120) -join "`n" }; $ErrorActionPreference = "Continue"; node .\modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs; $ErrorActionPreference = "Stop"; throw "ArtiSys QA ci:verify falhou com exit $code" }'
       - 'Remove-Item ".\artifacts\artisys-qa-current-step.txt" -ErrorAction SilentlyContinue'
 
   - name: reportar-sucesso
@@ -41,22 +41,4 @@ steps:
     when:
       - event: [push, manual]
         status: [success]
-    failure: ignore
-
-  - name: reportar-falha
-    image: powershell.exe
-    environment:
-      ARTISYS_REPORT_PATH: '.\artifacts\artisys-qa-verify-report.json'
-      ARTISYS_LOG_PATH: '.\artifacts\artisys-qa-verify.log'
-      ARTISYS_STATUS_CONTEXT: 'ci/woodpecker/artisys-qa'
-      ARTISYS_CI_RESULT: 'failure'
-      ARTISYS_INSTALLER_REQUIRED: 'false'
-    commands:
-      - '$ErrorActionPreference = "Continue"'
-      - '$env:ARTISYS_FAILED_STEP = "artisys-qa:ci-verify"'
-      - 'if (Test-Path ".\artifacts\artisys-qa-verify.log") { $env:ARTISYS_FAILURE_MESSAGE = (Get-Content ".\artifacts\artisys-qa-verify.log" -Tail 120) -join "`n" }'
-      - 'node .\modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs'
-    when:
-      - event: [push, manual]
-        status: [failure]
     failure: ignore
