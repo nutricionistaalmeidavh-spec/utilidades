@@ -15,8 +15,10 @@ steps:
       - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
       - 'Remove-Item ".\artifacts\artisys-qa-verify.log", ".\artifacts\artisys-qa-verify-report.json", ".\artifacts\artisys-qa-current-step.txt" -Force -ErrorAction SilentlyContinue'
       - '"verificar-artisys-qa" | Set-Content ".\artifacts\artisys-qa-current-step.txt" -Encoding utf8'
-      - 'node .\scripts\woodpecker-artisys-qa-verify.mjs'
+      - '$ErrorActionPreference = "Continue"'
+      - 'node .\scripts\woodpecker-artisys-qa-verify.mjs 2>&1 | ForEach-Object { Write-Host $_ }'
       - '$code = $LASTEXITCODE'
+      - '$ErrorActionPreference = "Stop"'
       - 'if ($code -ne 0) { throw "ArtiSys QA ci:verify falhou com exit $code" }'
       - 'Remove-Item ".\artifacts\artisys-qa-current-step.txt" -ErrorAction SilentlyContinue'
 
