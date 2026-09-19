@@ -2,7 +2,7 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { constants as fsConstants } from 'node:fs';
-import { publishGitHubFailure, publishGitHubSuccess, summarizeRelease } from '../src/index.mjs';
+import { parseJsonText, publishGitHubFailure, publishGitHubSuccess, summarizeRelease } from '../src/index.mjs';
 import { normalizeLegacyPhase5QaReport } from '../src/legacy-phase5.mjs';
 
 async function exists(target) {
@@ -11,7 +11,7 @@ async function exists(target) {
 
 async function readJson(target) {
   if (!target || !(await exists(target))) return null;
-  try { return JSON.parse(await readFile(target, 'utf8')); } catch { return null; }
+  try { return parseJsonText(await readFile(target, 'utf8')); } catch { return null; }
 }
 
 async function readText(target) {

@@ -7,6 +7,10 @@ function cleanText(value) {
     : '';
 }
 
+export function parseJsonText(value) {
+  return JSON.parse(String(value ?? '').replace(/^\uFEFF/, ''));
+}
+
 export function tailLines(value, maxLines = 40, maxChars = 6000) {
   const text = cleanText(value);
   if (!text) return '';
