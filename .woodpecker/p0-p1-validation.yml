@@ -11,57 +11,36 @@ steps:
     environment:
       ARTISYS_UTILIDADES_PATH: 'C:\VICTOR\Artisys\AgroFrota\utilidades'
     commands:
+      - '$ErrorActionPreference = "Stop"'
       - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
-      - '"=== RepoUteis P0/P1 validation ===" | Set-Content -Path ".\artifacts\woodpecker-release.log" -Encoding utf8'
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "environment" -Command "node --version && npm --version && python --version && java -version && if exist \\"%ARTISYS_UTILIDADES_PATH%\\" (exit /b 0) else (echo ARTISYS_UTILIDADES_PATH nao encontrado: %ARTISYS_UTILIDADES_PATH% 1>&2 & exit /b 1)"'
+      - '$logPath = ".\artifacts\woodpecker-release.log"'
+      - '"=== ambiente ===" | Set-Content -Path $logPath -Encoding utf8'
+      - '$out = @(node --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+      - '$out = @(npm --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+      - '$out = @(python --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+      - '$previous = $ErrorActionPreference; $ErrorActionPreference = "Continue"; $out = @(java -version 2>&1); $javaCode = $LASTEXITCODE; $ErrorActionPreference = $previous; $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }; if ($javaCode -ne 0) { throw "java -version falhou com codigo $javaCode" }'
+      - 'if (-not $env:ARTISYS_UTILIDADES_PATH) { throw "ARTISYS_UTILIDADES_PATH ausente no Agent Windows." }'
+      - 'if (-not (Test-Path $env:ARTISYS_UTILIDADES_PATH)) { throw "ARTISYS_UTILIDADES_PATH nao encontrado: $env:ARTISYS_UTILIDADES_PATH" }'
 
-  - name: module-dependencies
+  - name: validar-p0-p1
     image: powershell.exe
     commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "module-dependencies" -Command "npm ci --ignore-scripts --prefix modules\artisys-qa && npm ci --ignore-scripts --prefix modules\artisys-api-contracts && npm install --no-package-lock --prefix modules\artisys-serialport && npm install --no-package-lock --prefix modules\artisys-printing && npm install --no-package-lock --prefix modules\artisys-property-testing && npm install --no-package-lock --prefix modules\artisys-mutation-testing && npm install --no-package-lock --prefix modules\artisys-ai-quality && npm install --no-package-lock --prefix modules\artisys-ai-observability && python -m venv .ci-venv && .ci-venv\Scripts\python.exe -m pip install --upgrade pip && .ci-venv\Scripts\python.exe -m pip install .\modules\artisys-documents[preprocess] && cd modules\artisys-qa && npx.cmd --no-install playwright install chromium"'
+      - '$ErrorActionPreference = "Stop"'
+      - '$logPath = ".\artifacts\woodpecker-release.log"'
+      - '"=== validar-p0-p1 ===" | Add-Content -Path $logPath -Encoding utf8'
+      - '$engine = ".\modules\artisys-release\bin\artisys-release.mjs"'
+      - 'if (-not (Test-Path $engine)) { throw "artisys-release nao encontrado em $engine" }'
+      - '$previous = $ErrorActionPreference; $ErrorActionPreference = "Continue"; & node $engine ".\.artisys\p0-p1-validation.json" --profile quick --report ".\artifacts\artisys-release-report.json" *>&1 | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }; $code = $LASTEXITCODE; $ErrorActionPreference = $previous; if ($code -ne 0) { throw "P0/P1 falhou com codigo $code." }'
 
-  - name: provision-openapi-generator
+  - name: verificar-relatorio
     image: powershell.exe
     commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "provision-openapi-generator" -Command "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\provision-openapi-generator.ps1"'
-
-  - name: p0-structured-facts
-    image: powershell.exe
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "p0-structured-facts" -Command "npm test --prefix modules\artisys-structured-facts && npm run check --prefix modules\artisys-structured-facts"'
-
-  - name: p0-property-testing
-    image: powershell.exe
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "p0-property-testing" -Command "npm test --prefix modules\artisys-property-testing && npm run check --prefix modules\artisys-property-testing"'
-
-  - name: p0-mutation-testing
-    image: powershell.exe
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "p0-mutation-testing" -Command "npm test --prefix modules\artisys-mutation-testing && npm run check --prefix modules\artisys-mutation-testing"'
-
-  - name: p0-p1-ai-quality
-    image: powershell.exe
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "p0-p1-ai-quality" -Command "npm test --prefix modules\artisys-ai-quality && npm run check --prefix modules\artisys-ai-quality && npm run example --prefix modules\artisys-ai-quality"'
-
-  - name: p1-ai-observability
-    image: powershell.exe
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "p1-ai-observability" -Command "npm test --prefix modules\artisys-ai-observability && npm run check --prefix modules\artisys-ai-observability"'
-
-  - name: reusable-contract-smoke
-    image: powershell.exe
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "reusable-contract-smoke" -Command "node scripts\reuse-smoke.mjs"'
-
-  - name: full-module-checks
-    image: powershell.exe
-    environment:
-      PACT_DO_NOT_TRACK: 'true'
-      OPENAPI_GENERATOR_JAR: '.ci-tools\openapi-generator.jar'
-    commands:
-      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\woodpecker-gate.ps1 -Id "full-module-checks" -Command ".ci-venv\Scripts\python.exe scripts\check-modules.py --browser --pact --generator" -Final'
+      - '$ErrorActionPreference = "Stop"'
+      - '$reportPath = ".\artifacts\artisys-release-report.json"'
+      - 'if (-not (Test-Path $reportPath)) { throw "Relatorio P0/P1 nao foi gerado." }'
+      - '$report = Get-Content $reportPath -Raw | ConvertFrom-Json'
+      - 'if ($report.status -ne "pass") { throw "P0/P1 terminou com status $($report.status), step $($report.failedStep)." }'
+      - 'Write-Host "[RepoUteis Woodpecker] P0/P1 aprovado: $reportPath"'
 
   - name: reportar-falha-github
     image: powershell.exe
