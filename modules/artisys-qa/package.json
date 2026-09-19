@@ -1,6 +1,6 @@
 {
   "name": "@artisys/qa",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "type": "module",
   "engines": {
     "node": ">=22"
@@ -62,7 +62,8 @@
     "test": "node ./scripts/test-bounded.mjs",
     "test:raw": "node --test tests/*.test.js",
     "test:example": "playwright test --config examples/pos-reference/playwright.config.js",
-    "check": "node ./src/cli.mjs validate --config ./templates/consumer/artisys-qa.config.json"
+    "check": "node ./src/cli.mjs validate --config ./templates/consumer/artisys-qa.config.json",
+    "ci:verify": "npm ci --no-audit --no-fund && npm test && npm run check"
   },
   "peerDependencies": {
     "playwright": ">=1.51 <2"
