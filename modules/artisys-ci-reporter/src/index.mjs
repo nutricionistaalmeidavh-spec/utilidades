@@ -51,9 +51,9 @@ function normalizeBlockingFinding(finding) {
     path: cleanText(finding?.path) || cleanText(finding?.file) || cleanText(finding?.target) || null,
     url: cleanText(finding?.url) || null,
     package: packageName,
-    version: cleanText(finding?.version) || cleanText(finding?.installedVersion) || null,
+    version: cleanText(finding?.version) || cleanText(finding?.installedVersion) || cleanText(finding?.packageVersion) || null,
     evidence: cleanText(finding?.evidence) || cleanText(finding?.fingerprint) || cleanText(finding?.diagnostic) || null,
-    remediation: cleanText(finding?.remediation) || cleanText(finding?.fix) || cleanText(finding?.recommendation) || null,
+    remediation: cleanText(finding?.remediation) || cleanText(finding?.fix) || cleanText(finding?.recommendation) || (cleanText(finding?.fixedVersion) ? `Atualizar para uma versão corrigida: ${cleanText(finding.fixedVersion)}` : null),
   };
 }
 
@@ -143,14 +143,31 @@ function qaDiagnosticText(qa) {
   return [header, ...failures].join('\n');
 }
 
+function isFailingStep(step) {
+  const status = cleanText(step?.status).toLowerCase();
+  return new Set(['fail', 'failed', 'block', 'blocked', 'error', 'incomplete']).has(status);
+}
+
+function resolveFailedStep(report, declaredId) {
+  const steps = Array.isArray(report?.steps) ? report.steps : [];
+  const exact = steps.find((step) => cleanText(step?.id) === declaredId) ?? null;
+  if (exact) return exact;
+
+  const stem = cleanText(declaredId).replace(/-(scan|group|phase)$/i, '');
+  if (stem) {
+    const scoped = steps.find((step) => isFailingStep(step) && cleanText(step?.id).startsWith(`${stem}-`));
+    if (scoped) return scoped;
+  }
+  return steps.find(isFailingStep) ?? null;
+}
+
 export function summarizeRelease({ report = null, qaReport = null, logText = '', installerPaths = [], installerRequired = process.env.ARTISYS_INSTALLER_REQUIRED !== 'false', fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
   const installerPath = Array.isArray(installerPaths) && installerPaths.length ? installerPaths[0] : null;
   const requiresInstaller = installerRequired !== false;
   const reportPassedWithoutInstaller = requiresInstaller && report?.status === 'pass' && !installerPath;
-  const failedStepId = report?.failedStep || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
-  const failedStep = Array.isArray(report?.steps)
-    ? report.steps.find((step) => step?.id === failedStepId) ?? null
-    : null;
+  const declaredFailedStepId = cleanText(report?.failedStep) || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
+  const failedStep = resolveFailedStep(report, declaredFailedStepId);
+  const failedStepId = cleanText(failedStep?.id) || declaredFailedStepId;
   const gates = gatesFromReport(report);
   const qa = summarizeQaReport(qaReport);
   const blockingFindings = summarizeBlockingFindings(report);
@@ -169,6 +186,7 @@ export function summarizeRelease({ report = null, qaReport = null, logText = '',
     status: report?.status || 'failure',
     reportStatus: report?.status || null,
     failedStep: failedStepId,
+    declaredFailedStep: declaredFailedStepId === failedStepId ? null : declaredFailedStepId,
     exitCode: Number.isInteger(failedStep?.exitCode) ? failedStep.exitCode : null,
     command: cleanText(failedStep?.command) || null,
     errorExcerpt: tailLines(diagnostic),
@@ -216,7 +234,7 @@ function appendBlockingFindingsMarkdown(lines, findings) {
   if (!Array.isArray(findings) || !findings.length) return;
   lines.push('', '### Findings bloqueantes', `- Total: **${findings.length}**`);
   for (const finding of findings) {
-    lines.push('', `#### ${finding.severity.toUpperCase()} — \`${finding.tool}/${finding.ruleId}\```, `- Mensagem: ${finding.message}`);
+    lines.push('', `#### ${finding.severity.toUpperCase()} — \`${finding.tool}/${finding.ruleId}\``, `- Mensagem: ${finding.message}`);
     if (finding.path) lines.push(`- Arquivo/alvo: \`${finding.path}\``);
     if (finding.url) lines.push(`- URL: ${finding.url}`);
     if (finding.package) lines.push(`- Pacote: \`${finding.package}${finding.version ? `@${finding.version}` : ''}\``);
@@ -244,9 +262,10 @@ export function buildFailureMarkdown({ repo, sha, branch, pipelineUrl, summary }
   const exitCode = summary?.exitCode == null ? 'indisponível' : String(summary.exitCode);
   const command = summary?.command ? `\n- Comando: \`${summary.command}\`` : '';
   const reportStatus = summary?.reportStatus ? `\n- artisys-release: \`${summary.reportStatus}\`` : '';
+  const declaredStep = summary?.declaredFailedStep ? `\n- Grupo: \`${summary.declaredFailedStep}\`` : '';
   lines.splice(5, 0,
     `- Step: \`${cleanText(summary?.failedStep) || 'workflow'}\``,
-    `- Exit code: \`${exitCode}\`${command}${reportStatus}`,
+    `- Exit code: \`${exitCode}\`${command}${reportStatus}${declaredStep}`,
   );
   appendBlockingFindingsMarkdown(lines, summary?.blockingFindings);
   appendQaMarkdown(lines, summary?.qa);
