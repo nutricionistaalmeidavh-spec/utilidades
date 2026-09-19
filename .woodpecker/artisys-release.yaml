@@ -2,6 +2,12 @@ labels:
   platform: windows/amd64
   backend: local
 
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      recursive: false
+
 when:
   - event: [push, manual]
 
