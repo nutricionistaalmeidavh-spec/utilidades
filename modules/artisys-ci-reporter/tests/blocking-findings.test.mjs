@@ -38,6 +38,24 @@ test('summarizeRelease preserves blocking security finding details', () => {
   assert.match(summary.errorExcerpt, /CVE-2099-0001/);
 });
 
+test('summarizeRelease falls back to the concrete failing gate when failedStep is only a group label', () => {
+  const summary = summarizeRelease({
+    report: {
+      status: 'fail',
+      failedStep: 'dynamic-scan',
+      steps: [
+        { id: 'release-gate', status: 'block', exitCode: 3, stderr: '' },
+        { id: 'dynamic-runtime', status: 'fail', exitCode: 1, stderr: 'Desktop calibration failed: unsafe external URL.' },
+      ],
+    },
+    installerRequired: false,
+  });
+
+  assert.equal(summary.failedStep, 'dynamic-runtime');
+  assert.equal(summary.exitCode, 1);
+  assert.match(summary.errorExcerpt, /Desktop calibration failed/);
+});
+
 test('buildFailureMarkdown prints blocking finding rule, target and evidence', () => {
   const markdown = buildFailureMarkdown({
     repo: 'nutricionistaalmeidavh-spec/lojaonline',
