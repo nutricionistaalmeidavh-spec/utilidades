@@ -1,14 +1,18 @@
 {
   "product": "utilidades",
   "version": "dev",
-  "profile": "quick",
-  "requiredSteps": ["lint", "test"],
+  "profile": "full",
+  "requiredSteps": ["deps", "lint", "test", "build", "qa", "security"],
   "steps": {
+    "deps": "npm ci --prefix modules/artisys-qa --no-audit --no-fund",
     "lint": "npm run check --prefix modules/artisys-release",
-    "test": "npm test --prefix modules/artisys-release"
+    "test": "npm test --prefix modules/artisys-release",
+    "build": "npm test --prefix modules/artisys-ci-reporter && npm run check --prefix modules/artisys-ci-reporter",
+    "qa": "npm test --prefix modules/artisys-qa && npm run check --prefix modules/artisys-qa",
+    "security": "py -3 -m unittest discover -s modules/artisys-security/tests -v"
   },
   "reportPath": "artifacts/artisys-release-report.json",
   "metadata": {
-    "purpose": "self-validation of the shared release engine"
+    "purpose": "self-validation of shared ArtiSys release, reporter, QA and security modules"
   }
 }

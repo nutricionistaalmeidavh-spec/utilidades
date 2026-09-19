@@ -2,12 +2,61 @@ labels:
   platform: windows/amd64
   backend: local
 
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      recursive: false
+
 when:
   - event: [push, manual]
 
 steps:
+  - name: ambiente
+    image: powershell.exe
+    commands:
+      - '$ErrorActionPreference = "Stop"'
+      - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
+      - '$logPath = ".\artifacts\woodpecker-release.log"'
+      - '"=== ambiente utilidades ===" | Set-Content -Path $logPath -Encoding utf8'
+      - '$out = @(node --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+      - '$out = @(npm --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+      - '$out = @(git --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+      - '$out = @(py -3 --version 2>&1); $out | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }'
+
   - name: artisys-release
     image: powershell.exe
     commands:
-      - node --version
-      - node modules/artisys-release/bin/artisys-release.mjs .artisys/release.json --profile quick --report artifacts/artisys-release-report.json
+      - '$ErrorActionPreference = "Stop"'
+      - '& .\scripts\run-woodpecker-self-ci.ps1 -ReportPath ".\artifacts\artisys-release-report.json" -LogPath ".\artifacts\woodpecker-release.log"'
+
+  - name: reportar-sucesso-github
+    image: powershell.exe
+    environment:
+      ARTISYS_STATUS_CONTEXT: 'ci/woodpecker/artisys-release-detail'
+      ARTISYS_CI_RESULT: 'success'
+      ARTISYS_REPORT_PATH: '.\artifacts\artisys-release-report.json'
+      ARTISYS_LOG_PATH: '.\artifacts\woodpecker-release.log'
+      ARTISYS_INSTALLER_REQUIRED: 'false'
+    commands:
+      - '$ErrorActionPreference = "Continue"'
+      - '$reporter = ".\modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs"'
+      - 'if (Test-Path $reporter) { node $reporter } else { Write-Warning "Reporter compartilhado ausente." }'
+    failure: ignore
+
+  - name: reportar-falha-github
+    image: powershell.exe
+    environment:
+      ARTISYS_STATUS_CONTEXT: 'ci/woodpecker/artisys-release-detail'
+      ARTISYS_CI_RESULT: 'failure'
+      ARTISYS_REPORT_PATH: '.\artifacts\artisys-release-report.json'
+      ARTISYS_LOG_PATH: '.\artifacts\woodpecker-release.log'
+      ARTISYS_INSTALLER_REQUIRED: 'false'
+    commands:
+      - '$ErrorActionPreference = "Continue"'
+      - '$reporter = ".\modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs"'
+      - 'if (Test-Path $reporter) { node $reporter } else { Write-Warning "Reporter compartilhado ausente." }'
+    when:
+      - event: [push, manual]
+        status: [failure]
+    failure: ignore
