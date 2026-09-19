@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "id": "artisys-qa",
   "name": "ArtiSys QA",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "status": "stable",
   "consumptionMode": "shared",
   "upstreams": ["playwright", "rclone"],
   "optionalExternalServices": ["cloudflare-workers", "cloudflare-d1", "cloudflare-r2"],
-  "boundary": "Reusable QA platform for web/Electron products with declarative flows, execution profiles, desktop smoke checks, network/concurrency helpers, reusable business packs, evidence capture, reports/history, fail-closed release gates, fail-safe CI summaries for shared consumers, bounded per-file module validation with live output, optional self-hosted Remote Control, a Windows local agent with logon startup and stable A/B auto-update, an outbound private-repository bridge for whitelisted QA jobs, deterministic Google Drive artifact storage, managed consumer repositories, durable live agent telemetry, an authenticated read-only LAN observability console, and optional best-effort Cloudflare D1/R2 observability mirroring. Product-specific persistence, schema mapping, credentials, selectors and installer behavior remain isolated behind consumer configuration/adapters.",
+  "boundary": "Reusable QA platform for web/Electron products with declarative flows, execution profiles, desktop smoke checks, network/concurrency helpers, reusable business packs, evidence capture, reports/history, fail-closed release gates, fail-safe CI summaries for shared consumers, bounded per-file module validation with live output, dependency-hydrated shared CI verification, optional self-hosted Remote Control, a Windows local agent with logon startup and stable A/B auto-update, an outbound private-repository bridge for whitelisted QA jobs, deterministic Google Drive artifact storage, managed consumer repositories, durable live agent telemetry, an authenticated read-only LAN observability console, and optional best-effort Cloudflare D1/R2 observability mirroring. Product-specific persistence, schema mapping, credentials, selectors and installer behavior remain isolated behind consumer configuration/adapters.",
   "provides": [
     "shared-playwright-config",
     "declarative-flow-runner",
@@ -21,6 +21,7 @@
     "ci-summary-fail-safe",
     "bounded-module-test-runner",
     "live-module-test-output",
+    "dependency-hydrated-ci-verification",
     "bounded-local-history",
     "fail-closed-release-gate",
     "declarative-demo-runner",
@@ -97,6 +98,7 @@
     "ci-summary-flow-step-error-evidence",
     "module-test-per-file-timeout",
     "module-test-live-output",
+    "module-ci-installs-locked-dependencies",
     "release-gate-critical-failures",
     "release-gate-audited-override",
     "agent-state-registry",
@@ -182,6 +184,7 @@
   "plannedCapabilities": [],
   "verification": {
     "unit": "npm test",
+    "ci": "npm run ci:verify",
     "browser": "npm run test:example",
     "manifest": "npm run check",
     "package": "npm pack --dry-run"
