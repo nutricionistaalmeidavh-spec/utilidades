@@ -1,0 +1,22 @@
+{
+  "product": "utilidades-rag-quality",
+  "version": "p0-p1",
+  "profile": "quick",
+  "requiredSteps": ["deps", "lint", "test", "build"],
+  "steps": {
+    "deps": "npm ci --ignore-scripts --prefix modules\\artisys-qa && npm ci --ignore-scripts --prefix modules\\artisys-api-contracts && npm install --no-package-lock --prefix modules\\artisys-serialport && npm install --no-package-lock --prefix modules\\artisys-printing && npm install --no-package-lock --prefix modules\\artisys-property-testing && npm install --no-package-lock --prefix modules\\artisys-mutation-testing && npm install --no-package-lock --prefix modules\\artisys-ai-quality && npm install --no-package-lock --prefix modules\\artisys-ai-observability && python -m venv .ci-venv && .ci-venv\\Scripts\\python.exe -m pip install --upgrade pip && .ci-venv\\Scripts\\python.exe -m pip install .\\modules\\artisys-documents[preprocess] && cd modules\\artisys-qa && npx.cmd --no-install playwright install chromium && cd ..\\.. && powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\\provision-openapi-generator.ps1",
+    "lint": "npm test --prefix modules\\artisys-structured-facts && npm run check --prefix modules\\artisys-structured-facts && npm test --prefix modules\\artisys-property-testing && npm run check --prefix modules\\artisys-property-testing && npm test --prefix modules\\artisys-mutation-testing && npm run check --prefix modules\\artisys-mutation-testing",
+    "test": "npm test --prefix modules\\artisys-ai-quality && npm run check --prefix modules\\artisys-ai-quality && npm run example --prefix modules\\artisys-ai-quality && npm test --prefix modules\\artisys-ai-observability && npm run check --prefix modules\\artisys-ai-observability && node scripts\\reuse-smoke.mjs",
+    "build": {
+      "command": ".ci-venv\\Scripts\\python.exe scripts\\check-modules.py --browser --pact --generator",
+      "env": {
+        "PACT_DO_NOT_TRACK": "true",
+        "OPENAPI_GENERATOR_JAR": ".ci-tools\\openapi-generator.jar"
+      }
+    }
+  },
+  "reportPath": "artifacts/artisys-release-report.json",
+  "metadata": {
+    "purpose": "P0/P1 reusable modules validation"
+  }
+}
