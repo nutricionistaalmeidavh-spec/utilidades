@@ -15,5 +15,9 @@ steps:
   - name: artisys-release
     image: powershell.exe
     commands:
-      - node --version
-      - node modules/artisys-release/bin/artisys-release.mjs .artisys/release.json --profile quick --report artifacts/artisys-release-report.json
+      - '$ErrorActionPreference = "Stop"'
+      - 'node --version'
+      - '$npm = (Get-Command npm.cmd -ErrorAction Stop).Source'
+      - '& $npm test --prefix modules/artisys-ci-reporter; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }'
+      - '& $npm run check --prefix modules/artisys-ci-reporter; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }'
+      - 'node modules/artisys-release/bin/artisys-release.mjs .artisys/release.json --profile quick --report artifacts/artisys-release-report.json; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }'
