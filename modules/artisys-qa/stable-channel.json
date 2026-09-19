@@ -1,6 +1,6 @@
 {
   "channel": "stable",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "minimumNode": "22",
-  "notes": "Adiciona runner de testes com saída em tempo real e timeout por arquivo, impedindo validações compartilhadas de ficarem presas silenciosamente; mantém os resumos CI fail-safe da 2.5.0."
+  "notes": "A validação compartilhada passa a executar npm ci com o lockfile antes dos testes e do check, evitando ERR_MODULE_NOT_FOUND após git pull; preserva saída em tempo real e timeout por arquivo."
 }
