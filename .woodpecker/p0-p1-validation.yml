@@ -11,13 +11,7 @@ steps:
     environment:
       ARTISYS_UTILIDADES_PATH: 'C:\VICTOR\Artisys\AgroFrota\utilidades'
     commands:
-      - '$ErrorActionPreference = "Stop"'
-      - 'New-Item -ItemType Directory -Force -Path ".\artifacts" | Out-Null'
-      - '$logPath = ".\artifacts\woodpecker-release.log"'
-      - '"=== validar-p0-p1 ===" | Set-Content -Path $logPath -Encoding utf8'
-      - '$engine = ".\modules\artisys-release\bin\artisys-release.mjs"'
-      - 'if (-not (Test-Path $engine)) { throw "artisys-release nao encontrado em $engine" }'
-      - '$previous = $ErrorActionPreference; $ErrorActionPreference = "Continue"; & node $engine ".\.artisys\p0-p1-validation.json" --profile quick --report ".\artifacts\artisys-release-report.json" *>&1 | ForEach-Object { Write-Host $_; Add-Content -Path $logPath -Value ([string]$_) -Encoding utf8 }; $code = $LASTEXITCODE; $ErrorActionPreference = $previous; if ($code -ne 0) { throw "P0/P1 falhou com codigo $code." }'
+      - 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-p0-p1-ci.ps1'
 
   - name: verificar-relatorio
     image: powershell.exe
@@ -36,6 +30,7 @@ steps:
       ARTISYS_REPORT_PATH: '.\artifacts\artisys-release-report.json'
       ARTISYS_LOG_PATH: '.\artifacts\woodpecker-release.log'
       ARTISYS_STATUS_CONTEXT: 'ci/woodpecker/repoutils-p0-p1-detail'
+      ARTISYS_INSTALLER_REQUIRED: 'false'
     commands:
       - '$ErrorActionPreference = "Continue"'
       - '$reporter = Join-Path $env:ARTISYS_UTILIDADES_PATH "modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs"'
@@ -56,6 +51,7 @@ steps:
       ARTISYS_STATUS_CONTEXT: 'ci/woodpecker/repoutils-p0-p1-detail'
       ARTISYS_CI_RESULT: 'success'
       ARTISYS_COMMENT_SUCCESS: 'false'
+      ARTISYS_INSTALLER_REQUIRED: 'false'
     commands:
       - '$ErrorActionPreference = "Continue"'
       - '$reporter = Join-Path $env:ARTISYS_UTILIDADES_PATH "modules\artisys-ci-reporter\bin\artisys-ci-reporter.mjs"'
