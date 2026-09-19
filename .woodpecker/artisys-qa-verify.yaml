@@ -1,3 +1,4 @@
+# ArtiSys QA self-verification: persist log/report before failing.
 labels:
   platform: windows/amd64
   backend: local
