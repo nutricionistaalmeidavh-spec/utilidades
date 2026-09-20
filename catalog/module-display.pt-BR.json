@@ -369,12 +369,6 @@
       "name": "Exportação de Dados",
       "category": "Plataforma e Dados",
       "description": "Exporta CSV e JSON e gera modelo tabular neutro para adaptadores de planilha."
-    },
-    {
-      "id": "artisys-agro-contract",
-      "name": "Integração ArtiSys Agro",
-      "category": "Plataforma e Dados",
-      "description": "Padroniza contratos, identidade, pareamento e sincronização local entre os produtos agrícolas ArtiSys."
     }
   ]
 }
