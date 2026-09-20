@@ -43,7 +43,7 @@ JS_MODULES = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', 'artisys-agro-contract', *P0_JS_MODULES
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
@@ -53,7 +53,7 @@ NEW_PRODUCT_MODULES = (
     'artisys-release', 'artisys-desktop-shell', 'artisys-whatsapp-launcher', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
     'artisys-privacy', 'artisys-bim', 'artisys-release-validator', 'artisys-eventbus',
-    'artisys-files'
+    'artisys-files', 'artisys-agro-contract'
 )
 
 
