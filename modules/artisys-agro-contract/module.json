@@ -1,0 +1,22 @@
+{
+  "id": "artisys-agro-contract",
+  "version": "1.0.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-local",
+  "upstreams": [],
+  "implementedCapabilities": [
+    "versioned-agro-event-contract",
+    "local-http-bridge",
+    "pairing-secret-auth",
+    "event-idempotency",
+    "outbox-retry",
+    "conflict-resolution"
+  ],
+  "recommendedConsumers": [
+    "SistemaLavoura",
+    "maquinasagricolas",
+    "frota-e-manutencao",
+    "pecuaria"
+  ]
+}
