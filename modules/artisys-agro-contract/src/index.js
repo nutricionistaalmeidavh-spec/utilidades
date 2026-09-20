@@ -1,4 +1,4 @@
-import crypto from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 export const AGRO_CONTRACT_VERSION = "1.0";
 export const AGRO_EVENTS = Object.freeze([
@@ -15,7 +15,7 @@ const required = (v, name) => {
 export function createAgroEvent({ event, source, entityId, occurredAt = new Date().toISOString(), data = {}, links = {}, eventId }) {
   if (!AGRO_EVENTS.includes(event)) throw new Error(`Evento não suportado: ${event}`);
   required(source, "source"); required(entityId, "entityId");
-  const id = eventId || crypto.randomUUID();
+  const id = eventId || randomUUID();
   return { schemaVersion: AGRO_CONTRACT_VERSION, eventId: id, event, source, entityId, occurredAt, data, links };
 }
 
