@@ -885,14 +885,6 @@
         "maquinasagricolas",
         "frota-e-manutencao",
         "pecuaria"
-      ],
-      "implementedCapabilities": [
-        "versioned-agro-event-contract",
-        "local-http-bridge",
-        "pairing-secret-auth",
-        "event-idempotency",
-        "outbox-retry",
-        "conflict-resolution"
       ]
     }
   ]
