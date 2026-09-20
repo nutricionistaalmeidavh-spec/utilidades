@@ -1,1 +1,892 @@
-{"schemaVersion":2,"updatedAt":"2026-09-14","modules":[{"id":"artisys-qa","version":"2.4.1","status":"stable","consumptionMode":"shared","upstreams":["playwright","rclone"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},{"id":"artisys-pdf","version":"1.0.0","status":"stable","consumptionMode":"shared","upstreams":["pdfme","pdfjs","react-pdf-highlighter"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","PDV-ARTISYS"]},{"id":"artisys-workflows","version":"1.0.0","status":"stable","consumptionMode":"shared","upstreams":["xyflow","logicflow","rete"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub","PDV-ARTISYS"]},{"id":"artisys-capture","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["html5-qrcode","opencv"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-dashboard","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["react-grid-layout","react-resizable-panels","glide-data-grid"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-planning","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["frappe-gantt","fullcalendar"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-media","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded-or-dev-tool","upstreams":["mediabunny","motion-canvas"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","cyber-study-hub","Hackathon","Artisys-sites"]},{"id":"artisys-office","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded-or-local-on-demand","upstreams":["univer","docxjs","ppt-master"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-ui-builder","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["grapesjs","puck","craftjs"],"recommendedConsumers":["Artisys-sites","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-upload","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["uppy","react-dropzone"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o","PDV-ARTISYS","cyber-study-hub"]},{"id":"artisys-files","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-local","upstreams":[],"recommendedConsumers":["OBRANAMAOCOMERCIAL","drefluxo","CompatibilizaBIM","desktop-products","SistemasNichadosAgroFrota"]},{"id":"artisys-annotations","version":"1.0.0","status":"stable","consumptionMode":"shared","executionMode":"embedded","upstreams":["annotorious","react-pdf-highlighter"],"recommendedConsumers":["OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","cyber-study-hub"]},{"id":"artisys-serialport","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":["node-serialport"],"recommendedConsumers":["PDV-ARTISYS","desktop-products-with-serial-hardware"]},{"id":"artisys-printing","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":["receiptline","node-thermal-printer"],"recommendedConsumers":["PDV-ARTISYS","desktop-products-with-receipts"]},{"id":"artisys-security","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":["gitleaks","trivy","semgrep"],"recommendedConsumers":["all-active-products"]},{"id":"artisys-documents","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":["paddleocr","opencv"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS"]},{"id":"artisys-api-contracts","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":["openapi-generator","pact-js"],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-video-engine","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["gstreamer","mlt","libopenshot"],"recommendedConsumers":["Artisys-sites","cyber-study-hub","Hackathon","desktop-media-products"]},{"id":"artisys-doc-convert","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["gotenberg"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-local-backend","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["pocketbase"],"recommendedConsumers":["PDV-ARTISYS","drefluxo","desktop-products"]},{"id":"artisys-remote-support","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["rustdesk"],"recommendedConsumers":["PDV-ARTISYS","drefluxo","desktop-products"]},{"id":"artisys-release","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-or-ci","upstreams":["playwright","gitleaks","trivy","semgrep","pact-js","openapi-generator","cosign"],"recommendedConsumers":["all-active-products"]},{"id":"artisys-release-validator","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-or-ci","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","all-commercial-desktop-products"]},{"id":"artisys-desktop-shell","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-local-on-demand","upstreams":["powertoys"],"recommendedConsumers":["PDV-ARTISYS","drefluxo","CompatibilizaBIM","desktop-products"]},{"id":"artisys-whatsapp-launcher","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-local","upstreams":[],"recommendedConsumers":[]},{"id":"artisys-ocr","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-local-on-demand","upstreams":["paddleocr","opencv","tesseract","tesseract-js"],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-product-qa","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"local-or-ci","upstreams":["playwright","gitleaks","trivy","semgrep","pact-js","openapi-generator"],"recommendedConsumers":["all-active-products"]},{"id":"artisys-licensing","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-local-on-demand","upstreams":[],"recommendedConsumers":["all-commercial-desktop-products"]},{"id":"artisys-ai-quality","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["promptfoo"],"recommendedConsumers":["Hackathon","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","cyber-study-hub"]},{"id":"artisys-privacy","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand-or-ci","upstreams":["presidio"],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","ConsulroriaAmamenta-o"]},{"id":"artisys-bim","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"local-on-demand","upstreams":["ifcopenshell"],"recommendedConsumers":["CompatibilizaBIM","cbim"]},{"id":"artisys-eventbus","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded-or-worker","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OficinaAgricola","drefluxo","OBRANAMAOCOMERCIAL","ConsulroriaAmamenta-o","desktop-products","web-products"]},{"id":"artisys-alerts","version":"0.2.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["all-active-products","SistemasNichadosAgroFrota"]},{"id":"artisys-backup","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["drefluxo","CLINICASMEDICAS","PDV-ARTISYS","OficinaAgricola","desktop-products"]},{"id":"artisys-importer","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["drefluxo","OBRANAMAOCOMERCIAL","PDV-ARTISYS","OficinaAgricola","Almoxarifado","SistemasNichadosAgroFrota"]},{"id":"artisys-finance-domain","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["sistemafinanceiro","OBRANAMAOCOMERCIAL","drefluxo","desktop-products","web-products"]},{"id":"artisys-auth-rbac","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},{"id":"artisys-storage","version":"0.2.1","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["all-active-products","SistemasNichadosAgroFrota"]},{"id":"artisys-audit-log","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","drefluxo"]},{"id":"artisys-sync","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OBRANAMAOCOMERCIAL","CLINICASMEDICAS","ConsulroriaAmamenta-o","desktop-products","web-products"]},{"id":"artisys-pwa-runtime","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Almoxarifado","OficinaAgricola","ConsulroriaAmamenta-o","web-products"]},{"id":"artisys-webview-bridge","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Hackathon","mobile-wrapper-products"]},{"id":"artisys-inventory","version":"0.2.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["Almoxarifado","OBRANAMAOCOMERCIAL","PDV-ARTISYS","OficinaAgricola"]},{"id":"artisys-os","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["OficinaAgricola","field-service-products"]},{"id":"artisys-catalog","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","OficinaAgricola","drefluxo","Almoxarifado"]},{"id":"artisys-pricing","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["PDV-ARTISYS","commercial-products"]},{"id":"artisys-settings","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},{"id":"artisys-multitenancy","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["ConsulroriaAmamenta-o","CLINICASMEDICAS","OBRANAMAOCOMERCIAL","saas-products"]},{"id":"artisys-feature-flags","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["all-active-products"]},{"id":"artisys-checklists","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["OBRANAMAOCOMERCIAL","OficinaAgricola","Almoxarifado"]},{"id":"artisys-reporting","version":"0.1.0","status":"implemented","consumptionMode":"shared","upstreams":[],"recommendedConsumers":["drefluxo","PDV-ARTISYS","OBRANAMAOCOMERCIAL","OficinaAgricola","Almoxarifado"]},{"id":"artisys-workflow-engine","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["all-active-products","SistemasNichadosAgroFrota"]},{"id":"artisys-approvals","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["commercial-products","SistemasNichadosAgroFrota"]},{"id":"artisys-contacts","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["all-active-products","SistemasNichadosAgroFrota"]},{"id":"artisys-assets","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["asset-management-products","SistemasNichadosAgroFrota"]},{"id":"artisys-asset-lifecycle","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["asset-management-products","SistemasNichadosAgroFrota"]},{"id":"artisys-custody","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["field-service-products","SistemasNichadosAgroFrota"]},{"id":"artisys-maintenance","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["field-service-products","SistemasNichadosAgroFrota"]},{"id":"artisys-metering","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["asset-management-products","SistemasNichadosAgroFrota"]},{"id":"artisys-search","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["all-active-products","SistemasNichadosAgroFrota"]},{"id":"artisys-exporter","version":"0.1.0","status":"implemented","consumptionMode":"shared","executionMode":"embedded","upstreams":[],"recommendedConsumers":["all-active-products","SistemasNichadosAgroFrota"]}]}
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-09-20",
+  "modules": [
+    {
+      "id": "artisys-qa",
+      "version": "2.4.1",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "upstreams": [
+        "playwright",
+        "rclone"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "drefluxo",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o",
+        "cyber-study-hub"
+      ]
+    },
+    {
+      "id": "artisys-pdf",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "upstreams": [
+        "pdfme",
+        "pdfjs",
+        "react-pdf-highlighter"
+      ],
+      "recommendedConsumers": [
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o",
+        "PDV-ARTISYS"
+      ]
+    },
+    {
+      "id": "artisys-workflows",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "upstreams": [
+        "xyflow",
+        "logicflow",
+        "rete"
+      ],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "cyber-study-hub",
+        "PDV-ARTISYS"
+      ]
+    },
+    {
+      "id": "artisys-capture",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "html5-qrcode",
+        "opencv"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-dashboard",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "react-grid-layout",
+        "react-resizable-panels",
+        "glide-data-grid"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "drefluxo",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-planning",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "frappe-gantt",
+        "fullcalendar"
+      ],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "drefluxo",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-media",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-dev-tool",
+      "upstreams": [
+        "mediabunny",
+        "motion-canvas"
+      ],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "cyber-study-hub",
+        "Hackathon",
+        "Artisys-sites"
+      ]
+    },
+    {
+      "id": "artisys-office",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-local-on-demand",
+      "upstreams": [
+        "univer",
+        "docxjs",
+        "ppt-master"
+      ],
+      "recommendedConsumers": [
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-ui-builder",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "grapesjs",
+        "puck",
+        "craftjs"
+      ],
+      "recommendedConsumers": [
+        "Artisys-sites",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-upload",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "uppy",
+        "react-dropzone"
+      ],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "drefluxo",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o",
+        "PDV-ARTISYS",
+        "cyber-study-hub"
+      ]
+    },
+    {
+      "id": "artisys-files",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-local",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "drefluxo",
+        "CompatibilizaBIM",
+        "desktop-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-annotations",
+      "version": "1.0.0",
+      "status": "stable",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "annotorious",
+        "react-pdf-highlighter"
+      ],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o",
+        "cyber-study-hub"
+      ]
+    },
+    {
+      "id": "artisys-serialport",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "node-serialport"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "desktop-products-with-serial-hardware"
+      ]
+    },
+    {
+      "id": "artisys-printing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [
+        "receiptline",
+        "node-thermal-printer"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "desktop-products-with-receipts"
+      ]
+    },
+    {
+      "id": "artisys-security",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [
+        "gitleaks",
+        "trivy",
+        "semgrep"
+      ],
+      "recommendedConsumers": [
+        "all-active-products"
+      ]
+    },
+    {
+      "id": "artisys-documents",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [
+        "paddleocr",
+        "opencv"
+      ],
+      "recommendedConsumers": [
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS"
+      ]
+    },
+    {
+      "id": "artisys-api-contracts",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [
+        "openapi-generator",
+        "pact-js"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-video-engine",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand",
+      "upstreams": [
+        "gstreamer",
+        "mlt",
+        "libopenshot"
+      ],
+      "recommendedConsumers": [
+        "Artisys-sites",
+        "cyber-study-hub",
+        "Hackathon",
+        "desktop-media-products"
+      ]
+    },
+    {
+      "id": "artisys-doc-convert",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand",
+      "upstreams": [
+        "gotenberg"
+      ],
+      "recommendedConsumers": [
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-local-backend",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand",
+      "upstreams": [
+        "pocketbase"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "drefluxo",
+        "desktop-products"
+      ]
+    },
+    {
+      "id": "artisys-remote-support",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand",
+      "upstreams": [
+        "rustdesk"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "drefluxo",
+        "desktop-products"
+      ]
+    },
+    {
+      "id": "artisys-release",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-or-ci",
+      "upstreams": [
+        "playwright",
+        "gitleaks",
+        "trivy",
+        "semgrep",
+        "pact-js",
+        "openapi-generator",
+        "cosign"
+      ],
+      "recommendedConsumers": [
+        "all-active-products"
+      ]
+    },
+    {
+      "id": "artisys-release-validator",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-or-ci",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "all-commercial-desktop-products"
+      ]
+    },
+    {
+      "id": "artisys-desktop-shell",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-local-on-demand",
+      "upstreams": [
+        "powertoys"
+      ],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "drefluxo",
+        "CompatibilizaBIM",
+        "desktop-products"
+      ]
+    },
+    {
+      "id": "artisys-whatsapp-launcher",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-local",
+      "upstreams": [],
+      "recommendedConsumers": []
+    },
+    {
+      "id": "artisys-ocr",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-local-on-demand",
+      "upstreams": [
+        "paddleocr",
+        "opencv",
+        "tesseract",
+        "tesseract-js"
+      ],
+      "recommendedConsumers": [
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-product-qa",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-or-ci",
+      "upstreams": [
+        "playwright",
+        "gitleaks",
+        "trivy",
+        "semgrep",
+        "pact-js",
+        "openapi-generator"
+      ],
+      "recommendedConsumers": [
+        "all-active-products"
+      ]
+    },
+    {
+      "id": "artisys-licensing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-local-on-demand",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-commercial-desktop-products"
+      ]
+    },
+    {
+      "id": "artisys-ai-quality",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": [
+        "promptfoo"
+      ],
+      "recommendedConsumers": [
+        "Hackathon",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "cyber-study-hub"
+      ]
+    },
+    {
+      "id": "artisys-privacy",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand-or-ci",
+      "upstreams": [
+        "presidio"
+      ],
+      "recommendedConsumers": [
+        "drefluxo",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o"
+      ]
+    },
+    {
+      "id": "artisys-bim",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "local-on-demand",
+      "upstreams": [
+        "ifcopenshell"
+      ],
+      "recommendedConsumers": [
+        "CompatibilizaBIM",
+        "cbim"
+      ]
+    },
+    {
+      "id": "artisys-eventbus",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-or-worker",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OficinaAgricola",
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "ConsulroriaAmamenta-o",
+        "desktop-products",
+        "web-products"
+      ]
+    },
+    {
+      "id": "artisys-alerts",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-backup",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "drefluxo",
+        "CLINICASMEDICAS",
+        "PDV-ARTISYS",
+        "OficinaAgricola",
+        "desktop-products"
+      ]
+    },
+    {
+      "id": "artisys-importer",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "drefluxo",
+        "OBRANAMAOCOMERCIAL",
+        "PDV-ARTISYS",
+        "OficinaAgricola",
+        "Almoxarifado",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-finance-domain",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "sistemafinanceiro",
+        "OBRANAMAOCOMERCIAL",
+        "drefluxo",
+        "desktop-products",
+        "web-products"
+      ]
+    },
+    {
+      "id": "artisys-auth-rbac",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products"
+      ]
+    },
+    {
+      "id": "artisys-storage",
+      "version": "0.2.1",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-audit-log",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o",
+        "drefluxo"
+      ]
+    },
+    {
+      "id": "artisys-sync",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "CLINICASMEDICAS",
+        "ConsulroriaAmamenta-o",
+        "desktop-products",
+        "web-products"
+      ]
+    },
+    {
+      "id": "artisys-pwa-runtime",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "Almoxarifado",
+        "OficinaAgricola",
+        "ConsulroriaAmamenta-o",
+        "web-products"
+      ]
+    },
+    {
+      "id": "artisys-webview-bridge",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "Hackathon",
+        "mobile-wrapper-products"
+      ]
+    },
+    {
+      "id": "artisys-inventory",
+      "version": "0.2.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "Almoxarifado",
+        "OBRANAMAOCOMERCIAL",
+        "PDV-ARTISYS",
+        "OficinaAgricola"
+      ]
+    },
+    {
+      "id": "artisys-os",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "OficinaAgricola",
+        "field-service-products"
+      ]
+    },
+    {
+      "id": "artisys-catalog",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "OficinaAgricola",
+        "drefluxo",
+        "Almoxarifado"
+      ]
+    },
+    {
+      "id": "artisys-pricing",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "PDV-ARTISYS",
+        "commercial-products"
+      ]
+    },
+    {
+      "id": "artisys-settings",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products"
+      ]
+    },
+    {
+      "id": "artisys-multitenancy",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "ConsulroriaAmamenta-o",
+        "CLINICASMEDICAS",
+        "OBRANAMAOCOMERCIAL",
+        "saas-products"
+      ]
+    },
+    {
+      "id": "artisys-feature-flags",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products"
+      ]
+    },
+    {
+      "id": "artisys-checklists",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "OBRANAMAOCOMERCIAL",
+        "OficinaAgricola",
+        "Almoxarifado"
+      ]
+    },
+    {
+      "id": "artisys-reporting",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "drefluxo",
+        "PDV-ARTISYS",
+        "OBRANAMAOCOMERCIAL",
+        "OficinaAgricola",
+        "Almoxarifado"
+      ]
+    },
+    {
+      "id": "artisys-workflow-engine",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-approvals",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "commercial-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-contacts",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-assets",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "asset-management-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-asset-lifecycle",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "asset-management-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-custody",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "field-service-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-maintenance",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "field-service-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-metering",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "asset-management-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-search",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-exporter",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-agro-contract",
+      "version": "1.0.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-local",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "SistemaLavoura",
+        "maquinasagricolas",
+        "frota-e-manutencao",
+        "pecuaria"
+      ]
+    }
+  ]
+}
