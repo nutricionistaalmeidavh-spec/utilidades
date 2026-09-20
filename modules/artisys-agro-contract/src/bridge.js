@@ -1,5 +1,5 @@
 import http from "node:http";
-import crypto from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { validateAgroEvent } from "./index.js";
 
 export class IdempotencyStore {
@@ -11,7 +11,7 @@ export class IdempotencyStore {
   }
 }
 
-export function createPairingSecret() { return crypto.randomBytes(24).toString("base64url"); }
+export function createPairingSecret() { return randomBytes(24).toString("base64url"); }
 
 export function createAgroBridge({ productId, port = 47821, host = "127.0.0.1", secret, onEvent = async () => {}, store = new IdempotencyStore() }) {
   if (!secret) throw new Error("Bridge exige segredo de pareamento");
