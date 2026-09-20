@@ -873,19 +873,6 @@
         "all-active-products",
         "SistemasNichadosAgroFrota"
       ]
-    },
-    {
-      "id": "artisys-agro-contract",
-      "version": "1.0.0",
-      "status": "implemented",
-      "consumptionMode": "shared",
-      "upstreams": [],
-      "recommendedConsumers": [
-        "SistemaLavoura",
-        "maquinasagricolas",
-        "frota-e-manutencao",
-        "pecuaria"
-      ]
     }
   ]
 }
