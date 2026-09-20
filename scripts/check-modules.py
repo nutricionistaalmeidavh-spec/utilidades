@@ -27,7 +27,7 @@ READY = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', 'artisys-agro-contract', *P0_JS_MODULES
 )
 READY_STATUSES = ('implemented', 'stable')
 JS_MODULES = (
@@ -43,7 +43,7 @@ JS_MODULES = (
     'artisys-audit-log', 'artisys-sync', 'artisys-pwa-runtime', 'artisys-webview-bridge',
     'artisys-inventory', 'artisys-os', 'artisys-catalog', 'artisys-pricing',
     'artisys-settings', 'artisys-multitenancy', 'artisys-feature-flags',
-    'artisys-checklists', 'artisys-reporting', *P0_JS_MODULES
+    'artisys-checklists', 'artisys-reporting', 'artisys-agro-contract', *P0_JS_MODULES
 )
 NEW_PRODUCT_MODULES = (
     'artisys-capture', 'artisys-dashboard', 'artisys-planning',
