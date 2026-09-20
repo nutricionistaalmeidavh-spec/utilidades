@@ -53,7 +53,7 @@ NEW_PRODUCT_MODULES = (
     'artisys-release', 'artisys-desktop-shell', 'artisys-whatsapp-launcher', 'artisys-ocr',
     'artisys-product-qa', 'artisys-licensing', 'artisys-ai-quality',
     'artisys-privacy', 'artisys-bim', 'artisys-release-validator', 'artisys-eventbus',
-    'artisys-files'
+    'artisys-files', 'artisys-agro-contract'
 )
 
 
