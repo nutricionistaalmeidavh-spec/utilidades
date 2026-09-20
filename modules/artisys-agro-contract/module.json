@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "status": "implemented",
   "consumptionMode": "shared",
-  "executionMode": "embedded-local",
   "upstreams": [],
   "implementedCapabilities": [
     "versioned-agro-event-contract",
@@ -12,11 +11,5 @@
     "event-idempotency",
     "outbox-retry",
     "conflict-resolution"
-  ],
-  "recommendedConsumers": [
-    "SistemaLavoura",
-    "maquinasagricolas",
-    "frota-e-manutencao",
-    "pecuaria"
   ]
 }
