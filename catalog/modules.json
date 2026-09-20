@@ -879,7 +879,6 @@
       "version": "1.0.0",
       "status": "implemented",
       "consumptionMode": "shared",
-      "executionMode": "embedded-local",
       "upstreams": [],
       "recommendedConsumers": [
         "SistemaLavoura",
