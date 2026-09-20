@@ -1,0 +1,25 @@
+name: ArtiSys Agro Contract
+on:
+  pull_request:
+    paths:
+      - 'modules/artisys-agro-contract/**'
+      - '.github/workflows/artisys-agro-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contract tests
+        run: npm test --prefix modules/artisys-agro-contract
+      - name: Syntax checks
+        run: npm run check --prefix modules/artisys-agro-contract
+      - name: Example
+        run: npm run example --prefix modules/artisys-agro-contract
+      - name: Package contents
+        run: npm pack --dry-run --prefix modules/artisys-agro-contract
