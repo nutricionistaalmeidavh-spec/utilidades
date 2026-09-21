@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-09-20",
+  "updatedAt": "2026-09-21",
   "modules": [
     {
       "id": "artisys-qa",
@@ -871,6 +871,21 @@
       "upstreams": [],
       "recommendedConsumers": [
         "all-active-products",
+        "SistemasNichadosAgroFrota"
+      ]
+    },
+    {
+      "id": "artisys-agro-maps",
+      "version": "0.1.0",
+      "status": "implemented",
+      "consumptionMode": "shared",
+      "executionMode": "embedded-local",
+      "upstreams": [],
+      "recommendedConsumers": [
+        "SistemaLavoura",
+        "OficinaAgricola",
+        "pecuaria",
+        "maquinasagricolas",
         "SistemasNichadosAgroFrota"
       ]
     }
