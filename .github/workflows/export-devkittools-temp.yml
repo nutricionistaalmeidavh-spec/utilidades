@@ -1,0 +1,32 @@
+name: Exportar módulos para DevKitTools
+
+on:
+  push:
+    branches: [temp/export-devkittools]
+    paths:
+      - '.github/workflows/export-devkittools-temp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  exportar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Registrar revisão exportada
+        shell: bash
+        run: |
+          git rev-parse HEAD > EXPORT-COMMIT.txt
+          find modules -type f | sort > EXPORT-FILES.txt
+          printf 'Arquivos: '; wc -l < EXPORT-FILES.txt
+      - name: Publicar snapshot temporário
+        uses: actions/upload-artifact@v4
+        with:
+          name: utilidades-modules-devkittools
+          path: |
+            modules/
+            EXPORT-COMMIT.txt
+            EXPORT-FILES.txt
+          if-no-files-found: error
+          retention-days: 1
