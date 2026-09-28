@@ -1,0 +1,33 @@
+name: Exportar modulos para DevKitTools
+
+on:
+  push:
+    branches:
+      - tmp/devkit-artifact-20260928
+    paths:
+      - '.github/workflows/devkit-export-temp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  exportar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preparar snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p devkit-export
+          cp -a modules/. devkit-export/
+          find devkit-export -type d -name node_modules -prune -exec rm -rf {} +
+          find devkit-export -type d -name .git -prune -exec rm -rf {} +
+      - name: Publicar artefato temporario
+        uses: actions/upload-artifact@v4
+        with:
+          name: devkit-modules-snapshot
+          path: devkit-export/
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
