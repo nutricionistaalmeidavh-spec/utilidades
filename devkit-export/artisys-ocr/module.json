@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-ocr",
+  "name": "ArtiSys OCR",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-local-on-demand",
+  "upstreams": ["paddleocr", "opencv", "tesseract", "tesseract-js"],
+  "boundary": "Unified OCR request/result contract selecting local/browser providers without forcing one runtime.",
+  "provides": ["ocr-request", "provider-selection", "result-normalization", "provider-execution"],
+  "packageName": "@artisys/ocr",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["ocr-request", "provider-selection", "result-normalization", "provider-execution"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Provider binaries/models are installed only when selected.", "Model licenses must be reviewed separately."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

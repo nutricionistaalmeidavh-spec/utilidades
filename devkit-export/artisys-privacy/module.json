@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-privacy",
+  "name": "ArtiSys Privacy",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand-or-ci",
+  "upstreams": ["presidio"],
+  "boundary": "Portable PII request, redaction and adapter contract around Presidio. Presidio remains an optional local/CI runtime and no always-on privacy service is required.",
+  "provides": ["pii-request-validation", "pii-detection-boundary", "pii-anonymization-boundary", "deterministic-span-redaction", "adapter-execution"],
+  "packageName": "@artisys/privacy",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["analyze-anonymize-modes", "language-and-entity-normalization", "presidio-job-generation", "right-to-left-span-redaction", "injected-privacy-runner"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Presidio models and recognizers are separate runtime artifacts and must be vetted by the consuming product.", "The shared kit does not persist original or redacted sensitive text."],
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}

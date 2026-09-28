@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-release-validator",
+  "name": "ArtiSys Release Validator",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-or-ci",
+  "upstreams": [],
+  "boundary": "Installed-artifact and product-scenario release validation with consumer-defined profiles.",
+  "provides": [
+    "validation-profile",
+    "release-validation-runner",
+    "command-http-nsis-adapters",
+    "stress-repeat",
+    "artifact-sha256",
+    "json-html-reports",
+    "release-gate-cli"
+  ],
+  "packageName": "@artisys/release-validator",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": [
+    "validation-profile",
+    "release-validation-runner",
+    "command-http-nsis-adapters",
+    "stress-repeat",
+    "artifact-sha256",
+    "json-html-reports",
+    "release-gate-cli"
+  ],
+  "plannedCapabilities": [],
+  "verification": {
+    "unit": "npm test",
+    "syntax": "npm run check",
+    "example": "npm run example",
+    "package": "npm pack --dry-run"
+  },
+  "limitations": [
+    "Product-specific business scenarios are supplied by the consumer.",
+    "Physical hardware homologation remains external evidence.",
+    "The validator does not sign or publish releases."
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}

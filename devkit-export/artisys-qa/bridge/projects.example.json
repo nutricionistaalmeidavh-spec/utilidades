@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "example-system",
+      "name": "Example System",
+      "repository": "https://github.com/nutricionistaalmeidavh-spec/example-system.git",
+      "ref": "main",
+      "configPath": "qa/artisys-qa.config.json",
+      "enabled": false
+    }
+  ]
+}
