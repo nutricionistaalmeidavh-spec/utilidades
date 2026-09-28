@@ -41,6 +41,47 @@ function gatesText(gates) {
   return gates.map((gate) => `${gate.id}: ${gate.status}${gate.exitCode == null ? '' : ` (exit ${gate.exitCode})`}`).join('\n');
 }
 
+function normalizeBlockingFinding(finding) {
+  const packageName = cleanText(finding?.package) || cleanText(finding?.packageName) || null;
+  return {
+    severity: cleanText(finding?.severity).toLowerCase() || 'unknown',
+    tool: cleanText(finding?.tool) || cleanText(finding?.source) || 'unknown',
+    ruleId: cleanText(finding?.ruleId) || cleanText(finding?.rule) || cleanText(finding?.id) || 'unknown',
+    message: cleanText(finding?.message) || cleanText(finding?.title) || cleanText(finding?.description) || 'Finding sem mensagem capturada.',
+    path: cleanText(finding?.path) || cleanText(finding?.file) || cleanText(finding?.target) || null,
+    url: cleanText(finding?.url) || null,
+    package: packageName,
+    version: cleanText(finding?.version) || cleanText(finding?.installedVersion) || cleanText(finding?.packageVersion) || null,
+    evidence: cleanText(finding?.evidence) || cleanText(finding?.fingerprint) || cleanText(finding?.diagnostic) || null,
+    remediation: cleanText(finding?.remediation) || cleanText(finding?.fix) || cleanText(finding?.recommendation) || (cleanText(finding?.fixedVersion) ? `Atualizar para uma versão corrigida: ${cleanText(finding.fixedVersion)}` : null),
+  };
+}
+
+export function summarizeBlockingFindings(report) {
+  if (!report || typeof report !== 'object') return [];
+  const source = Array.isArray(report.blockingFindings)
+    ? report.blockingFindings
+    : Array.isArray(report.findings)
+      ? report.findings
+      : [];
+  return source
+    .map(normalizeBlockingFinding)
+    .filter((finding) => finding.severity === 'critical' || finding.severity === 'high');
+}
+
+function blockingFindingsDiagnosticText(findings) {
+  if (!Array.isArray(findings) || !findings.length) return '';
+  const lines = ['Findings bloqueantes:'];
+  for (const finding of findings) {
+    const location = finding.path ? ` [${finding.path}]` : '';
+    const pkg = finding.package ? ` | package=${finding.package}${finding.version ? `@${finding.version}` : ''}` : '';
+    const evidence = finding.evidence ? ` | evidence=${finding.evidence}` : '';
+    const remediation = finding.remediation ? ` | remediation=${finding.remediation}` : '';
+    lines.push(`${finding.severity.toUpperCase()} ${finding.tool}/${finding.ruleId}: ${finding.message}${location}${pkg}${evidence}${remediation}`);
+  }
+  return lines.join('\n');
+}
+
 function flowFailureDetails(flow) {
   const flowSummary = flow?.summary && typeof flow.summary === 'object' ? flow.summary : null;
   const failedStep = Array.isArray(flowSummary?.steps)
@@ -102,20 +143,39 @@ function qaDiagnosticText(qa) {
   return [header, ...failures].join('\n');
 }
 
+function isFailingStep(step) {
+  const status = cleanText(step?.status).toLowerCase();
+  return new Set(['fail', 'failed', 'block', 'blocked', 'error', 'incomplete']).has(status);
+}
+
+function resolveFailedStep(report, declaredId) {
+  const steps = Array.isArray(report?.steps) ? report.steps : [];
+  const exact = steps.find((step) => cleanText(step?.id) === declaredId) ?? null;
+  if (exact) return exact;
+
+  const stem = cleanText(declaredId).replace(/-(scan|group|phase)$/i, '');
+  if (stem) {
+    const scoped = steps.find((step) => isFailingStep(step) && cleanText(step?.id).startsWith(`${stem}-`));
+    if (scoped) return scoped;
+  }
+  return steps.find(isFailingStep) ?? null;
+}
+
 export function summarizeRelease({ report = null, qaReport = null, logText = '', installerPaths = [], installerRequired = process.env.ARTISYS_INSTALLER_REQUIRED !== 'false', fallbackStep = 'workflow', fallbackMessage = '' } = {}) {
   const installerPath = Array.isArray(installerPaths) && installerPaths.length ? installerPaths[0] : null;
   const requiresInstaller = installerRequired !== false;
   const reportPassedWithoutInstaller = requiresInstaller && report?.status === 'pass' && !installerPath;
-  const failedStepId = report?.failedStep || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
-  const failedStep = Array.isArray(report?.steps)
-    ? report.steps.find((step) => step?.id === failedStepId) ?? null
-    : null;
+  const declaredFailedStepId = cleanText(report?.failedStep) || (reportPassedWithoutInstaller ? 'evidence/installer' : fallbackStep);
+  const failedStep = resolveFailedStep(report, declaredFailedStepId);
+  const failedStepId = cleanText(failedStep?.id) || declaredFailedStepId;
   const gates = gatesFromReport(report);
   const qa = summarizeQaReport(qaReport);
+  const blockingFindings = summarizeBlockingFindings(report);
   const reportDiagnostic = report
     ? `artisys-release status: ${report.status || 'unknown'}${gates.length ? `\n${gatesText(gates)}` : ''}${reportPassedWithoutInstaller ? '\nInstaller esperado nao foi encontrado na validacao final.' : ''}`
     : '';
   const diagnostic = qaDiagnosticText(qa)
+    || blockingFindingsDiagnosticText(blockingFindings)
     || cleanText(failedStep?.stderr)
     || cleanText(failedStep?.stdout)
     || cleanText(reportDiagnostic)
@@ -126,6 +186,7 @@ export function summarizeRelease({ report = null, qaReport = null, logText = '',
     status: report?.status || 'failure',
     reportStatus: report?.status || null,
     failedStep: failedStepId,
+    declaredFailedStep: declaredFailedStepId === failedStepId ? null : declaredFailedStepId,
     exitCode: Number.isInteger(failedStep?.exitCode) ? failedStep.exitCode : null,
     command: cleanText(failedStep?.command) || null,
     errorExcerpt: tailLines(diagnostic),
@@ -134,6 +195,7 @@ export function summarizeRelease({ report = null, qaReport = null, logText = '',
     installerPath,
     gates,
     stepsSummary: gatesText(gates),
+    blockingFindings,
     qa,
   };
 }
@@ -168,6 +230,19 @@ function commonMarkdown({ repo, sha, branch, pipelineUrl, summary, title }) {
   return { lines, shortSha, product, url };
 }
 
+function appendBlockingFindingsMarkdown(lines, findings) {
+  if (!Array.isArray(findings) || !findings.length) return;
+  lines.push('', '### Findings bloqueantes', `- Total: **${findings.length}**`);
+  for (const finding of findings) {
+    lines.push('', `#### ${finding.severity.toUpperCase()} — \`${finding.tool}/${finding.ruleId}\``, `- Mensagem: ${finding.message}`);
+    if (finding.path) lines.push(`- Arquivo/alvo: \`${finding.path}\``);
+    if (finding.url) lines.push(`- URL: ${finding.url}`);
+    if (finding.package) lines.push(`- Pacote: \`${finding.package}${finding.version ? `@${finding.version}` : ''}\``);
+    if (finding.evidence) lines.push(`- Evidência: ${finding.evidence}`);
+    if (finding.remediation) lines.push(`- Remediação: ${finding.remediation}`);
+  }
+}
+
 function appendQaMarkdown(lines, qa) {
   if (!qa) return;
   lines.push('', '### QA detalhado', `- Fluxos: **${qa.passed}/${qa.total} PASS**${qa.failed ? ` — **${qa.failed} FAIL**` : ''}`);
@@ -187,10 +262,12 @@ export function buildFailureMarkdown({ repo, sha, branch, pipelineUrl, summary }
   const exitCode = summary?.exitCode == null ? 'indisponível' : String(summary.exitCode);
   const command = summary?.command ? `\n- Comando: \`${summary.command}\`` : '';
   const reportStatus = summary?.reportStatus ? `\n- artisys-release: \`${summary.reportStatus}\`` : '';
+  const declaredStep = summary?.declaredFailedStep ? `\n- Grupo: \`${summary.declaredFailedStep}\`` : '';
   lines.splice(5, 0,
     `- Step: \`${cleanText(summary?.failedStep) || 'workflow'}\``,
-    `- Exit code: \`${exitCode}\`${command}${reportStatus}`,
+    `- Exit code: \`${exitCode}\`${command}${reportStatus}${declaredStep}`,
   );
+  appendBlockingFindingsMarkdown(lines, summary?.blockingFindings);
   appendQaMarkdown(lines, summary?.qa);
   lines.push('', '### Erro capturado', '```text', tailLines(summary?.errorExcerpt || 'Falha sem saída capturada.', 40, 6000), '```', '', '_Relatório automático ArtiSys / Woodpecker._');
   return lines.join('\n');
@@ -260,8 +337,11 @@ export async function publishGitHubFailure({ token, repo, sha, branch, sourceBra
   const publicUrl = publicPipelineUrl(pipelineUrl);
   const markdown = buildFailureMarkdown({ repo, sha, branch, pipelineUrl: publicUrl, summary });
   const qaSuffix = summary?.qa?.failed ? `; QA ${summary.qa.passed}/${summary.qa.total}` : '';
+  const findingSuffix = Array.isArray(summary?.blockingFindings) && summary.blockingFindings.length
+    ? `; blockers ${summary.blockingFindings.length}`
+    : '';
   const installerSuffix = summary?.installerRequired === false ? '' : `; installer ${summary?.installerFound ? 'gerado' : 'nao gerado'}`;
-  const description = truncateDescription(`${summary?.failedStep || 'workflow'} falhou${summary?.exitCode == null ? '' : ` (exit ${summary.exitCode})`}${qaSuffix}${installerSuffix}`);
+  const description = truncateDescription(`${summary?.failedStep || 'workflow'} falhou${summary?.exitCode == null ? '' : ` (exit ${summary.exitCode})`}${qaSuffix}${findingSuffix}${installerSuffix}`);
   await githubRequest(`${apiBase}/repos/${repo}/statuses/${sha}`, { token, method: 'POST', body: { state: 'failure', target_url: publicUrl, description, context: statusContext }, fetchImpl });
   const prNumber = await findOpenPr({ token, repo, branch, sourceBranch, fetchImpl, apiBase });
   await publishComment({ token, repo, sha, prNumber, markdown, fetchImpl, apiBase });
