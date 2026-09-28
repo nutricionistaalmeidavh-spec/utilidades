@@ -89,6 +89,7 @@ def main():
     parser.add_argument('--pact', action='store_true')
     parser.add_argument('--generator', action='store_true')
     args = parser.parse_args()
+    run([sys.executable, 'scripts/export-devkit-temp.py'])
     catalog = json.loads((ROOT / 'catalog/modules.json').read_text())['modules']
     if len({m['id'] for m in catalog}) != len(catalog):
         raise ValueError('Duplicate module id')
