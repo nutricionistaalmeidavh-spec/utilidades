@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-licensing",
+  "name": "ArtiSys Licensing",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-local-on-demand",
+  "upstreams": [],
+  "boundary": "Offline-verifiable license contract using Ed25519 public-key signatures; private signing key stays outside client applications.",
+  "provides": ["license-payload", "ed25519-signing", "offline-verification", "expiry-device-product-checks", "feature-flags"],
+  "packageName": "@artisys/licensing",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["license-payload", "ed25519-signing", "offline-verification", "expiry-device-product-checks", "feature-flags"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Revocation requires an optional online channel or refreshed signed denylist.", "Private signing keys must never ship inside client applications."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

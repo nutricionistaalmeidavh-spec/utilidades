@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createCustody,isCustodyOverdue,returnCustody} from '../src/index.mjs';
+test('custody tracks overdue and return',()=>{let c=createCustody({id:'c1',assetRef:{kind:'tool',id:'t1'},holderRef:{kind:'worker',id:'w1'},checkoutAt:'2026-09-14T10:00:00Z',dueAt:'2026-09-15T10:00:00Z'});assert.equal(isCustodyOverdue(c,{now:'2026-09-16T10:00:00Z'}),true);c=returnCustody(c,{at:'2026-09-16T11:00:00Z',conditionIn:'good'});assert.equal(c.status,'returned')});

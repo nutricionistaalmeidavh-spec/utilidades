@@ -1,0 +1,1 @@
+{"name":"@artisys/files","version":"0.1.0","type":"module","exports":{".":"./src/index.mjs","./browser":"./src/browser.mjs"},"files":["src","examples","module.json","README.md","LICENSE"],"scripts":{"test":"node --test","check":"node --check src/index.mjs && node --check src/browser.mjs","example":"node examples/basic.mjs"},"engines":{"node":">=22"},"license":"MIT"}

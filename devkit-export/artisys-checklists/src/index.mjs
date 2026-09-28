@@ -1,0 +1,3 @@
+export function createChecklist({id,items=[]}){if(!id)throw new TypeError('id is required');return{id:String(id),items:items.map((i,n)=>({id:String(i.id??n),label:String(i.label??''),done:Boolean(i.done),evidence:i.evidence??null}))}}
+export function setChecklistItem(checklist,itemId,patch={}){const id=String(itemId);let found=false;const items=checklist.items.map(i=>{if(i.id!==id)return i;found=true;return{...i,...patch,id:i.id}});if(!found)throw new Error('checklist item not found');return{...checklist,items}}
+export function checklistProgress(checklist){const total=checklist.items.length;const completed=checklist.items.filter(i=>i.done).length;return{completed,total,percent:total?Math.round(completed/total*100):100,done:completed===total}}

@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createAssetLifecycle,recordLifecycleEvent} from '../src/index.mjs';
+test('records validated lifecycle events',()=>{let l=createAssetLifecycle({assetId:'a1'});l=recordLifecycleEvent(l,'active',{at:'2026-09-14T10:00:00Z'});l=recordLifecycleEvent(l,'maintenance',{reason:'preventive',at:'2026-09-15T10:00:00Z'});assert.equal(l.status,'maintenance');assert.equal(l.events.length,2);assert.throws(()=>recordLifecycleEvent(l,'acquired'))});

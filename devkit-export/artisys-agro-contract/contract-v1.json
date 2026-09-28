@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "protocol": "artisys-agro",
+  "transport": {
+    "defaultHost": "127.0.0.1",
+    "defaultPort": 47821,
+    "auth": "bearer-pairing-secret"
+  },
+  "identity": "artisys://{product}/{type}/{id}",
+  "events": [
+    "machine.registered",
+    "machine.hours.recorded",
+    "machine.usage.recorded",
+    "fueling.recorded",
+    "maintenance.completed",
+    "machine.cost.updated",
+    "field-operation.machine-used"
+  ],
+  "guarantees": [
+    "at-least-once-delivery",
+    "consumer-idempotency-by-eventId",
+    "no-direct-cross-product-database-access",
+    "manual-conflicts-never-overwritten"
+  ]
+}

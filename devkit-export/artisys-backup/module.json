@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-backup",
+  "name": "ArtiSys Backup",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [],
+  "boundary": "Backup manifests, integrity verification, retention and scheduling primitives. Product-specific persistence, file IO and restore orchestration stay in the consumer.",
+  "provides": ["backup-manifest", "sha256-integrity", "retention-selection", "backup-due-check", "provider-neutral-backup-contract"],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []},
+  "implementedCapabilities": ["deterministic-manifest", "sha256-file-integrity", "restore-precheck", "keep-last-retention", "scheduled-backup-due-state"],
+  "requirements": {"node": ">=22", "runtimeDependencies": "none"}
+}

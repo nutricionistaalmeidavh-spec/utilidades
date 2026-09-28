@@ -1,0 +1,30 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "ArtiSys reference POS contract", "version": "1.0.0" },
+  "servers": [{ "url": "http://127.0.0.1:3000" }],
+  "paths": {
+    "/sales/{id}": {
+      "get": {
+        "operationId": "getSale",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": { "description": "Sale", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Sale" } } } },
+          "404": { "description": "Sale not found" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Sale": {
+        "type": "object",
+        "required": ["id", "totalCents", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "totalCents": { "type": "integer", "format": "int32", "minimum": 0 },
+          "status": { "type": "string", "enum": ["completed", "cancelled"] }
+        }
+      }
+    }
+  }
+}

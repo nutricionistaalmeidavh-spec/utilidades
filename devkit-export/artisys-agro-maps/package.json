@@ -1,0 +1,12 @@
+{
+  "name": "@artisys/agro-maps",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./gis": "./src/gis.js",
+    "./spatial": "./src/spatial.js",
+    "./pmtiles": "./src/pmtiles.js"
+  }
+}

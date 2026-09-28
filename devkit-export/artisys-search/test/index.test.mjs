@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {buildSearchIndex,searchIndex} from '../src/index.mjs';
+test('search ranks weighted fields and ignores accents',()=>{const idx=buildSearchIndex([{id:'1',name:'Máquina agrícola',description:'trator'},{id:'2',name:'Peça',description:'máquina'}],{fields:['name','description'],weights:{name:3,description:1}});const r=searchIndex(idx,'maquina');assert.equal(r[0].id,'1');assert.equal(r[0].score,3)});

@@ -1,0 +1,19 @@
+{
+  "name": "@artisys/release",
+  "version": "0.2.0",
+  "type": "module",
+  "exports": "./src/index.mjs",
+  "bin": {
+    "artisys-release": "./bin/artisys-release.mjs",
+    "artisys-github-release": "./bin/artisys-github-release.mjs"
+  },
+  "files": ["src", "bin", "module.json", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/index.mjs && node --check src/github-release.mjs && node --check bin/artisys-release.mjs && node --check bin/artisys-github-release.mjs",
+    "example": "node examples/basic.mjs",
+    "dry-run": "node bin/artisys-release.mjs examples/release.config.json --dry-run"
+  },
+  "engines": {"node": ">=22"},
+  "license": "MIT"
+}
