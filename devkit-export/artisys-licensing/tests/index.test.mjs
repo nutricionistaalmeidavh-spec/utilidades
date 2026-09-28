@@ -1,0 +1,6 @@
+import test from 'node:test'; import assert from 'node:assert/strict'; import { generateKeyPairSync } from 'node:crypto';
+import { createLicensePayload, signLicense, verifyLicense, isFeatureEnabled } from '../src/index.mjs';
+const {privateKey,publicKey}=generateKeyPairSync('ed25519');
+test('signs and verifies offline license',()=>{ const p=createLicensePayload({licenseId:'L1',product:'PDV',customerId:'C1',issuedAt:'2026-09-10T00:00:00Z',expiresAt:'2027-09-10T00:00:00Z',deviceIds:['D1'],features:['pro']}); const t=signLicense(p,privateKey); const v=verifyLicense(t,publicKey,{now:'2026-10-01T00:00:00Z',deviceId:'D1',product:'PDV'}); assert.equal(v.valid,true); assert.equal(isFeatureEnabled(v.payload,'pro'),true); });
+test('rejects expired license',()=>{ const p=createLicensePayload({licenseId:'L1',product:'PDV',customerId:'C1',issuedAt:'2026-01-01T00:00:00Z',expiresAt:'2026-02-01T00:00:00Z'}); const v=verifyLicense(signLicense(p,privateKey),publicKey,{now:'2026-03-01T00:00:00Z'}); assert.equal(v.valid,false); assert.equal(v.reason,'expired'); });
+test('rejects wrong device',()=>{ const p=createLicensePayload({licenseId:'L1',product:'PDV',customerId:'C1',issuedAt:'2026-01-01T00:00:00Z',deviceIds:['D1']}); const v=verifyLicense(signLicense(p,privateKey),publicKey,{deviceId:'D2'}); assert.equal(v.reason,'device-mismatch'); });

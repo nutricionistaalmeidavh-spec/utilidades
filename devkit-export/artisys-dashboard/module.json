@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-dashboard",
+  "name": "ArtiSys Dashboard",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["react-grid-layout", "react-resizable-panels", "glide-data-grid"],
+  "boundary": "Portable dashboard layout contracts; metrics, persistence, permissions and widget implementations stay in the consumer.",
+  "provides": ["dashboard-layout-validation", "react-grid-layout-adapter", "resizable-panels-adapter", "glide-data-grid-column-adapter"],
+  "packageName": "@artisys/dashboard",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["unique-widget-validation", "grid-coordinate-validation", "react-grid-layout-model", "resizable-panel-model", "glide-column-model"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["The module does not persist dashboard state.", "Consumers own actual React components and data fetching."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}

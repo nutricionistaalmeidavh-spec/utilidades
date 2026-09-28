@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-documents",
+  "name": "ArtiSys Document Intelligence",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [
+    "paddleocr",
+    "opencv"
+  ],
+  "boundary": "Shared local image/OCR core; consumer owns classification, extraction rules and storage. OCR model integration requires host provisioning.",
+  "provides": [
+    "image-preprocessing",
+    "ocr-adapter",
+    "consumer-classification-hooks",
+    "consumer-field-extraction-hooks"
+  ],
+  "implementedCapabilities": [
+    "bounded-local-image-input",
+    "source-preservation",
+    "exif-orientation",
+    "opencv-grayscale-threshold",
+    "paddleocr-3-lazy-adapter",
+    "normalized-ocr-contract-v1",
+    "consumer-rules",
+    "exclusive-json-cli-output"
+  ],
+  "plannedCapabilities": [],
+  "limitations": [
+    "No PDF or multi-page input",
+    "No scanner drivers",
+    "No signature detection or authenticity verification",
+    "PaddleOCR inference requires platform-specific PaddlePaddle and provisioned models; real inference not validated in this delivery"
+  ],
+  "runtime": {
+    "python": ">=3.10",
+    "network": "Offline after dependencies and OCR models are provisioned"
+  },
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}

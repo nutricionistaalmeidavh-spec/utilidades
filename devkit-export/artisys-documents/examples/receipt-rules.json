@@ -1,0 +1,9 @@
+{
+  "classification": {
+    "receipt": ["recibo", "valor"]
+  },
+  "fields": {
+    "amount": "valor\\s*:?\\s*R\\$\\s*([0-9.,]+)",
+    "employeeId": "matrícula\\s*:?\\s*(\\d+)"
+  }
+}
