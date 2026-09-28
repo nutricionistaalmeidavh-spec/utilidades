@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-ai-quality",
+  "name": "ArtiSys AI Quality",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand-or-ci",
+  "upstreams": ["promptfoo"],
+  "boundary": "Portable evaluation contract and Promptfoo configuration boundary. Provider credentials, sensitive datasets and provider-specific runtime settings remain in the consumer or CI environment.",
+  "provides": ["prompt-regression", "model-comparison", "evaluation-summary", "promptfoo-config", "adapter-execution"],
+  "packageName": "@artisys/ai-quality",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["suite-validation", "promptfoo-config-generation", "credential-free-config", "result-summary", "injected-evaluation-runner"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Promptfoo runtime and model-provider credentials are installed/configured only where evaluation is executed.", "Sensitive evaluation datasets stay outside the shared kit."],
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}

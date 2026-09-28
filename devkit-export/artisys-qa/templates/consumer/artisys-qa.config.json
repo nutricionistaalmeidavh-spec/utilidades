@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "systemId": "example-system",
+  "mode": "web",
+  "defaultEnvironment": "production",
+  "defaultFlow": "smoke",
+  "defaultDemo": "quick-30s",
+  "defaultViewport": "desktop",
+  "capture": {
+    "video": true,
+    "screenshotEachStep": true,
+    "fps": 4
+  },
+  "environments": {
+    "production": {
+      "baseURL": "https://example.com"
+    }
+  },
+  "flows": {
+    "smoke": "flows/smoke.json"
+  },
+  "demos": {
+    "quick-30s": {
+      "file": "demo/quick-30s.json",
+      "preset": "reels-9x16",
+      "durationTargetSec": 30
+    }
+  }
+}

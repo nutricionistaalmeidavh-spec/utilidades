@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-doc-convert",
+  "name": "ArtiSys Document Convert",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand",
+  "upstreams": ["gotenberg"],
+  "boundary": "Portable document-conversion contract over an isolated on-demand Gotenberg adapter.",
+  "provides": ["conversion-validation", "gotenberg-request", "adapter-execution"],
+  "packageName": "@artisys/doc-convert",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["conversion-validation", "gotenberg-request", "adapter-execution"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Gotenberg is optional and started only when conversion is requested.", "Core does not require an always-on service."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

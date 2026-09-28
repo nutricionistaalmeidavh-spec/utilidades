@@ -1,0 +1,12 @@
+{
+  "id": "approval",
+  "nodes": [
+    { "id": "draft", "type": "draft", "data": { "label": "Rascunho" }, "position": { "x": 0, "y": 0 } },
+    { "id": "review", "type": "review", "data": { "label": "Revisão" }, "position": { "x": 240, "y": 0 } },
+    { "id": "approved", "type": "approved", "data": { "label": "Aprovado" }, "position": { "x": 480, "y": 0 } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "draft", "target": "review", "data": {} },
+    { "id": "e2", "source": "review", "target": "approved", "data": {} }
+  ]
+}

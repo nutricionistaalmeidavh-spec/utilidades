@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createMeter,recordReading,readingDelta} from '../src/index.mjs';
+test('meter records monotonic readings',()=>{let m=createMeter({id:'m1',assetRef:{kind:'machine',id:'x1'},kind:'hour',unit:'h'});m=recordReading(m,{value:100,at:'2026-09-14T10:00:00Z'});m=recordReading(m,{value:104,at:'2026-09-14T14:00:00Z'});assert.equal(readingDelta(m),4);assert.throws(()=>recordReading(m,{value:99}))});

@@ -1,0 +1,30 @@
+{
+  "name": "@artisys/eventbus",
+  "version": "0.2.0",
+  "description": "EventBus local-first para Node, browser e Cloudflare D1 com outbox durável e efeitos idempotentes.",
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./web": "./web/index.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "src",
+    "web",
+    "migrations",
+    "examples",
+    "README.md",
+    "module.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "example": "node examples/basic-usage.js && node examples/web-debora.mjs",
+    "check": "node --check src/index.js && node --check web/index.mjs && node --check examples/basic-usage.js && node --check examples/web-debora.mjs"
+  },
+  "dependencies": {},
+  "license": "MIT"
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-release",
+  "name": "ArtiSys Release",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-or-ci",
+  "upstreams": ["playwright", "gitleaks", "trivy", "semgrep", "pact-js", "openapi-generator", "cosign"],
+  "boundary": "Provider-neutral release pipeline. Product commands are injected by configuration; CI providers only invoke the same engine. GitHub Release publishing is exposed as an optional shared CLI.",
+  "provides": ["release-plan", "sequential-gates", "artifact-sha256", "blocking-summary", "pipeline-profiles", "profile-scoped-steps", "command-runner", "json-report", "github-release-publisher", "cli"],
+  "packageName": "@artisys/release",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["release-plan", "sequential-gates", "artifact-sha256", "blocking-summary", "quick-full-release-profiles", "profile-scoped-required-steps", "profile-scoped-commands", "installer-before-qa", "fail-fast-command-pipeline", "required-step-policy", "dry-run", "json-report", "idempotent-github-release", "replace-release-assets", "cli"],
+  "plannedCapabilities": ["artifact-manifest-signing", "parallel-non-release-checks"],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run", "dryRun": "npm run dry-run"},
+  "limitations": ["Product-specific build, installer and QA commands remain owned by the consumer.", "Publishing requires a GitHub token with release/content write permission.", "Woodpecker server/agent credentials are infrastructure configuration and are not stored in this module."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

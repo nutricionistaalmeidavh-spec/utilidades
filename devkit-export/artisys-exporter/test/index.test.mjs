@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {toCsv,toJson,toWorkbookModel} from '../src/index.mjs';
+test('exports csv json and workbook-neutral model',()=>{const rows=[{name:'A, B',qty:2}];assert.equal(toCsv(rows),'name,qty\r\n"A, B",2');assert.deepEqual(JSON.parse(toJson(rows)),rows);const wb=toWorkbookModel(rows,{sheetName:'Itens'});assert.equal(wb.sheetName,'Itens');assert.deepEqual(wb.rows[0],['A, B',2])});
+test('quotes the selected CSV delimiter and validates it',()=>{assert.equal(toCsv([{name:'A; B'}],{delimiter:';'}),'name\r\n"A; B"');assert.throws(()=>toCsv([{name:'A'}],{delimiter:';;'}),/one character/)});

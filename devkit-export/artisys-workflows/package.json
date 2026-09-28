@@ -1,0 +1,25 @@
+{
+  "name": "@artisys/workflows",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "exports": { ".": "./src/index.mjs" },
+  "bin": { "artisys-workflows": "./bin/workflows.mjs" },
+  "files": ["src", "bin", "examples", "README.md", "module.json"],
+  "scripts": {
+    "test": "node --test tests/core.test.mjs",
+    "check": "node bin/workflows.mjs validate examples/approval-flow.json",
+    "example": "node bin/workflows.mjs order examples/approval-flow.json"
+  },
+  "peerDependencies": {
+    "@logicflow/core": ">=2 <3",
+    "@xyflow/react": ">=12 <13",
+    "rete": ">=2 <3"
+  },
+  "peerDependenciesMeta": {
+    "@logicflow/core": { "optional": true },
+    "@xyflow/react": { "optional": true },
+    "rete": { "optional": true }
+  },
+  "license": "MIT"
+}

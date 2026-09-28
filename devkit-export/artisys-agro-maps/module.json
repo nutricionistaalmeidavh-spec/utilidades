@@ -1,0 +1,19 @@
+{
+  "id": "artisys-agro-maps",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-local",
+  "upstreams": [],
+  "optionalUpstreams": ["@xmldom/xmldom", "@tmcw/togeojson", "fflate", "shpjs", "isoxml"],
+  "implementedCapabilities": [
+    "wgs84-geometry-validation",
+    "geojson-normalization",
+    "polygon-topology-validation",
+    "generic-spatial-snapshot",
+    "pmtiles-manifest-validation",
+    "regional-pmtiles-download-planning",
+    "offline-first-map-contract"
+  ],
+  "recommendedConsumers": ["SistemaLavoura", "OficinaAgricola", "pecuaria", "maquinasagricolas", "SistemasNichadosAgroFrota"]
+}

@@ -1,0 +1,4 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createAlert,acknowledgeAlert,snoozeAlert,dismissAlert,listDueAlerts} from '../src/index.mjs';
+test('alerts expose local lifecycle and due filtering',()=>{const created=createAlert({id:'a1',entityRef:{kind:'vehicle-document',id:'doc1'},title:'Documento vencendo',dueAt:'2026-09-14T12:00:00Z',severity:'warning'});assert.equal(created.status,'active');assert.equal(listDueAlerts([created],{now:'2026-09-14T13:00:00Z'}).length,1);const snoozed=snoozeAlert(created,{until:'2026-09-16T12:00:00Z'});assert.equal(listDueAlerts([snoozed],{now:'2026-09-15T12:00:00Z'}).length,0);const acknowledged=acknowledgeAlert(created,{actorId:'u1',at:'2026-09-14T13:05:00Z'});assert.equal(acknowledged.status,'acknowledged');const dismissed=dismissAlert(created,{actorId:'u1',reason:'renewed'});assert.equal(dismissed.status,'dismissed');assert.equal(listDueAlerts([dismissed],{now:'2026-09-20T12:00:00Z'}).length,0);});

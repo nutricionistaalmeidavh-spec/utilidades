@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-desktop-shell",
+  "name": "ArtiSys Desktop Shell",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-or-local-on-demand",
+  "upstreams": ["powertoys"],
+  "boundary": "Desktop shell contract inspired by curated Windows utility patterns without copying PowerToys into products.",
+  "provides": ["desktop-manifest", "deep-link-normalization", "desktop-action-routing"],
+  "packageName": "@artisys/desktop-shell",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["desktop-manifest", "deep-link-normalization", "desktop-action-routing"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Electron/PySide/AppKit implementations stay in platform adapters."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

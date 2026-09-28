@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "artisys-documents"
+version = "0.2.0"
+description = "Local document pipeline with consumer-owned rules"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = ["Pillow>=10.4,<13"]
+
+[project.optional-dependencies]
+preprocess = ["opencv-python-headless>=4.10,<5"]
+ocr = ["paddleocr>=3.0,<4"]
+
+[project.scripts]
+artisys-documents = "artisys_documents.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-remote-support",
+  "name": "ArtiSys Remote Support",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand",
+  "upstreams": ["rustdesk"],
+  "boundary": "Explicit remote-support session contract; RustDesk remains isolated from product runtime.",
+  "provides": ["support-session-policy", "rustdesk-request", "adapter-execution"],
+  "packageName": "@artisys/remote-support",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["support-session-policy", "rustdesk-request", "adapter-execution"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Unattended access is opt-in and disabled by default.", "No mandatory relay/server is provisioned by this kit."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

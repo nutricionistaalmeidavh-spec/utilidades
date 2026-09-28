@@ -1,0 +1,32 @@
+# Copy to the CONSUMER .github/workflows/security.yml.
+# Replace REPLACE_WITH_REVIEWED_UTILIDADES_COMMIT with a full reviewed SHA.
+name: ArtiSys security
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          path: product
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: nutricionistaalmeidavh-spec/utilidades
+          ref: REPLACE_WITH_REVIEWED_UTILIDADES_COMMIT
+          persist-credentials: false
+          path: utilities
+      - name: Security gate
+        env:
+          RELEASE: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          mode=commit
+          if [ "$RELEASE" = "true" ]; then mode=release; fi
+          python3 utilities/modules/artisys-security/security.py product --engine docker --mode "$mode"
