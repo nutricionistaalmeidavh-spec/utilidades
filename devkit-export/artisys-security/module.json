@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-security",
+  "name": "ArtiSys Security Pipeline",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [
+    "gitleaks",
+    "trivy",
+    "semgrep"
+  ],
+  "boundary": "CI/dev tooling only; no runtime services.",
+  "provides": [
+    "secret-scanning",
+    "dependency-scanning",
+    "static-analysis",
+    "security-gates"
+  ],
+  "implementedCapabilities": [
+    "native-and-docker-cli",
+    "redacted-secret-and-git-history-scan",
+    "dependency-and-misconfiguration-scan",
+    "local-semgrep-baseline",
+    "commit-release-fail-closed-gates",
+    "sanitized-json-summary"
+  ],
+  "requirements": {
+    "python": ">=3.10",
+    "docker": "optional engine; images pinned in security.py",
+    "nativeTools": "gitleaks 8.24.3, trivy 0.61.1, semgrep 1.116.0"
+  },
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}

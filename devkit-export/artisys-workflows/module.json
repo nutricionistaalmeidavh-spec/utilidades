@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-workflows",
+  "name": "ArtiSys Workflows",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "upstreams": ["xyflow", "logicflow", "rete"],
+  "boundary": "Portable workflow graph, validation and execution stay in ArtiSys; visual editor choice and product process rules stay in the consumer.",
+  "provides": [
+    "portable-workflow-contract",
+    "graph-validation",
+    "cycle-detection",
+    "topological-order",
+    "deterministic-execution",
+    "xyflow-adapter",
+    "logicflow-adapter",
+    "rete-adapter",
+    "workflow-cli",
+    "consumer-example"
+  ],
+  "packageName": "@artisys/workflows",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": [
+    "node-and-edge-contract",
+    "duplicate-id-validation",
+    "dangling-edge-validation",
+    "cycle-detection",
+    "topological-order",
+    "async-node-handler-runtime",
+    "predecessor-output-passing",
+    "xyflow-roundtrip-adapter",
+    "logicflow-roundtrip-adapter",
+    "rete-portable-adapter",
+    "cli-validation",
+    "cli-order"
+  ],
+  "plannedCapabilities": [],
+  "verification": { "unit": "npm test", "manifest": "npm run check", "example": "npm run example" },
+  "compatibility": { "node": ">=22", "xyflow": ">=12 <13", "logicflow": ">=2 <3", "rete": ">=2 <3" },
+  "limitations": [
+    "Consumers own business-specific node types, permissions, persistence and UI styling.",
+    "Rete, XYFlow and LogicFlow are optional editor runtimes; the portable graph engine has no always-on service.",
+    "The execution engine is deterministic dependency execution, not a background job scheduler."
+  ],
+  "costPolicy": { "coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": [] }
+}

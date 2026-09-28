@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-serialport",
+  "name": "ArtiSys SerialPort",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["node-serialport"],
+  "boundary": "Reusable local serial communication, sessions and hardware adapters; product business rules and device-specific protocols stay in the consumer.",
+  "provides": [
+    "serial-port-discovery",
+    "serial-transport",
+    "request-response-session",
+    "numeric-weight-parser",
+    "line-buffer",
+    "scale-adapter",
+    "cash-drawer-adapter",
+    "generic-serial-device"
+  ],
+  "implementedCapabilities": [
+    "serial-port-discovery",
+    "validated-device-profile",
+    "open-close-state-machine",
+    "concurrent-open-guard",
+    "serial-write-and-drain",
+    "data-subscription",
+    "request-response-timeout",
+    "fragmented-response-buffering",
+    "stable-serial-error-codes",
+    "numeric-weight-parser",
+    "line-buffer",
+    "scale-adapter",
+    "cash-drawer-escpos-pulse",
+    "generic-serial-device"
+  ],
+  "packageName": "@artisys/serialport",
+  "entrypoint": "./src/index.js",
+  "verification": {
+    "unit": "npm test",
+    "syntax": "npm run check"
+  },
+  "compatibility": {
+    "node": ">=22",
+    "serialport": "13.0.0",
+    "platforms": ["windows", "linux", "macos"]
+  },
+  "limitations": [
+    "Physical device protocols remain configurable by the consumer.",
+    "Implemented status does not imply validation against every serial peripheral model.",
+    "Promotion to stable requires real hardware validation."
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  }
+}

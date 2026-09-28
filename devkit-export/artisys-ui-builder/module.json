@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-ui-builder",
+  "name": "ArtiSys UI Builder",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["grapesjs", "puck", "craftjs"],
+  "boundary": "Portable ArtiSys page/block tree plus editor adapter models; component implementation, styling, publishing and persistence stay in the consumer.",
+  "provides": ["portable-page-tree", "grapesjs-project-adapter", "puck-data-adapter", "craft-element-tree-adapter"],
+  "packageName": "@artisys/ui-builder",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["recursive-block-validation", "global-block-id-uniqueness", "grapesjs-project-data", "puck-content-data", "craft-element-tree"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["Consumers register their own concrete components for block types.", "Publishing, persistence, CSS systems and asset storage are outside this module."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}
