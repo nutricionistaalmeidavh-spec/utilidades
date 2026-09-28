@@ -1,4 +1,3 @@
-# exportação temporária DevKitTools
 name: ArtiSys module checks
 on:
   workflow_dispatch:
@@ -50,7 +49,7 @@ jobs:
           npx --no-install playwright install chromium
       - name: Provision pinned generator
         run: |
-          curl --fail --location --output "$RUNNER_TEMP/openapi-generator.jar" https://repo.maven.apache.org/maven2/org/openapitools/openapi-generator-cli/7.16.0/openapi-generator-cli-7.16.0.jar
+          curl --fail --location --output "$RUNNER_TEMP/openapi-generator.jar" https://repo.maven.apache.org/maven2/org/opentapitools/openapi-generator-cli/7.16.0/openapi-generator-cli-7.16.0.jar
           echo "6999b18cece5b58f5d5b246fef5a43bdf61239491c4f0ed6513214e0f6e8464b  $RUNNER_TEMP/openapi-generator.jar" | sha256sum --check
       - name: Verify modules and external tool boundaries
         env:
