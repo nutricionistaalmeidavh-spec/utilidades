@@ -1,0 +1,10 @@
+{
+  "name":"@artisys/annotations",
+  "version":"1.0.0",
+  "type":"module",
+  "engines":{"node":">=22"},
+  "exports":{".":"./src/index.mjs"},
+  "files":["src","examples","README.md","module.json","LICENSE"],
+  "scripts":{"test":"node --test tests/*.test.mjs","example":"node examples/basic.mjs","check":"npm test"},
+  "license":"MIT"
+}

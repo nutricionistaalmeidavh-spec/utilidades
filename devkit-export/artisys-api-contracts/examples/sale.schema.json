@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "totalCents", "status"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "totalCents": { "type": "integer", "minimum": 0 },
+    "status": { "enum": ["completed", "cancelled"] }
+  }
+}
