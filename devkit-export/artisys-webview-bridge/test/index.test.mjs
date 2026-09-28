@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createBridgeMessage,encodeBridgeMessage,parseBridgeMessage} from '../src/index.mjs';
+test('validates bridge messages',()=>{const m=createBridgeMessage('subscription:update',{pro:true},{id:'1'});assert.equal(parseBridgeMessage(encodeBridgeMessage(m),{allowedTypes:['subscription:update']}).ok,true);assert.equal(parseBridgeMessage(encodeBridgeMessage(m),{allowedTypes:['other']}).ok,false);});

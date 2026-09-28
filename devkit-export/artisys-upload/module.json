@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-upload",
+  "name": "ArtiSys Upload",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["uppy", "react-dropzone"],
+  "boundary": "Portable upload policy, queue and adapter contract; authentication, storage destination, persistence and product permissions stay in the consumer.",
+  "provides": ["upload-policy", "file-normalization", "batch-validation", "upload-queue", "uppy-config-adapter", "react-dropzone-adapter"],
+  "packageName": "@artisys/upload",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["policy-validation", "file-normalization", "batch-validation", "queue-state", "uppy-config", "dropzone-options"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["The consumer owns authentication, upload transport and storage destination.", "Uppy Companion and Transloadit are not required by the core module."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}

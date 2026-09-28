@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-whatsapp-launcher",
+  "name": "ArtiSys WhatsApp Launcher",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "embedded-local",
+  "upstreams": [],
+  "boundary": "Launcher local para WhatsApp Web, templates e adapter Electron. Não envia mensagens automaticamente, não lê/scrapeia conversas e não integra nenhum produto consumidor por padrão.",
+  "provides": ["whatsapp-web-url-builder", "phone-normalization", "message-template-rendering", "local-template-store", "electron-webcontentsview-adapter", "persistent-electron-session"],
+  "packageName": "@artisys/whatsapp-launcher",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["standalone-module", "embedded-whatsapp-web", "persistent-local-session", "open-chat-by-phone", "prefilled-message", "editable-local-templates", "dynamic-template-variables"],
+  "plannedCapabilities": [],
+  "verification": {"unit":"npm test","syntax":"npm run check","example":"npm run example","package":"npm pack --dry-run"},
+  "authorizationPolicy": {"consumerIntegration":"explicit-user-approval-required"},
+  "limitations": ["O aplicativo host precisa fornecer Electron WebContentsView para uso embutido.", "WhatsApp Web exige conexão com internet e autenticação da conta do usuário.", "O módulo apenas pré-preenche mensagens; o envio final permanece sob ação do usuário.", "Nenhum produto consumidor é integrado automaticamente."],
+  "costPolicy": {"coreLicenseFee":0,"selfHosted":true,"requiredPaidServices":[]}
+}
