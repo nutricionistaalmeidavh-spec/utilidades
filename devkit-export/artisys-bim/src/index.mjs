@@ -1,0 +1,6 @@
+function obj(v,n){if(!v||typeof v!=='object'||Array.isArray(v))throw new TypeError(`${n} must be an object`);return v}
+const OPS=new Set(['summary','properties','quantities']);
+export function normalizeBimQuery(value){obj(value,'bim query');if(typeof value.file!=='string'||!value.file.trim())throw new TypeError('file is required');if(!/\.ifc$/i.test(value.file))throw new TypeError('IFC input is required');const operation=value.operation??'summary';if(!OPS.has(operation))throw new TypeError('unsupported BIM operation');return {file:value.file,operation,entity:value.entity??null,options:{...(value.options??{})}}}
+export function createIfcOpenShellJob(value){return {...normalizeBimQuery(value),provider:'ifcopenshell',execution:'local-on-demand'}}
+export function summarizeIfcEntities(entities){if(!Array.isArray(entities))throw new TypeError('entities must be an array');const byType={};for(const entity of entities){const type=entity?.type??'Unknown';byType[type]=(byType[type]??0)+1}return {total:entities.length,byType}}
+export async function executeBim(adapter,value){if(typeof adapter?.run!=='function')throw new TypeError('BIM adapter must expose run');return adapter.run(createIfcOpenShellJob(value))}

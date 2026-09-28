@@ -1,0 +1,15 @@
+{
+  "id": "artisys-agro-contract",
+  "version": "1.0.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [],
+  "implementedCapabilities": [
+    "versioned-agro-event-contract",
+    "local-http-bridge",
+    "pairing-secret-auth",
+    "event-idempotency",
+    "outbox-retry",
+    "conflict-resolution"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-annotations",
+  "name": "ArtiSys Annotations",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["annotorious", "react-pdf-highlighter"],
+  "boundary": "Portable annotation model for images and PDFs; storage, permissions, collaboration and product-specific review flows stay in the consumer.",
+  "provides": ["portable-annotation-contract", "image-region-annotation", "pdf-highlight-annotation", "annotorious-adapter", "react-pdf-highlighter-adapter", "annotation-filtering"],
+  "packageName": "@artisys/annotations",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["annotation-validation", "image-region-normalization", "pdf-highlight-normalization", "annotorious-roundtrip", "pdf-highlighter-roundtrip", "target-filtering"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["The consumer owns persistence, permissions and collaborative synchronization.", "The module persists portable annotation data rather than UI component state."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}

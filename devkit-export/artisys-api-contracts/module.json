@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-api-contracts",
+  "name": "ArtiSys API Contracts",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [
+    "openapi-generator",
+    "pact-js"
+  ],
+  "boundary": "Development-time API schemas, generated clients and contract tests.",
+  "provides": [
+    "openapi-client-generation",
+    "consumer-contract-tests",
+    "provider-contract-tests",
+    "api-drift-detection"
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  },
+  "implementedCapabilities": [
+    "strict-json-schema-validation",
+    "event-envelope-validation",
+    "explicit-baseline-drift-gate",
+    "pinned-openapi-typescript-generation",
+    "local-pact-consumer-provider-tests"
+  ],
+  "plannedCapabilities": [],
+  "limitations": [
+    "Conservative content drift check; not semantic backward compatibility analysis",
+    "Example contracts do not validate existing product APIs"
+  ],
+  "requirements": {
+    "node": ">=22",
+    "java": ">=17 for generator",
+    "generator": "7.16.0",
+    "pact": "17.1.4 optional development peer"
+  }
+}

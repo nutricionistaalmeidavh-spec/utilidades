@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {createAuditEntry,MemoryAuditLog} from '../src/index.mjs';
+test('records immutable entries',async()=>{const log=new MemoryAuditLog();const e=createAuditEntry({actorId:'u1',action:'sale.cancel'},{id:'1',at:'2026-09-12T00:00:00Z'});await log.append(e);assert.equal((await log.list({action:'sale.cancel'})).length,1);assert.equal(Object.isFrozen(e),true);});

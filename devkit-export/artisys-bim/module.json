@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "id": "artisys-bim",
+  "name": "ArtiSys BIM Boundary",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand",
+  "upstreams": ["ifcopenshell"],
+  "boundary": "Explicit local-on-demand boundary around IfcOpenShell. IFC parsing and geometry stay behind an adapter so consumer products do not silently copy or link upstream code.",
+  "provides": ["ifc-query-validation", "ifc-summary", "ifc-properties-boundary", "ifc-quantities-boundary", "adapter-execution"],
+  "packageName": "@artisys/bim",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["ifc-input-validation", "summary-properties-quantities-contract", "ifcopenshell-job-generation", "entity-type-summary", "injected-bim-runner"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["IfcOpenShell installation and model-specific geometry processing remain optional local runtime concerns.", "DWG/DXF ingestion belongs to upstream conversion/import layers before this IFC boundary."],
+  "costPolicy": {"coreLicenseFee": 0, "requiredPaidServices": []}
+}
