@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-local-backend",
+  "name": "ArtiSys Local Backend",
+  "version": "0.1.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "executionMode": "local-on-demand",
+  "upstreams": ["pocketbase"],
+  "boundary": "Safe local-backend launch contract for PocketBase with loopback-only defaults.",
+  "provides": ["backend-config-validation", "pocketbase-launch-plan", "runner-execution"],
+  "packageName": "@artisys/local-backend",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["backend-config-validation", "pocketbase-launch-plan", "runner-execution"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "syntax": "npm run check", "example": "npm run example", "package": "npm pack --dry-run"},
+  "limitations": ["Remote bind requires explicit allowRemote=true.", "Database schema business rules remain in the product."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": true, "requiredPaidServices": []}
+}

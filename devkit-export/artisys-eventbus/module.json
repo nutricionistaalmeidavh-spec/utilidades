@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-eventbus",
+  "name": "ArtiSys EventBus",
+  "version": "0.2.0",
+  "status": "implemented",
+  "consumptionMode": "shared",
+  "upstreams": [],
+  "boundary": "Domain event delivery, browser synchronization, Cloudflare D1 outbox dispatch and idempotent effect execution. Business rules remain in the consuming product.",
+  "provides": [
+    "domain-event-contract",
+    "sync-async-event-bus",
+    "browser-esm-event-bus",
+    "wildcard-and-once-subscriptions",
+    "broadcast-channel-bridge",
+    "sse-remote-bridge",
+    "d1-durable-outbox",
+    "d1-idempotent-effects",
+    "sqlite-adapters",
+    "memory-adapters"
+  ],
+  "costPolicy": {
+    "coreLicenseFee": 0,
+    "selfHosted": true,
+    "requiredPaidServices": []
+  },
+  "implementedCapabilities": [
+    "canonical-domain-event-validation",
+    "sync-and-async-delivery",
+    "subscriber-failure-isolation",
+    "wildcard-delivery",
+    "idempotent-effect-runner",
+    "memory-effect-store",
+    "memory-outbox",
+    "durable-outbox-contract",
+    "one-shot-browser-subscribers",
+    "cross-tab-broadcast-channel-delivery",
+    "server-sent-event-consumption",
+    "d1-atomic-batch-outbox-preparation",
+    "d1-outbox-retry-state",
+    "d1-idempotent-effect-store",
+    "sqlite-outbox-adapter",
+    "sqlite-effect-store-adapter"
+  ],
+  "plannedCapabilities": [
+    "optional-websocket-bridge",
+    "optional-durable-objects-bridge"
+  ],
+  "limitations": [
+    "The browser EventBus is in-process and is not a source of truth",
+    "SSE server endpoint lifecycle remains the responsibility of the consuming application",
+    "Cross-device real-time delivery requires an application transport such as SSE, WebSocket or Durable Objects"
+  ],
+  "requirements": {
+    "node": ">=18",
+    "runtimeDependencies": "none",
+    "d1": "optional Cloudflare D1 binding",
+    "browser": "native ESM; BroadcastChannel/EventSource only when their bridges are used"
+  }
+}

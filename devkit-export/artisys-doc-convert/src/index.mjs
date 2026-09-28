@@ -1,0 +1,4 @@
+function obj(v,n){if(!v||typeof v!=='object'||Array.isArray(v))throw new TypeError(`${n} must be an object`);return v}const OUTPUTS=new Set(['pdf']);
+export function normalizeDocumentConversion(value){obj(value,'document conversion');if(typeof value.input!=='string'||!value.input.trim())throw new TypeError('input is required');const outputFormat=String(value.outputFormat??'').toLowerCase();if(!OUTPUTS.has(outputFormat))throw new TypeError('unsupported output format');return {input:value.input,outputFormat,outputPath:value.outputPath??null,options:{...(value.options??{})}}}
+export function createConversionRequest(value){const job=normalizeDocumentConversion(value);return {...job,provider:'gotenberg',execution:'isolated-on-demand'}}
+export async function executeConversion(adapter,value){if(typeof adapter?.convert!=='function')throw new TypeError('conversion adapter must expose convert');return adapter.convert(createConversionRequest(value))}
