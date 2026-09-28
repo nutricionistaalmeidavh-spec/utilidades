@@ -1,0 +1,29 @@
+{
+  "name": "@artisys/pdf",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "exports": { ".": "./src/index.mjs" },
+  "bin": { "artisys-pdf": "./bin/pdf.mjs" },
+  "files": ["src", "bin", "examples", "README.md", "module.json"],
+  "scripts": {
+    "test": "node --test tests/core.test.mjs",
+    "check": "node bin/pdf.mjs validate examples/template.json",
+    "example": "node examples/normalize.mjs"
+  },
+  "peerDependencies": {
+    "@pdfme/generator": ">=6 <7",
+    "@pdfme/schemas": ">=6 <7",
+    "pdfjs-dist": ">=6 <7",
+    "react": ">=18 <20",
+    "react-pdf-highlighter": ">=8.0.0-rc.0 <9"
+  },
+  "peerDependenciesMeta": {
+    "@pdfme/generator": { "optional": true },
+    "@pdfme/schemas": { "optional": true },
+    "pdfjs-dist": { "optional": true },
+    "react": { "optional": true },
+    "react-pdf-highlighter": { "optional": true }
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,37 @@
+name: QA Capture
+
+on:
+  workflow_dispatch:
+    inputs:
+      flow:
+        description: Fluxo declarado em qa/artisys-qa.config.json
+        required: false
+        default: smoke
+      environment:
+        description: Ambiente declarado no manifesto
+        required: false
+        default: production
+      viewport:
+        description: Viewport
+        required: true
+        default: desktop
+        type: choice
+        options: [desktop, tablet, mobile]
+  pull_request:
+    paths:
+      - 'qa/**'
+      - '.github/workflows/qa-capture.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    uses: nutricionistaalmeidavh-spec/utilidades/.github/workflows/artisys-qa-reusable.yml@main
+    with:
+      config: qa/artisys-qa.config.json
+      flow: ${{ inputs.flow || 'smoke' }}
+      environment: ${{ inputs.environment || 'production' }}
+      viewport: ${{ inputs.viewport || 'desktop' }}
+      retention-days: 7
+    secrets: inherit

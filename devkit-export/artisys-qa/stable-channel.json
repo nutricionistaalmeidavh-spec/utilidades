@@ -1,0 +1,6 @@
+{
+  "channel": "stable",
+  "version": "2.6.0",
+  "minimumNode": "22",
+  "notes": "Promove o ArtiSys QA P2 compartilhado com telemetria durável e serializada, persistência de artefatos por job, business packs de SaaS/licenciamento/multitenancy, redaction/fail-closed e release gate. CI Woodpecker validado em Windows com clone não recursivo e reporter detalhado."
+}

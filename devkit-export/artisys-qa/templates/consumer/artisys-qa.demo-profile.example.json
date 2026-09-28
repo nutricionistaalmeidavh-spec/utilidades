@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "systemId": "example-system-with-demo-profile",
+  "mode": "web",
+  "defaultEnvironment": "demo",
+  "defaultFlow": "smoke",
+  "defaultDemo": "quick-30s",
+  "defaultDemoProfile": "default",
+  "defaultViewport": "desktop",
+  "capture": {
+    "video": true,
+    "screenshotEachStep": true
+  },
+  "environments": {
+    "demo": {
+      "baseURL": "https://demo.example.invalid"
+    }
+  },
+  "flows": {
+    "smoke": "flows/smoke.json"
+  },
+  "demos": {
+    "quick-30s": {
+      "file": "demo/quick-30s.json",
+      "preset": "reels-9x16",
+      "durationTargetSec": 30
+    }
+  },
+  "demoProfiles": {
+    "default": {
+      "adapter": "./demo-adapter.mjs",
+      "account": {
+        "createIfMissing": true,
+        "usernameEnv": "ARTISYS_DEMO_USERNAME",
+        "passwordEnv": "ARTISYS_DEMO_PASSWORD"
+      },
+      "workspace": {
+        "strategy": "persistent",
+        "resetBeforeRun": "baseline"
+      },
+      "fixtures": [
+        "common/base",
+        "product/demo"
+      ]
+    }
+  }
+}

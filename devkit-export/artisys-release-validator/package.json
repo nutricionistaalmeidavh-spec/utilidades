@@ -1,0 +1,15 @@
+{
+  "name": "@artisys/release-validator",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": "./src/index.mjs",
+  "bin": {"artisys-release-validator": "./bin/artisys-release-validator.mjs"},
+  "files": ["src", "bin", "module.json", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check src/index.mjs && node --check src/profile.mjs && node --check src/runner.mjs && node --check src/executor.mjs && node --check src/artifact.mjs && node --check src/report.mjs && node --check src/adapters/command.mjs && node --check src/adapters/http.mjs && node --check src/adapters/nsis.mjs && node --check bin/artisys-release-validator.mjs",
+    "example": "node examples/basic.mjs"
+  },
+  "engines": {"node": ">=22"},
+  "license": "MIT"
+}

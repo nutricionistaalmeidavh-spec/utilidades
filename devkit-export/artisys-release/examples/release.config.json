@@ -1,0 +1,18 @@
+{
+  "product": "demo",
+  "version": "1.0.0",
+  "profile": "release",
+  "requiredSteps": ["test", "build", "installer", "qa"],
+  "steps": {
+    "deps": "npm ci",
+    "lint": "npm run lint",
+    "test": "npm test",
+    "build": "npm run build",
+    "installer": "npm run dist",
+    "qa": "npm run qa:e2e",
+    "security": "npm run security",
+    "evidence": "npm run qa:evidence",
+    "deploy": "npm run deploy",
+    "publish": "npm run publish"
+  }
+}

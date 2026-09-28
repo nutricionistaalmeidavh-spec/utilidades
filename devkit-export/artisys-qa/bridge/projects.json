@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "pdv-artisys",
+      "name": "PDV ARTISYS",
+      "repository": "https://github.com/nutricionistaalmeidavh-spec/PDV-ARTISYS.git",
+      "ref": "main",
+      "configPath": "qa/artisys-qa.config.json",
+      "setup": "npm-install",
+      "enabled": true
+    },
+    {
+      "id": "sistema-financeiro",
+      "name": "Sistema Financeiro",
+      "repository": "https://github.com/nutricionistaalmeidavh-spec/sistemafinanceiro.git",
+      "ref": "feat/e14-e15-final-polish",
+      "configPath": "artisys-qa.config.json",
+      "setup": "none",
+      "enabled": true
+    }
+  ]
+}

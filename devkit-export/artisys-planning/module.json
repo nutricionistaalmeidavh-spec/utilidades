@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "artisys-planning",
+  "name": "ArtiSys Planning",
+  "version": "1.0.0",
+  "status": "stable",
+  "consumptionMode": "shared",
+  "executionMode": "embedded",
+  "upstreams": ["frappe-gantt", "fullcalendar"],
+  "boundary": "Portable scheduling contract and UI adapters; business scheduling rules and persistence stay in the consumer.",
+  "provides": ["plan-validation", "frappe-gantt-adapter", "fullcalendar-adapter", "plan-progress", "resource-conflict-detection"],
+  "packageName": "@artisys/planning",
+  "entrypoint": "./src/index.mjs",
+  "implementedCapabilities": ["task-id-validation", "date-range-validation", "dependency-reference-validation", "gantt-task-model", "calendar-event-model", "progress-aggregation", "resource-overlap-detection"],
+  "plannedCapabilities": [],
+  "verification": {"unit": "npm test", "example": "npm run example"},
+  "limitations": ["This module does not optimize schedules or run background jobs.", "Calendar end-date semantics remain controlled by the consumer."],
+  "costPolicy": {"coreLicenseFee": 0, "selfHosted": false, "requiredPaidServices": []}
+}

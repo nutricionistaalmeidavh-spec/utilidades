@@ -1,0 +1,6 @@
+node_modules/
+qa-results/
+qa-report/
+qa-artifacts/
+test-results/
+*.tgz
